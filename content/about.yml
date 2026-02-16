@@ -1,0 +1,29 @@
+title: About Me
+description: Full Stack Developer, open source contributor, sound healer, and ecstatic dance DJ. Based in Belgium.
+content: |
+  Hi, I'm **Wouter Vernaillen**, a freelance Full Stack Developer based in Belgium. For over 25 years, I've been building web solutions — from the earliest static HTML sites to complex enterprise portals with seamless backend integrations.
+
+  My career started in 1999 as a developer, and after 14 years as an employee at companies like IBM, UPM-Kymmene, and Van Marcke, I went freelance in 2013. Since then I've been helping organizations build robust web portals and applications, primarily in the government and enterprise space.
+
+  ### What I Build
+
+  On the backend, I'm deeply experienced with **Java** and **Spring Framework** — building APIs, integrating systems, and architecting solutions that scale. On the frontend, I've fallen in love with **Nuxt** and **Vue.js** for their developer experience and the speed at which you can ship beautiful, performant websites.
+
+  This combination — enterprise backend strength with modern frontend craft — is what I bring to every project.
+
+  ### Open Source
+
+  I'm the creator of **[WPNuxt](https://wpnuxt.com)**, a Nuxt module that lets you use WordPress as a headless CMS with a Nuxt frontend. It connects via GraphQL and gives you the best of both worlds: a familiar editing experience for content creators, and a cutting-edge frontend for developers and visitors.
+
+  ### Beyond Code
+
+  Sound, music and dance are a big part of my life. I'm a sound healing practitioner, ecstatic dance DJ, and trance dance facilitator. I find music to be the best way to translate, give and receive energy. You can find more about these activities on my other website **[Harmonics.be](https://harmonics.be)**.
+
+  I'm also an avid traveler, always open to learn from other cultures and fascinated by cross-cultural movements.
+
+  Want to work together? [Schedule a call](https://calendly.com/vernaillen/15min) or find me on [LinkedIn](https://www.linkedin.com/in/woutervernaillen/).
+images:
+  - src: /images/woutervernaillen.jpg
+    alt: Wouter Vernaillen
+  - src: /images/projects/wpnuxt-logo-dark.png
+    alt: WPNuxt
