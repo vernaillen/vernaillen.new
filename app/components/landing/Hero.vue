@@ -17,6 +17,12 @@ defineProps<{
       links: 'mt-4 flex-col justify-center items-center'
     }"
   >
+    <template #top>
+      <ClientOnly>
+        <DotGrid />
+      </ClientOnly>
+    </template>
+
     <template #headline>
       <Motion
         :initial="{ scale: 1.05, opacity: 0, filter: 'blur(4px)' }"

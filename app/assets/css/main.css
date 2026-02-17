@@ -99,3 +99,7 @@ body::after {
   -webkit-mask-image: radial-gradient(ellipse at center, black, transparent 70%);
   opacity: 0.25;
 }
+/* Hide CSS dots when canvas is active (CSS dots remain as SSR/no-JS fallback) */
+.dot-pattern:has(canvas)::before {
+  display: none;
+}
