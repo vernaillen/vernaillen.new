@@ -28,8 +28,8 @@ useSeoMeta({
 const groupedEvents = computed((): Record<Event['category'], Event[]> => {
   const events = page.value?.events || []
   const grouped: Record<Event['category'], Event[]> = {
-    'Freelance': [],
-    'Employment': []
+    Freelance: [],
+    Employment: []
   }
   for (const event of events) {
     if (grouped[event.category]) grouped[event.category].push(event)

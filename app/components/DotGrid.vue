@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   spacing: 14,
   dotRadius: 1,
-  baseOpacity: 0.35
+  baseOpacity: 0.25
 })
 
 const canvasRef = useTemplateRef('canvas')

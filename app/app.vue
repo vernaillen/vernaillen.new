@@ -1,8 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
 
-useGlowFollow()
-
 const color = computed(() => colorMode.value === 'dark' ? '#020618' : 'white')
 
 useHead({

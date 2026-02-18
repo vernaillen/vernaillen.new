@@ -54,10 +54,10 @@ export function useDotGrid(
         const i = (r * cols + c) * STRIDE
         const x = c * spacing + offset
         const y = r * spacing + offset
-        dots[i] = x       // currentX
-        dots[i + 1] = y   // currentY
-        dots[i + 2] = x   // restX
-        dots[i + 3] = y   // restY
+        dots[i] = x // currentX
+        dots[i + 1] = y // currentY
+        dots[i + 2] = x // restX
+        dots[i + 3] = y // restY
       }
     }
   }

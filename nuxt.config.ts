@@ -17,6 +17,10 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  colorMode: {
+    preference: 'dark'
+  },
+
   compatibilityDate: '2026-02-16',
 
   nitro: {

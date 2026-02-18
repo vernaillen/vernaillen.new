@@ -13,7 +13,7 @@ defineProps<{
     :ui="{
       root: 'dot-pattern',
       headline: 'flex items-center justify-center',
-      title: 'text-shadow-sm max-w-xl mx-auto leading-normal',
+      title: 'text-shadow-sm',
       links: 'mt-4 flex-col justify-center items-center'
     }"
   >

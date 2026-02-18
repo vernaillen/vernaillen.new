@@ -18,8 +18,8 @@ if (!posts.value) {
     :title="page.blog.title"
     :description="page.blog.description"
     :ui="{
-      container: 'px-0 pt-0! sm:gap-6 lg:gap-8',
-      title: 'text-left text-xl sm:text-xl lg:text-2xl font-medium',
+      container: 'px-0 py-24 lg:py-32 sm:gap-6 lg:gap-8',
+      title: 'text-left text-2xl sm:text-2xl lg:text-3xl font-medium section-title',
       description: 'text-left mt-2 text-sm sm:text-md lg:text-sm text-muted'
     }"
   >
@@ -35,8 +35,8 @@ if (!posts.value) {
         v-bind="post"
         :to="post.path"
         :ui="{
-          root: 'group relative lg:items-start lg:flex ring-0 hover:ring-0',
-          body: 'px-0!',
+          root: 'group relative lg:items-start lg:flex ring-0 hover:ring-0 sm:px-4! sm:pb-4 rounded-lg transition-colors hover:bg-elevated/50',
+          body: '',
           header: 'hidden'
         }"
       >
