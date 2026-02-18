@@ -34,7 +34,7 @@ useSeoMeta({
       }"
     >
       <UColorModeAvatar
-        class="sm:rotate-4 size-36 rounded-lg ring ring-default ring-offset-3 ring-offset-(--ui-bg)"
+        class="-mb-10 sm:rotate-4 size-36 rounded-lg ring ring-default ring-offset-3 ring-offset-bg"
         :light="global.picture?.light!"
         :dark="global.picture?.dark!"
         :alt="global.picture?.alt!"
@@ -45,18 +45,29 @@ useSeoMeta({
         container: 'pt-0!'
       }"
     >
-      <MDC
-        :value="page.content"
-        unwrap="p"
-      />
-      <div class="flex flex-row justify-center items-center py-10 space-x-[-2rem]">
-        <PolaroidItem
-          v-for="(image, index) in page.images"
-          :key="index"
-          :image="image"
-          :index
-        />
-      </div>
+      <Motion
+        :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+        :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+        :transition="{ delay: 0.1 }"
+        :in-view-options="{ once: true }"
+      >
+        <ContentRenderer :value="page" />
+      </Motion>
+      <Motion
+        :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+        :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+        :transition="{ delay: 0.2 }"
+        :in-view-options="{ once: true }"
+      >
+        <div class="flex flex-row justify-center items-center py-10 space-x-[-2rem]">
+          <PolaroidItem
+            v-for="(image, index) in page.images"
+            :key="index"
+            :image="image"
+            :index
+          />
+        </div>
+      </Motion>
     </UPageSection>
   </UPage>
 </template>

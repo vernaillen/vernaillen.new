@@ -79,30 +79,37 @@ function formatDate(dateString: string): string {
         </div>
 
         <div class="lg:col-span-2 space-y-8">
-          <div
+          <Motion
             v-for="(event, index) in eventsInCategory"
             :key="`${category}-${index}`"
-            class="group relative pl-6 border-l border-default"
+            :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+            :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+            :transition="{ delay: 0.1 * index }"
+            :in-view-options="{ once: true }"
           >
-            <NuxtLink
-              v-if="event.url"
-              :to="event.url"
-              target="_blank"
-              class="absolute inset-0"
-            />
-            <div class="mb-1 text-sm font-medium text-muted">
-              <span>{{ event.location }}</span>
-              <span
-                v-if="event.location && event.date"
-                class="mx-1"
-              >&middot;</span>
-              <span v-if="event.date">{{ formatDate(event.date) }}</span>
-            </div>
+            <div
+              class="group relative pl-6 border-l border-default"
+            >
+              <NuxtLink
+                v-if="event.url"
+                :to="event.url"
+                target="_blank"
+                class="absolute inset-0"
+              />
+              <div class="mb-1 text-sm font-medium text-muted">
+                <span>{{ event.location }}</span>
+                <span
+                  v-if="event.location && event.date"
+                  class="mx-1"
+                >&middot;</span>
+                <span v-if="event.date">{{ formatDate(event.date) }}</span>
+              </div>
 
-            <h3 class="text-lg font-semibold text-highlighted">
-              {{ event.title }}
-            </h3>
-          </div>
+              <h3 class="text-lg font-semibold text-highlighted">
+                {{ event.title }}
+              </h3>
+            </div>
+          </Motion>
         </div>
       </div>
     </UPageSection>
