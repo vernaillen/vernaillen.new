@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/content',
     '@vueuse/nuxt',
-    'nuxt-og-image',
+    '@nuxtjs/seo',
     'nuxt-svgo',
     'motion-v/nuxt',
     'nuxt-studio',
@@ -30,6 +30,26 @@ export default defineNuxtConfig({
 
   plausible: {
     apiHost: 'https://vernaillen.dev/plio'
+  },
+
+  site: {
+    url: 'https://vernaillen.dev',
+    name: 'Wouter Vernaillen',
+    description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
+    defaultLocale: 'en'
+  },
+
+  seo: {
+    meta: {
+      title: 'Wouter Vernaillen',
+      description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
+      ogTitle: 'Wouter Vernaillen',
+      ogDescription: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.'
+    }
+  },
+
+  sitemap: {
+    sources: ['/api/sitemap']
   },
 
   compatibilityDate: '2026-02-16',
