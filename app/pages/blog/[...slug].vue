@@ -72,69 +72,93 @@ const formatDate = (dateString: string) => {
               {{ page.minRead }} MIN READ
             </span>
           </div>
-          <NuxtImg
-            :src="page.image"
-            :alt="page.title"
-            class="rounded-lg w-full h-[300px] object-cover object-center"
-          />
-          <h1 class="text-4xl text-center font-medium max-w-3xl mx-auto mt-4">
-            {{ page.title }}
-          </h1>
-          <p class="text-muted text-center max-w-2xl mx-auto">
-            {{ page.description }}
-          </p>
-          <div class="flex items-center justify-center gap-2 mt-2">
-            <UUser
-              orientation="vertical"
-              color="neutral"
-              variant="outline"
-              class="justify-center items-center text-center"
-              v-bind="page.author"
+          <Motion
+            :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+            :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          >
+            <NuxtImg
+              :src="page.image?.src"
+              :alt="page.title"
+              :class="`h-[${page.image?.height ? page.image.height : 300}px]`"
+              class="rounded-lg w-full blog-image-height object-cover object-center"
             />
-          </div>
+          </Motion>
+          <Motion
+            :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+            :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+            :transition="{ delay: 0.1 }"
+          >
+            <h1 class="text-4xl text-center font-medium max-w-3xl mx-auto mt-4">
+              {{ page.title }}
+            </h1>
+            <p class="text-muted text-center max-w-2xl mx-auto mt-3">
+              {{ page.description }}
+            </p>
+          </Motion>
+          <Motion
+            :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+            :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+            :transition="{ delay: 0.2 }"
+          >
+            <div class="flex items-center justify-center gap-2 mt-2">
+              <UUser
+                orientation="vertical"
+                color="neutral"
+                variant="outline"
+                class="justify-center items-center text-center"
+                v-bind="page.author"
+              />
+            </div>
+          </Motion>
         </div>
-        <UPageBody class="max-w-3xl mx-auto">
-          <ContentRenderer
-            v-if="page.body"
-            :value="page"
-          />
+        <Motion
+          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :transition="{ delay: 0.3 }"
+        >
+          <UPageBody class="max-w-3xl mx-auto">
+            <ContentRenderer
+              v-if="page.body"
+              :value="page"
+            />
 
-          <div class="flex items-center justify-end gap-2 text-sm text-muted">
-            <span class="text-xs">Share on</span>
-            <UButton
-              size="xs"
-              variant="outline"
-              color="neutral"
-              icon="i-simple-icons-x"
-              :to="`https://x.com/intent/tweet?text=${encodeURIComponent(page.title)}&url=${encodeURIComponent(articleLink)}`"
-              target="_blank"
-            />
-            <UButton
-              size="xs"
-              variant="outline"
-              color="neutral"
-              icon="i-simple-icons-linkedin"
-              :to="`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleLink)}`"
-              target="_blank"
-            />
-            <UButton
-              size="xs"
-              variant="outline"
-              color="neutral"
-              icon="i-simple-icons-bluesky"
-              :to="`https://bsky.app/intent/compose?text=${encodeURIComponent(page.title + ' ' + articleLink)}`"
-              target="_blank"
-            />
-            <UButton
-              size="sm"
-              variant="link"
-              color="neutral"
-              label="Copy link"
-              @click="copyToClipboard(articleLink, 'Article link copied to clipboard')"
-            />
-          </div>
-          <UContentSurround :surround />
-        </UPageBody>
+            <div class="flex items-center justify-end gap-2 text-sm text-muted">
+              <span class="text-xs">Share on</span>
+              <UButton
+                size="xs"
+                variant="outline"
+                color="neutral"
+                icon="i-simple-icons-x"
+                :to="`https://x.com/intent/tweet?text=${encodeURIComponent(page.title)}&url=${encodeURIComponent(articleLink)}`"
+                target="_blank"
+              />
+              <UButton
+                size="xs"
+                variant="outline"
+                color="neutral"
+                icon="i-simple-icons-linkedin"
+                :to="`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleLink)}`"
+                target="_blank"
+              />
+              <UButton
+                size="xs"
+                variant="outline"
+                color="neutral"
+                icon="i-simple-icons-bluesky"
+                :to="`https://bsky.app/intent/compose?text=${encodeURIComponent(page.title + ' ' + articleLink)}`"
+                target="_blank"
+              />
+              <UButton
+                size="sm"
+                variant="link"
+                color="neutral"
+                label="Copy link"
+                @click="copyToClipboard(articleLink, 'Article link copied to clipboard')"
+              />
+            </div>
+            <UContentSurround :surround />
+          </UPageBody>
+        </Motion>
       </UPage>
     </UContainer>
   </UMain>

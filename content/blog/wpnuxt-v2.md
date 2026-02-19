@@ -3,7 +3,9 @@ title: "WPNuxt 2.0: A Complete Rewrite for Headless WordPress with Nuxt"
 description: Announcing WPNuxt 2.0.0-beta.3 — a ground-up rewrite bringing type-safe composables, multi-layer caching, Gutenberg block rendering, authentication, and an AI-powered MCP server to the WordPress + Nuxt stack
 minRead: 9
 date: 2026-02-16
-image: /images/projects/wpnuxt.png
+image: 
+  src: /images/blog/990.wpnuxt-v2/wpnuxt.png
+  height: 450
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer

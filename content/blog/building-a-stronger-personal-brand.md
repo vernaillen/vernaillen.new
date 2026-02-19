@@ -3,7 +3,8 @@ title: Building a stronger personal brand
 description: The story behind the vernaillen.com website
 minRead: 3
 date: 2017-09-14
-image: /images/blog/997.personalbrand/balivolcanosunset_thumb.png
+image: 
+  src: /images/blog/997.personalbrand/balivolcanosunset_thumb.png
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer

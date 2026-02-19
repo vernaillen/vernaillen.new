@@ -3,7 +3,9 @@ title: Kaspa
 description: A proof-of-work cryptocurrency staying true to Satoshi's vision while using blockDAG technology for faster transactions
 minRead: 4
 date: 2025-12-08
-image: /images/blog/994.kaspa/Gxn--EmXEAAjHhA.jpeg
+image: 
+  src: /images/blog/994.kaspa/Gxn--EmXEAAjHhA.jpeg
+  height: 450
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer

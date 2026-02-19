@@ -3,7 +3,8 @@ title: Discovering Nuxt
 description: After starting to learn Vue 3 a few years ago, I decided to continue the learning path to Nuxt 3
 minRead: 2
 date: 2023-04-02
-image: /images/blog/995.nuxt/nuxt-logo-green-light.png
+image: 
+  src: /images/blog/995.nuxt/nuxt-logo-green-light.png
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer

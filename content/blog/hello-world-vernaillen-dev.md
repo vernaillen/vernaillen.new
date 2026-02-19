@@ -3,7 +3,8 @@ title: Hello World Vernaillen.dev
 description: Introducing a complete rewrite of the website for my freelance business, now built with Vue 3, Vite, Tailwind and Markdown
 minRead: 2
 date: 2022-11-06
-image: /images/blog/996.hello-world/hello-world_dark.png
+image: 
+  src: /images/blog/996.hello-world/hello-world_dark.png
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer

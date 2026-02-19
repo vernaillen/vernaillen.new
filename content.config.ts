@@ -94,7 +94,10 @@ export default defineContentConfig({
       schema: z.object({
         minRead: z.number(),
         date: z.date(),
-        image: z.string().nonempty().editor({ input: 'media' }),
+        image: z.object({
+          src: z.string().nonempty().editor({ input: 'media' }),
+          height: z.number()
+        }),
         author: createAuthorSchema()
       })
     }),

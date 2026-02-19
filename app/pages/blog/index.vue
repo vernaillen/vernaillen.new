@@ -59,6 +59,7 @@ useSeoMeta({
             orientation="horizontal"
             :to="post.path"
             v-bind="post"
+            :image="post.image.src"
             :ui="{
               root: 'md:grid md:grid-cols-2 group overflow-visible transition-all duration-300',
               image:

@@ -3,7 +3,8 @@ title: My action plan after Liferay DevCon
 description: Liferay DevCon
 minRead: 2
 date: 2015-11-16
-image: /images/blog/999.devcon/devcon_thumb.png
+image: 
+  src: /images/blog/999.devcon/devcon_thumb.png
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer

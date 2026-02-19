@@ -3,7 +3,8 @@ title: Using Liferay 7 to build a community website
 description: Plans for the devNomads website
 minRead: 3
 date: 2016-07-24
-image: /images/blog/998.devnomads/devnomads_thumb.png
+image: 
+  src: /images/blog/998.devnomads/devnomads_thumb.png
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer
