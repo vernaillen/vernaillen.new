@@ -20,15 +20,13 @@ const blogNavigation = computed(() => navigation.value.find(item => item.path ==
 
 const breadcrumb = computed(() => mapContentNavigation(findPageBreadcrumb(blogNavigation?.value, page.value?.path)).map(({ icon, ...link }) => link))
 
-if (page.value.image) {
-  defineOgImage({ url: page.value.image })
-} else {
-  defineOgImageComponent('Blog', {
-    headline: breadcrumb.value.map(item => item.label).join(' > ')
-  }, {
-    fonts: ['Geist:400', 'Geist:600']
-  })
-}
+defineOgImage({
+  component: 'VernaillenBlog',
+  title: page.value.title,
+  description: page.value.description,
+  headline: breadcrumb.value.map(item => item.label).join(' > '),
+  fonts: ['Space+Grotesk:400', 'Space+Grotesk:500']
+})
 
 const title = page.value?.seo?.title || page.value?.title
 const description = page.value?.seo?.description || page.value?.description
@@ -102,6 +100,31 @@ const formatDate = (dateString: string) => {
           />
 
           <div class="flex items-center justify-end gap-2 text-sm text-muted">
+            <span class="text-xs">Share on</span>
+            <UButton
+              size="xs"
+              variant="outline"
+              color="neutral"
+              icon="i-simple-icons-x"
+              :to="`https://x.com/intent/tweet?text=${encodeURIComponent(page.title)}&url=${encodeURIComponent(articleLink)}`"
+              target="_blank"
+            />
+            <UButton
+              size="xs"
+              variant="outline"
+              color="neutral"
+              icon="i-simple-icons-linkedin"
+              :to="`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleLink)}`"
+              target="_blank"
+            />
+            <UButton
+              size="xs"
+              variant="outline"
+              color="neutral"
+              icon="i-simple-icons-bluesky"
+              :to="`https://bsky.app/intent/compose?text=${encodeURIComponent(page.title + ' ' + articleLink)}`"
+              target="_blank"
+            />
             <UButton
               size="sm"
               variant="link"

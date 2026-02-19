@@ -19,6 +19,13 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  site: {
+    url: 'https://vernaillen.dev',
+    name: 'Wouter Vernaillen',
+    description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
+    defaultLocale: 'en'
+  },
+
   colorMode: {
     preference: 'dark'
   },
@@ -28,28 +35,8 @@ export default defineNuxtConfig({
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' }
   },
 
-  plausible: {
-    apiHost: 'https://vernaillen.dev/plio'
-  },
-
-  site: {
-    url: 'https://vernaillen.dev',
-    name: 'Wouter Vernaillen',
-    description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
-    defaultLocale: 'en'
-  },
-
-  seo: {
-    meta: {
-      title: 'Wouter Vernaillen',
-      description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
-      ogTitle: 'Wouter Vernaillen',
-      ogDescription: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.'
-    }
-  },
-
-  sitemap: {
-    sources: ['/api/sitemap']
+  experimental: {
+    componentIslands: true
   },
 
   compatibilityDate: '2026-02-16',
@@ -70,6 +57,23 @@ export default defineNuxtConfig({
         braceStyle: '1tbs'
       }
     }
+  },
+
+  plausible: {
+    apiHost: 'https://vernaillen.dev/plio'
+  },
+
+  seo: {
+    meta: {
+      title: 'Wouter Vernaillen',
+      description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
+      ogTitle: 'Wouter Vernaillen',
+      ogDescription: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.'
+    }
+  },
+
+  sitemap: {
+    sources: ['/api/sitemap']
   },
 
   svgo: {

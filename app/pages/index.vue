@@ -10,11 +10,21 @@ if (!page.value) {
   })
 }
 
+const title = page.value?.seo?.title || page.value?.title
+const description = page.value?.seo?.description || page.value?.description
+
 useSeoMeta({
-  title: page.value?.seo.title || page.value?.title,
-  ogTitle: page.value?.seo.title || page.value?.title,
-  description: page.value?.seo.description || page.value?.description,
-  ogDescription: page.value?.seo.description || page.value?.description
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description
+})
+
+defineOgImage({
+  component: 'Vernaillen',
+  title,
+  description,
+  fonts: ['Space+Grotesk:400', 'Space+Grotesk:500']
 })
 </script>
 
