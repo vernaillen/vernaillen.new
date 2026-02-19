@@ -1,41 +1,45 @@
 title: Career
 description: The projects and companies I've worked with over 25+ years, and the technologies I've used along the way.
+events:
+  - category: Freelance
+    title: Senior Full Stack Java Developer — Governmental citizen portal
+    date: 2019-01-01
+    location: Opgroeien / Kind & Gezin
+    url: https://www.opgroeien.be
+  - category: Freelance
+    title: Senior Full Stack Java Developer — Customer Portal
+    date: 2018-01-01
+    location: IDEWE (via Cronos)
+  - category: Freelance
+    title: Senior Full Stack Java Developer — Governmental citizen portal
+    date: 2014-01-01
+    location: Kind & Gezin (via Cronos)
+  - category: Freelance
+    title: Lead Developer — Dreambaby community portal
+    date: 2013-01-01
+    location: Colruyt (via TCS)
+  - category: Employment
+    title: Portal Architect / Project Leader Intranet
+    date: 2010-01-01
+    location: Van Marcke
+  - category: Employment
+    title: "WebSphere Portal & J2EE Developer/Consultant — clients: UZ Gent, VDAB, European Commission, Eandis"
+    date: 2006-01-01
+    location: IBM
+  - category: Employment
+    title: Java Software Engineer & Lead Developer
+    date: 2003-01-01
+    location: UPM-Kymmene
+  - category: Employment
+    title: Lotus Notes Developer
+    date: 2000-01-01
+    location: Atos Origin
+  - category: Employment
+    title: Lotus Notes Developer
+    location: Alcatel e-Com / the e-Corporation
+    date: 1999-01-01
 links:
   - label: LinkedIn
     size: md
     to: https://www.linkedin.com/in/woutervernaillen/
     icon: i-simple-icons-linkedin
-events:
-  - category: Freelance
-    title: "Senior Full Stack Java Developer — Governmental citizen portal"
-    date: "2019-01-01"
-    location: "Opgroeien / Kind & Gezin"
-    url: "https://www.opgroeien.be"
-  - category: Freelance
-    title: "Senior Full Stack Java Developer — Customer Portal"
-    date: "2018-01-01"
-    location: "IDEWE (via Cronos)"
-  - category: Freelance
-    title: "Senior Full Stack Java Developer — Governmental citizen portal"
-    date: "2014-01-01"
-    location: "Kind & Gezin (via Cronos)"
-  - category: Freelance
-    title: "Lead Developer — Dreambaby community portal"
-    date: "2013-01-01"
-    location: "Colruyt (via TCS)"
-  - category: Employment
-    title: "Portal Architect / Project Leader Intranet"
-    date: "2010-01-01"
-    location: "Van Marcke"
-  - category: Employment
-    title: "WebSphere Portal & J2EE Developer — UZ Gent, VDAB, European Commission, Eandis"
-    date: "2006-01-01"
-    location: "IBM"
-  - category: Employment
-    title: "Java Software Engineer & Lead Developer — Online Paper Catalogue"
-    date: "2003-01-01"
-    location: "UPM-Kymmene"
-  - category: Employment
-    title: "Developer — Various projects"
-    date: "1999-01-01"
-    location: "Atos Origin / Alcatel e-com"
