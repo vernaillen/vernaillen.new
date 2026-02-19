@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     'nuxt-og-image',
     'nuxt-svgo',
     'motion-v/nuxt',
-    'nuxt-studio'
+    'nuxt-studio',
+    '@nuxtjs/plausible'
   ],
 
   devtools: {
@@ -20,6 +21,15 @@ export default defineNuxtConfig({
 
   colorMode: {
     preference: 'dark'
+  },
+
+  routeRules: {
+    '/plio/js/script.js': { proxy: 'https://plausible.io/js/script.js' },
+    '/plio/api/event': { proxy: 'https://plausible.io/api/event' }
+  },
+
+  plausible: {
+    apiHost: 'https://vernaillen.dev/plio'
   },
 
   compatibilityDate: '2026-02-16',
