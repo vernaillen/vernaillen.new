@@ -1,11 +1,11 @@
 ---
 title: "WPNuxt 2.0: A Complete Rewrite for Headless WordPress with Nuxt"
-description: Announcing WPNuxt 2.0.0-beta.3 — a ground-up rewrite bringing type-safe composables, multi-layer caching, Gutenberg block rendering, authentication, and an AI-powered MCP server to the WordPress + Nuxt stack
+description: Announcing WPNuxt 2.0 — a ground-up rewrite bringing type-safe composables, multi-layer caching, Gutenberg block rendering, authentication, and an AI-powered MCP server to the WordPress + Nuxt stack
 minRead: 9
 date: 2026-02-16
 image: 
   src: /images/blog/990.wpnuxt-v2/wpnuxt.png
-  height: 450
+  height: 400
 author:
   name: Wouter Vernaillen
   description: Full Stack Developer
@@ -16,7 +16,7 @@ author:
 
 ## Introducing WPNuxt 2.0
 
-After months of development spanning 16 alpha releases and over 250 commits, WPNuxt 2.0.0-beta.3 is here. This is a complete rewrite of the WordPress-Nuxt integration module, built from the ground up for Nuxt 4.
+After months of development spanning 16 alpha releases, 5 betas, and over 250 commits, WPNuxt 2.0 is here. This is a complete rewrite of the WordPress-Nuxt integration module, built from the ground up for Nuxt 4.
 
 WPNuxt connects WordPress with Nuxt via GraphQL, generating type-safe composables from your queries so you can fetch and render WordPress content without writing boilerplate. Version 2 takes this foundation and adds multi-layer caching, Gutenberg block rendering, a full authentication module, and an AI-powered development workflow via MCP.
 
@@ -372,14 +372,14 @@ Run `nuxt prepare` and WPNuxt handles the rest — downloading the GraphQL schem
 
 ## What's Next
 
-WPNuxt 2.0 is in beta. The core API is stable, but there are areas I'm actively working on before the final release:
+WPNuxt 2.0 is stable and ready for production. Here's what's on the roadmap for upcoming releases:
 
 - **Cursor-based pagination** for large content sets
 - **Deeper inner block nesting** for complex Gutenberg layouts
 - **Additional default queries** for taxonomies and search
 - **Expanded test coverage** for components and module setup logic
 
-Feedback and bug reports are welcome on the [GitHub repository](https://github.com/vernaillen/wpnuxt).
+Feedback, feature requests, and bug reports are welcome on the [GitHub repository](https://github.com/vernaillen/wpnuxt).
 
 ---
 

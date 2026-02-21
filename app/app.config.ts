@@ -20,6 +20,20 @@ export default defineAppConfig({
         title: 'mx-auto max-w-2xl text-pretty text-3xl sm:text-4xl lg:text-5xl',
         description: 'mt-2 text-md mx-auto max-w-2xl text-pretty sm:text-md text-muted'
       }
+    },
+    blogPost: {
+      slots: {
+        root: 'md:grid md:grid-cols-2 group overflow-visible transition-all duration-300',
+        image: 'rounded-lg shadow-lg border-1 border-muted ring-2 ring-default',
+        header: 'overflow-visible'
+      },
+      variants: {
+        to: {
+          true: {
+            image: 'group-hover/blog-post:scale-105'
+          }
+        }
+      }
     }
   },
   footer: {
