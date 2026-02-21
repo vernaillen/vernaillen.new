@@ -54,7 +54,7 @@ const formatDate = (dateString: string) => {
 <template>
   <UMain
     v-if="page"
-    class="mt-20 px-2"
+    class="mt-15 px-2"
   >
     <UContainer>
       <ULink
@@ -64,33 +64,18 @@ const formatDate = (dateString: string) => {
         <UIcon name="lucide:chevron-left" />
         Blog
       </ULink>
-      <div class="flex flex-col gap-3 mt-8">
-        <div class="flex text-xs text-muted items-center justify-center gap-2">
-          <span v-if="page.date">
-            {{ formatDate(page.date) }}
-          </span>
-          <span v-if="page.date && page.minRead">
-            -
-          </span>
-          <span v-if="page.minRead">
-            {{ page.minRead }} MIN READ
-          </span>
-        </div>
-        <Motion
-          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-        >
+      <div class="flex flex-col gap-3 mt-6">
+        <div>
           <h1 class="text-4xl text-center font-medium max-w-3xl mx-auto mt-4">
             {{ page.title }}
           </h1>
           <p class="text-muted text-center max-w-2xl mx-auto mt-3">
             {{ page.description }}
           </p>
-        </Motion>
+        </div>
         <Motion
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
           :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-          :transition="{ delay: 0.1 }"
         >
           <NuxtImg
             :src="page.image?.src"
@@ -102,8 +87,19 @@ const formatDate = (dateString: string) => {
         <Motion
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
           :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-          :transition="{ delay: 0.2 }"
+          :transition="{ delay: 0.1 }"
         >
+          <div class="flex text-xs text-muted items-center justify-center gap-2">
+            <span v-if="page.date">
+              {{ formatDate(page.date) }}
+            </span>
+            <span v-if="page.date && page.minRead">
+              -
+            </span>
+            <span v-if="page.minRead">
+              {{ page.minRead }} MIN READ
+            </span>
+          </div>
           <div class="flex items-center justify-center gap-2 mt-2">
             <UUser
               orientation="vertical"
@@ -117,60 +113,66 @@ const formatDate = (dateString: string) => {
       </div>
     </UContainer>
 
-    <UContainer class="relative min-h-screen">
-      <UPage>
-        <UPageBody>
-          <ContentRenderer
-            v-if="page.body"
-            :value="page"
-          />
+    <Motion
+      :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+      :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+      :transition="{ delay: 0.2 }"
+    >
+      <UContainer class="relative min-h-screen">
+        <UPage>
+          <UPageBody>
+            <ContentRenderer
+              v-if="page.body"
+              :value="page"
+            />
 
-          <div class="flex items-center justify-end gap-2 text-sm text-muted">
-            <span class="text-xs">Share on</span>
-            <UButton
-              size="xs"
-              variant="outline"
-              color="neutral"
-              icon="i-simple-icons-x"
-              :to="`https://x.com/intent/tweet?text=${encodeURIComponent(page.title)}&url=${encodeURIComponent(articleLink)}`"
-              target="_blank"
+            <div class="flex items-center justify-end gap-2 text-sm text-muted">
+              <span class="text-xs">Share on</span>
+              <UButton
+                size="xs"
+                variant="outline"
+                color="neutral"
+                icon="i-simple-icons-x"
+                :to="`https://x.com/intent/tweet?text=${encodeURIComponent(page.title)}&url=${encodeURIComponent(articleLink)}`"
+                target="_blank"
+              />
+              <UButton
+                size="xs"
+                variant="outline"
+                color="neutral"
+                icon="i-simple-icons-linkedin"
+                :to="`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleLink)}`"
+                target="_blank"
+              />
+              <UButton
+                size="xs"
+                variant="outline"
+                color="neutral"
+                icon="i-simple-icons-bluesky"
+                :to="`https://bsky.app/intent/compose?text=${encodeURIComponent(page.title + ' ' + articleLink)}`"
+                target="_blank"
+              />
+              <UButton
+                size="sm"
+                variant="link"
+                color="neutral"
+                label="Copy link"
+                @click="copyToClipboard(articleLink, 'Article link copied to clipboard')"
+              />
+            </div>
+            <UContentSurround :surround />
+          </UPageBody>
+          <template
+            v-if="page?.body?.toc?.links?.length"
+            #right
+          >
+            <UContentToc
+              :links="page.body.toc.links"
+              highlight
             />
-            <UButton
-              size="xs"
-              variant="outline"
-              color="neutral"
-              icon="i-simple-icons-linkedin"
-              :to="`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleLink)}`"
-              target="_blank"
-            />
-            <UButton
-              size="xs"
-              variant="outline"
-              color="neutral"
-              icon="i-simple-icons-bluesky"
-              :to="`https://bsky.app/intent/compose?text=${encodeURIComponent(page.title + ' ' + articleLink)}`"
-              target="_blank"
-            />
-            <UButton
-              size="sm"
-              variant="link"
-              color="neutral"
-              label="Copy link"
-              @click="copyToClipboard(articleLink, 'Article link copied to clipboard')"
-            />
-          </div>
-          <UContentSurround :surround />
-        </UPageBody>
-        <template
-          v-if="page?.body?.toc?.links?.length"
-          #right
-        >
-          <UContentToc
-            :links="page.body.toc.links"
-            highlight
-          />
-        </template>
-      </UPage>
-    </UContainer>
+          </template>
+        </UPage>
+      </UContainer>
+    </Motion>
   </UMain>
 </template>
