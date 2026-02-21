@@ -14,13 +14,9 @@ author:
     alt: Wouter Vernaillen
 ---
 
-## Introducing WPNuxt 2.0
-
 WPNuxt 2.0 brings type-safe composables, multi-layer caching, Gutenberg block rendering, and full authentication to headless WordPress with Nuxt. After 16 alpha releases, 5 betas, and over 700 commits, it's ready for production.
 
 WPNuxt connects WordPress with Nuxt via GraphQL, generating typed composables from your queries so you can fetch and render WordPress content without writing boilerplate. Version 2 adds the features that were missing to make this a complete solution for production headless WordPress sites.
-
-### Highlights
 
 - **Type-safe composables** generated from GraphQL queries with full autocomplete
 - **Three-layer caching** — server (Nitro SWR), client deduplication, and SSR payload
@@ -31,19 +27,13 @@ WPNuxt connects WordPress with Nuxt via GraphQL, generating typed composables fr
 - **SSG support** — full static site generation with prerender route fetching
 - **GraphQL mutations** — generated `useMutation*()` composables alongside queries
 
+WPNuxt v1 worked as a single module wrapping `nuxt-graphql-middleware`, but it had gaps: no built-in caching strategy, no authentication, and serverless deployments on Vercel broke due to jsdom in the server bundle. Version 2 fills those gaps. Three packages (`@wpnuxt/core`, `@wpnuxt/blocks`, `@wpnuxt/auth`) ship from a unified monorepo with synchronized versions, shared testing infrastructure, and a CI compatibility matrix covering multiple WordPress and Nuxt versions.
+
 Upgrading from v1? The MCP server includes a `wpnuxt_migrate` tool that scans your project and guides you through the changes. See [breaking changes](#breaking-changes) below.
 
 ---
 
-## Why Version 2
-
-WPNuxt v1 worked as a single module wrapping `nuxt-graphql-middleware`, but it had gaps: no built-in caching strategy, no authentication, and serverless deployments on Vercel broke due to jsdom in the server bundle.
-
-Version 2 fills those gaps. Three packages (`@wpnuxt/core`, `@wpnuxt/blocks`, `@wpnuxt/auth`) ship from a unified monorepo with synchronized versions, shared testing infrastructure, and a CI compatibility matrix covering multiple WordPress and Nuxt versions.
-
----
-
-## Simplified Composable API
+## Composable API
 
 The composable API is cleaner in v2. The configurable prefix is gone — all composables use a consistent `use` naming convention. The separate `useAsync*` composables are replaced by a `lazy` option.
 
@@ -60,8 +50,6 @@ The composable API is cleaner in v2. The configurable prefix is gone — all com
 
 Every composable is auto-imported and fully typed. The module generates TypeScript declarations from your GraphQL queries and fragments at build time, so you get autocomplete and type checking all the way from WordPress through to your Vue templates.
 
-### New Composable Options
-
 Each composable now accepts options for retry, timeout, and caching:
 
 ```ts [app/pages/blog/[...slug].vue]
@@ -77,13 +65,24 @@ const { data: post } = await usePostByUri({
 
 Retry uses exponential backoff by default. Timeouts create an `AbortController` under the hood and clean up properly when the request completes or the component unmounts.
 
-### Mutation Support
+WPNuxt 2 also generates composables for GraphQL mutations. Define a mutation in your `extend/queries/` folder and the module generates a `useMutation{Name}()` composable — fully typed, auto-imported, and ready to use for creating comments, submitting forms, or any custom WordPress mutation. The `usePrevNextPost()` composable provides previous/next post navigation out of the box.
 
-WPNuxt 2 also generates composables for GraphQL mutations. Define a mutation in your `extend/queries/` folder and the module generates a `useMutation{Name}()` composable — fully typed, auto-imported, and ready to use for creating comments, submitting forms, or any custom WordPress mutation.
+### Extending Queries
 
-### Built-in Navigation Helper
+WPNuxt provides default GraphQL queries for posts, pages, menus, and settings. You can override any of these or add your own by creating `.gql` files in the `extend/queries/` folder:
 
-The `usePrevNextPost()` composable provides previous/next post navigation out of the box — a common need for blog layouts that no longer requires custom queries.
+```graphql [extend/queries/CustomPosts.gql]
+query CustomPosts($limit: Int = 10) {
+  posts(first: $limit) {
+    nodes {
+      ...Post
+      customField
+    }
+  }
+}
+```
+
+This generates `useCustomPosts()` and a lazy variant automatically — fully typed, auto-imported, and cached.
 
 ---
 
@@ -125,7 +124,9 @@ The SSG support deserves a special mention. WPNuxt normalizes WordPress URIs wit
 
 ---
 
-## The WPContent Component
+## Content Rendering
+
+### The WPContent Component
 
 The `<WPContent>` component handles WordPress content rendering:
 
@@ -139,9 +140,7 @@ WPContent automatically detects whether `@wpnuxt/blocks` is installed. If it is,
 
 The component also intercepts clicks on internal links and uses `navigateTo()` for client-side navigation. It respects modifier keys (Ctrl/Cmd+click for new tab), `target="_blank"`, `download` attributes, and `rel="external"` — so link behavior stays predictable.
 
----
-
-## Gutenberg Block Rendering
+### Gutenberg Blocks
 
 The `@wpnuxt/blocks` package renders WordPress Gutenberg blocks as Vue components. Each block type maps to a dedicated component:
 
@@ -174,9 +173,13 @@ The blocks module automatically extends the `Post` and `Page` GraphQL fragments 
 
 Override any block by creating your own component in `components/blocks/`. A `CoreParagraph.vue` in your project takes precedence over the built-in version, giving you full control over rendering without ejecting from the system.
 
+### Serverless-Ready Sanitization
+
+Version 1 used `@radya/nuxt-dompurify`, which pulled jsdom (~5.7 MB) into the server bundle. This broke SSR on serverless platforms like Vercel where the bundle size matters. Version 2 replaces this with a built-in `v-sanitize-html` directive. On the server, HTML passes through as-is (WordPress is a trusted source). On the client, DOMPurify loads lazily using the native browser DOM — no jsdom required.
+
 ---
 
-## Authentication Module
+## Authentication
 
 The `@wpnuxt/auth` package adds WordPress authentication with three supported flows:
 
@@ -204,15 +207,9 @@ Authentication is SSR-compatible — cookies are included in server-side request
 
 ---
 
-## Serverless-Ready HTML Sanitization
+## Developer Tools
 
-Version 1 used `@radya/nuxt-dompurify`, which pulled jsdom (~5.7 MB) into the server bundle. This broke SSR on serverless platforms like Vercel where the bundle size matters.
-
-Version 2 replaces this with a built-in `v-sanitize-html` directive. On the server, HTML passes through as-is (WordPress is a trusted source). On the client, DOMPurify loads lazily using the native browser DOM — no jsdom required.
-
----
-
-## AI-Powered Development with MCP
+### MCP Server
 
 WPNuxt 2 ships with a [Model Context Protocol](https://modelcontextprotocol.io/) server that integrates with AI assistants like Claude Code. Add it to your project's `.mcp.json`:
 
@@ -239,9 +236,7 @@ The MCP server provides tools across several categories:
 
 **Documentation Proxy** — The `nuxt_docs` and `nuxt_ui_docs` tools proxy official Nuxt and Nuxt UI documentation, so you only need one MCP server for your WPNuxt project.
 
----
-
-## The wpnuxi CLI
+### The wpnuxi CLI
 
 A standalone CLI tool handles project scaffolding and diagnostics:
 
@@ -258,9 +253,7 @@ npx wpnuxi doctor
 
 The `doctor` command checks your environment variables, WordPress URL validity, GraphQL endpoint reachability, introspection support, and project dependencies. It gives you a clear diagnostic when something isn't connecting.
 
----
-
-## Vercel Auto-Configuration
+### Vercel Auto-Configuration
 
 WPNuxt v2 auto-detects Vercel deployments and applies the right settings:
 
@@ -271,11 +264,7 @@ WPNuxt v2 auto-detects Vercel deployments and applies the right settings:
 
 No manual Vercel configuration needed — it just works.
 
----
-
-## Additional Features
-
-### Private Schema Support
+### Additional Configuration
 
 For WordPress sites with public introspection disabled, WPNuxt supports a `schemaAuthToken` that sends a Bearer token during schema download without ever exposing it in the client bundle:
 
@@ -285,40 +274,9 @@ wpNuxt: {
 }
 ```
 
-### Auto-Generated GraphQL Middleware Options
-
 WPNuxt automatically creates `server/graphqlMiddleware.serverOptions.ts` and `app/graphqlMiddleware.clientOptions.ts` with sensible defaults for cookie forwarding, Authorization header passthrough, and preview mode support. Existing files are never overwritten, so custom configurations are preserved.
 
-### Interactive First-Run Setup
-
-Running `nuxt prepare` for the first time triggers an interactive setup that:
-
-- Prompts for your WordPress URL
-- Creates `.env` and `.env.example` files
-- Sets up `.mcp.json` for AI assistant integration
-- Adds `.queries/` to `.gitignore`
-- Creates the `extend/queries/` folder for custom GraphQL queries
-
-This removes the "where do I start?" friction for new projects.
-
----
-
-## Extending Queries
-
-WPNuxt provides default GraphQL queries for posts, pages, menus, and settings. You can override any of these or add your own by creating `.gql` files in the `extend/queries/` folder:
-
-```graphql [extend/queries/CustomPosts.gql]
-query CustomPosts($limit: Int = 10) {
-  posts(first: $limit) {
-    nodes {
-      ...Post
-      customField
-    }
-  }
-}
-```
-
-This generates `useCustomPosts()` and a lazy variant automatically — fully typed, auto-imported, and cached.
+Running `nuxt prepare` for the first time triggers an interactive setup that prompts for your WordPress URL, creates `.env` and `.env.example` files, sets up `.mcp.json` for AI assistant integration, and creates the `extend/queries/` folder for custom GraphQL queries.
 
 ---
 
@@ -337,8 +295,6 @@ The WPNuxt MCP server includes a `wpnuxt_migrate` tool that can scan your v1 pro
 ---
 
 ## Getting Started
-
-### New Project
 
 The fastest way to start a new WPNuxt project:
 
@@ -361,7 +317,7 @@ export default defineNuxtConfig({
 })
 ```
 
-### Adding Blocks and Auth
+To add blocks and authentication:
 
 ```bash
 pnpm add @wpnuxt/blocks @wpnuxt/auth

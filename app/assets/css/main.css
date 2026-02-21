@@ -54,7 +54,7 @@ h1, h2, h3, h4 {
 }
 
 :root {
-  --ui-container: var(--container-6xl);
+  --ui-container: var(--container-7xl);
   --ui-radius: 0.5rem;
 
   ::selection {
