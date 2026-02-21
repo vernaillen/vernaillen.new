@@ -80,24 +80,24 @@ const formatDate = (dateString: string) => {
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
           :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
         >
-          <NuxtImg
-            :src="page.image?.src"
-            :alt="page.title"
-            :class="`h-[${page.image?.height ? page.image.height : 300}px]`"
-            class="rounded-lg w-full blog-image-height object-cover object-center"
-          />
-        </Motion>
-        <Motion
-          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-          :transition="{ delay: 0.1 }"
-        >
           <h1 class="text-4xl text-center font-medium max-w-3xl mx-auto mt-4">
             {{ page.title }}
           </h1>
           <p class="text-muted text-center max-w-2xl mx-auto mt-3">
             {{ page.description }}
           </p>
+        </Motion>
+        <Motion
+          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :transition="{ delay: 0.1 }"
+        >
+          <NuxtImg
+            :src="page.image?.src"
+            :alt="page.title"
+            :class="`h-[${page.image?.height ? page.image.height : 300}px]`"
+            class="rounded-lg w-full blog-image-height object-cover object-center"
+          />
         </Motion>
         <Motion
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
