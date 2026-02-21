@@ -161,8 +161,14 @@ const formatDate = (dateString: string) => {
             <UContentSurround :surround />
           </UPageBody>
         </Motion>
-        <template v-if="page?.body?.toc?.links?.length" #right>
-          <UContentToc :links="page.body.toc.links" highlight />
+        <template
+          v-if="page?.body?.toc?.links?.length"
+          #right
+        >
+          <UContentToc
+            :links="page.body.toc.links"
+            highlight
+          />
         </template>
       </UPage>
     </UContainer>

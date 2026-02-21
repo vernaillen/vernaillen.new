@@ -1,6 +1,6 @@
-import type { RouterConfig } from '@nuxt/schema'
+import type { RouterOptions } from 'vue-router'
 
-export default {
+export default <RouterOptions>{
   scrollBehavior(to, _from, savedPosition) {
     if (savedPosition) {
       return savedPosition
@@ -16,4 +16,4 @@ export default {
 
     return { top: 0 }
   }
-} satisfies RouterConfig['options']
+}
