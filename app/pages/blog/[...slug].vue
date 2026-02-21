@@ -22,9 +22,11 @@ const breadcrumb = computed(() => mapContentNavigation(findPageBreadcrumb(blogNa
 
 defineOgImage({
   component: 'VernaillenBlog',
-  title: page.value.title,
-  description: page.value.description,
-  headline: breadcrumb.value.map(item => item.label).join(' > '),
+  props: {
+    title: page.value.title,
+    description: page.value.description,
+    headline: breadcrumb.value.map(item => item.label).join(' > ')
+  },
   fonts: ['Space+Grotesk:400', 'Space+Grotesk:500']
 })
 

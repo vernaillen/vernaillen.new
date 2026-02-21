@@ -1,9 +1,9 @@
 ---
-title: "WPNuxt 2.0: A Complete Rewrite for Headless WordPress with Nuxt"
-description: Announcing WPNuxt 2.0 — a ground-up rewrite bringing type-safe composables, multi-layer caching, Gutenberg block rendering, authentication, and an AI-powered MCP server to the WordPress + Nuxt stack
+title: "WPNuxt 2.0: Type-Safe Headless WordPress for Nuxt 4"
+description: Announcing WPNuxt 2.0 — type-safe composables, multi-layer caching, Gutenberg block rendering, authentication, and an AI-powered MCP server for headless WordPress with Nuxt
 minRead: 9
-date: 2026-02-16
-image: 
+date: 2026-02-21
+image:
   src: /images/blog/990.wpnuxt-v2/wpnuxt.png
   height: 400
 author:
@@ -16,17 +16,30 @@ author:
 
 ## Introducing WPNuxt 2.0
 
-After months of development spanning 16 alpha releases, 5 betas, and over 250 commits, WPNuxt 2.0 is here. This is a complete rewrite of the WordPress-Nuxt integration module, built from the ground up for Nuxt 4.
+WPNuxt 2.0 brings type-safe composables, multi-layer caching, Gutenberg block rendering, and full authentication to headless WordPress with Nuxt. After 16 alpha releases, 5 betas, and over 700 commits, it's ready for production.
 
-WPNuxt connects WordPress with Nuxt via GraphQL, generating type-safe composables from your queries so you can fetch and render WordPress content without writing boilerplate. Version 2 takes this foundation and adds multi-layer caching, Gutenberg block rendering, a full authentication module, and an AI-powered development workflow via MCP.
+WPNuxt connects WordPress with Nuxt via GraphQL, generating typed composables from your queries so you can fetch and render WordPress content without writing boilerplate. Version 2 adds the features that were missing to make this a complete solution for production headless WordPress sites.
 
-If you've been building headless WordPress sites with Nuxt — or thinking about it — this release changes what's possible.
+### Highlights
 
-## What Changed and Why
+- **Type-safe composables** generated from GraphQL queries with full autocomplete
+- **Three-layer caching** — server (Nitro SWR), client deduplication, and SSR payload
+- **Gutenberg block rendering** with 10 built-in Vue components
+- **Authentication** with password, OAuth, and external provider support
+- **AI-powered development** via MCP server integration
+- **Serverless-ready** — no jsdom, works on Vercel out of the box
+- **SSG support** — full static site generation with prerender route fetching
+- **GraphQL mutations** — generated `useMutation*()` composables alongside queries
 
-WPNuxt v1 started as a single module wrapping `nuxt-graphql-middleware`. It worked, but it had limitations: composable naming was inconsistent, caching was basic, there was no built-in support for Gutenberg blocks or authentication, and serverless deployments on platforms like Vercel hit issues with jsdom in the server bundle.
+Upgrading from v1? The MCP server includes a `wpnuxt_migrate` tool that scans your project and guides you through the changes. See [breaking changes](#breaking-changes) below.
 
-Version 2 addresses all of this. The three packages (`@wpnuxt/core`, `@wpnuxt/blocks`, `@wpnuxt/auth`) now live in a unified monorepo with synchronized versions, shared testing infrastructure, and a 42-combination CI compatibility matrix covering WordPress 6.4-6.9 and Nuxt 3.17-4.3.
+---
+
+## Why Version 2
+
+WPNuxt v1 worked as a single module wrapping `nuxt-graphql-middleware`, but it had gaps: no built-in caching strategy, no authentication, and serverless deployments on Vercel broke due to jsdom in the server bundle.
+
+Version 2 fills those gaps. Three packages (`@wpnuxt/core`, `@wpnuxt/blocks`, `@wpnuxt/auth`) ship from a unified monorepo with synchronized versions, shared testing infrastructure, and a CI compatibility matrix covering multiple WordPress and Nuxt versions.
 
 ---
 
@@ -64,6 +77,14 @@ const { data: post } = await usePostByUri({
 
 Retry uses exponential backoff by default. Timeouts create an `AbortController` under the hood and clean up properly when the request completes or the component unmounts.
 
+### Mutation Support
+
+WPNuxt 2 also generates composables for GraphQL mutations. Define a mutation in your `extend/queries/` folder and the module generates a `useMutation{Name}()` composable — fully typed, auto-imported, and ready to use for creating comments, submitting forms, or any custom WordPress mutation.
+
+### Built-in Navigation Helper
+
+The `usePrevNextPost()` composable provides previous/next post navigation out of the box — a common need for blog layouts that no longer requires custom queries.
+
 ---
 
 ## Multi-Layer Caching
@@ -98,13 +119,15 @@ const { data } = await useViewer(undefined, {
 })
 ```
 
+Every deployment automatically generates a unique build hash that invalidates the cache, so stale content never survives a redeploy.
+
 The SSG support deserves a special mention. WPNuxt normalizes WordPress URIs with trailing slashes to ensure consistent cache keys between prerendered payloads and client-side navigation. The `getCachedData` functions are defined at module level (not inside the composable) to maintain stable function references across SSR and hydration, preventing Nuxt's "incompatible options" warnings.
 
 ---
 
 ## The WPContent Component
 
-A new `<WPContent>` component handles WordPress content rendering:
+The `<WPContent>` component handles WordPress content rendering:
 
 ```vue [app/pages/[...slug].vue]
 <template>
@@ -133,6 +156,7 @@ The `@wpnuxt/blocks` package renders WordPress Gutenberg blocks as Vue component
 | `CoreGallery` | `core/gallery` |
 | `CoreSpacer` | `core/spacer` |
 | `CoreDetails` | `core/details` |
+| `EditorBlock` | Fallback for unsupported blocks |
 
 Install the blocks package alongside core:
 
@@ -186,8 +210,6 @@ Version 1 used `@radya/nuxt-dompurify`, which pulled jsdom (~5.7 MB) into the se
 
 Version 2 replaces this with a built-in `v-sanitize-html` directive. On the server, HTML passes through as-is (WordPress is a trusted source). On the client, DOMPurify loads lazily using the native browser DOM — no jsdom required.
 
-The directive API is identical, so no template changes are needed when upgrading.
-
 ---
 
 ## AI-Powered Development with MCP
@@ -221,7 +243,7 @@ The MCP server provides tools across several categories:
 
 ## The wpnuxi CLI
 
-A new standalone CLI tool handles project scaffolding and diagnostics:
+A standalone CLI tool handles project scaffolding and diagnostics:
 
 ```bash
 # Create a new WPNuxt project
@@ -234,7 +256,7 @@ npx wpnuxi info
 npx wpnuxi doctor
 ```
 
-The `doctor` command runs six checks: environment variables, URL validity, GraphQL endpoint reachability, introspection support, schema download, and plugin detection. It gives you a clear diagnostic when something isn't connecting.
+The `doctor` command checks your environment variables, WordPress URL validity, GraphQL endpoint reachability, introspection support, and project dependencies. It gives you a clear diagnostic when something isn't connecting.
 
 ---
 
@@ -244,14 +266,30 @@ WPNuxt v2 auto-detects Vercel deployments and applies the right settings:
 
 - Native SWR for proper ISR (Incremental Static Regeneration) handling
 - SSR forced for all routes (fixes catch-all route classification issues)
-- WordPress uploads proxy (`/wp-content/uploads/**` forwarded to your WordPress site)
+- WordPress uploads proxy (`/wp-content/uploads/**` forwarded to your WordPress site) — images and media referenced in WordPress content just work without exposing your WordPress domain
 - `@nuxt/image` IPX configuration with proper WordPress domain aliases
 
 No manual Vercel configuration needed — it just works.
 
 ---
 
-## Interactive First-Run Setup
+## Additional Features
+
+### Private Schema Support
+
+For WordPress sites with public introspection disabled, WPNuxt supports a `schemaAuthToken` that sends a Bearer token during schema download without ever exposing it in the client bundle:
+
+```ts [nuxt.config.ts]
+wpNuxt: {
+  schemaAuthToken: process.env.WPNUXT_SCHEMA_AUTH_TOKEN
+}
+```
+
+### Auto-Generated GraphQL Middleware Options
+
+WPNuxt automatically creates `server/graphqlMiddleware.serverOptions.ts` and `app/graphqlMiddleware.clientOptions.ts` with sensible defaults for cookie forwarding, Authorization header passthrough, and preview mode support. Existing files are never overwritten, so custom configurations are preserved.
+
+### Interactive First-Run Setup
 
 Running `nuxt prepare` for the first time triggers an interactive setup that:
 
@@ -286,42 +324,15 @@ This generates `useCustomPosts()` and a lazy variant automatically — fully typ
 
 ## Breaking Changes
 
-If you're upgrading from v1, here are the key changes:
+If you're upgrading from v1, the key changes are:
 
-### Composable Naming
+- **Composable names** — `useWP*` prefix dropped: `useWPPosts()` → `usePosts()`, `useWPPageByUri()` → `usePageByUri()`
+- **Lazy loading** — `useAsync*` replaced by a `lazy` option: `usePosts(undefined, { lazy: true })`
+- **Cache config** — `enableCache` / `cacheMaxAge` replaced by `cache: { enabled, maxAge, swr }`
+- **Removed composables** — `useFeaturedImage()` (use `post.featuredImage.node` directly), `useWPUri()` (use `useRoute().params`)
+- **Minimum versions** — Nuxt 3.17+, Node.js 20+, nuxt-graphql-middleware 5.x
 
-| v1 | v2 |
-|----|-----|
-| `useWPPosts()` | `usePosts()` |
-| `useWPPageByUri()` | `usePageByUri()` |
-| `useAsyncWPPosts()` | `usePosts(undefined, { lazy: true })` |
-
-### Removed Options
-
-| Removed | Alternative |
-|---------|-------------|
-| `composablesPrefix` | Fixed `use` prefix |
-| `frontendUrl` | Not needed |
-| `defaultMenuName` | Pass menu name to query |
-| `enableCache` / `cacheMaxAge` | `cache: { enabled, maxAge, swr }` |
-| `staging` | Use environment variables |
-
-### Removed Composables
-
-| Removed | Alternative |
-|---------|-------------|
-| `useFeaturedImage()` | Access `post.featuredImage.node` directly |
-| `useWPUri()` | Use `useRoute().params` |
-
-### Minimum Requirements
-
-| Dependency | v1 | v2 |
-|---|---|---|
-| Nuxt | 3.x | 3.17+ |
-| Node.js | 18+ | 20+ |
-| nuxt-graphql-middleware | 4.x | 5.x |
-
-The WPNuxt MCP server includes a `wpnuxt_migrate` tool that can scan your v1 project and guide you through the upgrade.
+The WPNuxt MCP server includes a `wpnuxt_migrate` tool that can scan your v1 project and generate a detailed migration plan.
 
 ---
 
@@ -372,14 +383,15 @@ Run `nuxt prepare` and WPNuxt handles the rest — downloading the GraphQL schem
 
 ## What's Next
 
-WPNuxt 2.0 is stable and ready for production. Here's what's on the roadmap for upcoming releases:
+WPNuxt 2.0 is stable and ready for production. Here's what's on the roadmap:
 
 - **Cursor-based pagination** for large content sets
 - **Deeper inner block nesting** for complex Gutenberg layouts
 - **Additional default queries** for taxonomies and search
-- **Expanded test coverage** for components and module setup logic
+- **End-to-end tutorials** for common use cases (blog, SEO, menus)
+- **Media handling deep dive** with `@nuxt/image` optimization patterns
 
-Feedback, feature requests, and bug reports are welcome on the [GitHub repository](https://github.com/vernaillen/wpnuxt).
+Feedback, feature requests, and bug reports are welcome on the [GitHub repository](https://github.com/wpnuxt/wpnuxt).
 
 ---
 
@@ -387,12 +399,12 @@ Feedback, feature requests, and bug reports are welcome on the [GitHub repositor
 
 **Getting Started:**
 - [WPNuxt Documentation](https://wpnuxt.com)
-- [GitHub Repository](https://github.com/vernaillen/wpnuxt)
+- [GitHub Repository](https://github.com/wpnuxt/wpnuxt)
 - [npm: @wpnuxt/core](https://www.npmjs.com/package/@wpnuxt/core)
 
 **WordPress Requirements:**
 - [WPGraphQL Plugin](https://www.wpgraphql.com/)
-- [WPGraphQL Content Blocks](https://developer.flavor.dev/wp-graphql-content-blocks/) (for `@wpnuxt/blocks`)
+- [WPGraphQL Content Blocks](https://github.com/wpengine/wp-graphql-content-blocks) (for `@wpnuxt/blocks`)
 - [Headless Login for WPGraphQL](https://github.com/AxeWP/wp-graphql-headless-login) (for `@wpnuxt/auth`)
 
 **Related Posts:**

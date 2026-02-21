@@ -76,6 +76,14 @@ export default defineNuxtConfig({
     sources: ['/api/sitemap']
   },
 
+  studio: {
+    repository: {
+      provider: 'github',
+      owner: 'vernaillen',
+      repo: 'vernaillen.new'
+    }
+  },
+
   svgo: {
     svgo: true,
     autoImportPath: './assets/svg/',

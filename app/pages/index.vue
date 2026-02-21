@@ -22,8 +22,10 @@ useSeoMeta({
 
 defineOgImage({
   component: 'Vernaillen',
-  title,
-  description,
+  props: {
+    title,
+    description
+  },
   fonts: ['Space+Grotesk:400', 'Space+Grotesk:500']
 })
 </script>

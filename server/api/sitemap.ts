@@ -1,5 +1,5 @@
 import type { BlogCollectionItem } from '@nuxt/content'
-import { queryCollection } from '#imports'
+import { queryCollection } from '@nuxt/content/server'
 
 export default defineSitemapEventHandler(async (e) => {
   const posts = await queryCollection(e, 'blog').all() as BlogCollectionItem[]
