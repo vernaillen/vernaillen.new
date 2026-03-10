@@ -57,52 +57,73 @@ const formatDate = (dateString: string) => {
     class="mt-15 px-2"
   >
     <UContainer>
+      <!-- Terminal-style breadcrumb -->
       <ULink
         to="/blog"
-        class="text-sm flex items-center gap-1"
+        class="font-mono text-xs text-muted flex items-center gap-1.5 hover:text-foreground transition-colors"
       >
-        <UIcon name="lucide:chevron-left" />
-        Blog
+        <span class="text-primary opacity-70">&gt;_</span>
+        <span>blog</span>
       </ULink>
-      <div class="flex flex-col gap-3 mt-6">
-        <div>
-          <h1 class="text-4xl text-center font-medium max-w-3xl mx-auto mt-4">
-            {{ page.title }}
-          </h1>
-          <p class="text-muted text-center max-w-2xl mx-auto mt-3">
-            {{ page.description }}
-          </p>
-        </div>
+
+      <div class="flex flex-col gap-4 mt-8 mx-auto">
+        <!-- Metadata row -->
         <Motion
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
           :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
         >
-          <NuxtImg
-            :src="page.image?.src"
-            :alt="page.title"
-            :class="`h-[${page.image?.height ? page.image.height : 300}px]`"
-            class="rounded-lg w-full blog-image-height object-cover object-center"
-          />
+          <div class="flex items-center justify-center gap-3 font-mono text-xs text-muted">
+            <span v-if="page.date">
+              {{ formatDate(page.date) }}
+            </span>
+            <span
+              v-if="page.date && page.minRead"
+              class="text-primary/50"
+            >
+              //
+            </span>
+            <span v-if="page.minRead">
+              {{ page.minRead }} min read
+            </span>
+          </div>
         </Motion>
+
+        <!-- Title & description -->
+        <Motion
+          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :transition="{ delay: 0.07 }"
+        >
+          <h1 class="text-3xl sm:text-4xl text-center font-medium max-w-3xl mx-auto tracking-tight leading-tight">
+            {{ page.title }}
+          </h1>
+          <p class="text-muted text-center max-w-2xl mx-auto mt-3 text-base leading-relaxed text-foreground/80">
+            {{ page.description }}
+          </p>
+        </Motion>
+
+        <!-- Hero image -->
         <Motion
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
           :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
           :transition="{ delay: 0.1 }"
         >
-          <div class="flex text-xs text-muted items-center justify-center gap-2">
-            <span v-if="page.date">
-              {{ formatDate(page.date) }}
-            </span>
-            <span v-if="page.date && page.minRead">
-              -
-            </span>
-            <span v-if="page.minRead">
-              {{ page.minRead }} MIN READ
-            </span>
-          </div>
-          <div class="flex items-center justify-center gap-2 mt-2">
+          <NuxtImg
+            :src="page.image?.src"
+            :alt="page.title"
+            :class="`h-[${page.image?.height ? page.image.height : 300}px]`"
+            class="rounded-lg w-full blog-image-height object-cover object-center border border-dusk-200 dark:border-dusk-800/50"
+          />
+        </Motion>
+
+        <!-- Author -->
+        <Motion
+          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :transition="{ delay: 0.15 }"
+        >
+          <div class="flex items-center justify-center">
             <UUser
-              orientation="vertical"
               color="neutral"
               variant="outline"
               class="justify-center items-center text-center"
@@ -120,14 +141,15 @@ const formatDate = (dateString: string) => {
     >
       <UContainer class="relative min-h-screen">
         <UPage>
-          <UPageBody>
+          <UPageBody class="blog-prose">
             <ContentRenderer
               v-if="page.body"
               :value="page"
             />
 
-            <div class="flex items-center justify-end gap-2 text-sm text-muted">
-              <span class="text-xs">Share on</span>
+            <!-- Share row -->
+            <div class="flex items-center justify-end gap-2 mt-10 pt-6 border-t border-dusk-200 dark:border-dusk-800/50">
+              <span class="font-mono text-xs text-muted mr-1">share //</span>
               <UButton
                 size="xs"
                 variant="outline"

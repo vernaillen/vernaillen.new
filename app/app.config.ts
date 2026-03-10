@@ -12,25 +12,26 @@ export default defineAppConfig({
   ui: {
     colors: {
       primary: 'vernaillen',
+      secondary: 'teal',
       neutral: 'dusk'
     },
     pageHero: {
       slots: {
         container: 'py-18 sm:py-24 lg:py-32',
-        title: 'mx-auto max-w-2xl text-pretty text-3xl sm:text-4xl lg:text-5xl',
+        title: 'mx-auto max-w-2xl text-pretty text-3xl sm:text-4xl lg:text-5xl tracking-tight',
         description: 'mt-2 text-md mx-auto max-w-2xl text-pretty sm:text-md text-muted'
       }
     },
     blogPost: {
       slots: {
-        root: 'md:grid md:grid-cols-2 group overflow-visible transition-all duration-300',
-        image: 'rounded-lg shadow-lg border-1 border-muted ring-2 ring-default',
-        header: 'overflow-visible'
+        root: 'group overflow-hidden transition-all duration-200',
+        image: 'rounded-lg',
+        header: ''
       },
       variants: {
         to: {
           true: {
-            image: 'group-hover/blog-post:scale-105'
+            image: 'group-hover/blog-post:scale-100'
           }
         }
       }

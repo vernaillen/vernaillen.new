@@ -79,7 +79,7 @@ useSeoMeta({
           }"
         >
           <template #leading>
-            <span class="text-sm text-muted">
+            <span class="font-mono text-xs text-muted">
               {{ new Date(project.date).getFullYear() }}
             </span>
           </template>
@@ -98,7 +98,7 @@ useSeoMeta({
           <img
             :src="project.image"
             :alt="project.title"
-            class="object-cover w-full h-48 rounded-lg"
+            class="object-cover w-full h-48 rounded-lg border border-dusk-200 dark:border-dusk-800/50"
           >
         </UPageCard>
       </Motion>

@@ -45,25 +45,32 @@ useSeoMeta({
         container: 'pt-0!'
       }"
     >
-      <UBlogPosts orientation="vertical">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Motion
           v-for="(post, index) in posts"
           :key="index"
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
           :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-          :transition="{ delay: 0.2 * index }"
+          :transition="{ delay: 0.1 * index }"
           :in-view-options="{ once: true }"
         >
           <UBlogPost
             variant="naked"
-            orientation="horizontal"
             :to="post.path"
             v-bind="post"
             :image="post.image.src"
-            :ui="{ header: index % 2 === 0 ? 'sm:-rotate-1 ' : 'sm:rotate-1' }"
+            orientation="vertical"
+            :ui="{
+              root: 'flex flex-col h-full card-glow rounded-lg border border-dusk-200 dark:border-dusk-800/50 p-3 transition-transform duration-400 hover:scale-[1.01]',
+              header: 'aspect-auto',
+              image: 'border border-dusk-200 dark:border-dusk-800/30 h-72 object-cover',
+              date: 'font-mono text-xs',
+              title: 'tracking-tight text-lg',
+              description: 'text-sm line-clamp-2'
+            }"
           />
         </Motion>
-      </UBlogPosts>
+      </div>
     </UPageSection>
   </UPage>
 </template>

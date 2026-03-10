@@ -34,10 +34,12 @@ if (!posts.value) {
         variant="naked"
         v-bind="post"
         :to="post.path"
+        class="card-glow"
         :ui="{
-          root: 'group relative lg:items-start lg:flex ring-0 hover:ring-0 sm:px-4! sm:pb-4 rounded-lg transition-colors hover:bg-elevated/50',
+          root: 'group relative lg:items-start lg:flex ring-0 hover:ring-0 sm:px-4! sm:pb-4 rounded-lg border border-dusk-200/70 dark:border-dusk-800/40 transition-all',
           body: '',
-          header: 'hidden'
+          header: 'hidden',
+          date: 'font-mono text-xs'
         }"
       >
         <template #footer>

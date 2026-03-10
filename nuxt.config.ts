@@ -10,7 +10,8 @@ export default defineNuxtConfig({
     'nuxt-svgo',
     'motion-v/nuxt',
     'nuxt-studio',
-    '@nuxtjs/plausible'
+    '@nuxtjs/plausible',
+    '@nuxt/fonts'
   ],
 
   devtools: {

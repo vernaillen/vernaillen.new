@@ -26,7 +26,7 @@ defineProps<{
           :in-view-options="{ once: true }"
           class="text-muted flex items-center text-nowrap gap-2"
         >
-          <p class="text-sm">
+          <p class="font-mono text-xs">
             {{ experience.date }}
           </p>
           <USeparator />

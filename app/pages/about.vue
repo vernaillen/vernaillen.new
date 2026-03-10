@@ -59,7 +59,7 @@ useSeoMeta({
         :transition="{ delay: 0.2 }"
         :in-view-options="{ once: true }"
       >
-        <div class="flex flex-row justify-center items-center py-10 space-x-[-2rem]">
+        <div class="flex flex-row justify-center items-center py-10 -space-x-8">
           <PolaroidItem
             v-for="(image, index) in page.images"
             :key="index"

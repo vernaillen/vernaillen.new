@@ -13,6 +13,15 @@ hero:
       alt: Vue AudioMotion Analyzer
     - src: /images/projects/wpnuxt.png
       alt: WPnuxt
+stats:
+  - value: "25+"
+    label: "Years Experience"
+  - value: "50+"
+    label: "Projects Delivered"
+  - value: "64"
+    label: "GitHub Stars"
+  - value: "2013"
+    label: "Freelancing Since"
 about:
   title: "About Me"
   description: |

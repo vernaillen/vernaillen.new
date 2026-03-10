@@ -48,10 +48,77 @@
 
 h1, h2, h3, h4 {
   font-family: var(--font-heading);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.05em;
   line-height: 1.2;
 }
+
+/* Blog prose — constrained width, refined typography */
+.blog-prose {
+  max-width: 900px;
+
+  & h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  & h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  & p {
+    color: var(--ui-text-muted);
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+  & li {
+    color: var(--ui-text-muted);
+    line-height: 1.75;
+  }
+  & strong {
+    color: var(--ui-text-highlighted);
+    font-weight: 600;
+  }
+  & a {
+    color: var(--color-vernaillen-500);
+    text-underline-offset: 4px;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  /* Blockquotes — secondary color left-border accent */
+  & blockquote {
+    border-left: 2px solid var(--ui-color-secondary-500);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    & p {
+      color: var(--ui-text-dimmed);
+    }
+  }
+
+  /* Inline code — monospace with accent */
+  & :not(pre) > code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--color-vernaillen-400);
+    background: color-mix(in srgb, var(--color-vernaillen-500) 8%, transparent);
+    padding: 0.15em 0.4em;
+    border-radius: 0.25rem;
+  }
+  :is(.dark) & :not(pre) > code {
+    color: var(--color-vernaillen-300);
+    background: color-mix(in srgb, var(--color-vernaillen-500) 12%, transparent);
+  }
+}
+
 
 :root {
   --ui-container: var(--container-7xl);
@@ -68,6 +135,20 @@ h1, h2, h3, h4 {
     color: #ffffff;
     background-color: #474747;
   }
+}
+
+/* Softer prose text in dark mode */
+:is(.dark) .blog-prose p,
+:is(.dark) .blog-prose li {
+  color: color-mix(in srgb, var(--ui-text-default) 90%, var(--color-dusk-950));
+}
+
+/* Consistent section dividers */
+.section-divider {
+  border-top: 1px solid var(--color-dusk-200);
+}
+:is(.dark) .section-divider {
+  border-top-color: var(--color-dusk-800);
 }
 
 /* Fixed gradient glow behind content */
@@ -119,14 +200,13 @@ h1::after,
 }
 
 
-/* Card hover gold border glow */
+/* Card hover — subtle border accent */
 .card-glow {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.3s ease;
 }
 .card-glow:hover {
-  border-color: var(--color-vernaillen-400);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--color-vernaillen-400) 20%, transparent);
+  border-color: color-mix(in srgb, var(--color-vernaillen-400) 50%, transparent);
 }
 :is(.dark) .card-glow:hover {
-  box-shadow: 0 0 16px color-mix(in srgb, var(--color-vernaillen-500) 25%, transparent);
+  border-color: color-mix(in srgb, var(--color-vernaillen-500) 40%, transparent);
 }
