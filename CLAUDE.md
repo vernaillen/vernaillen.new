@@ -28,3 +28,16 @@ pnpm typecheck
 - `@shikijs/engine-javascript` and `@shikijs/engine-oniguruma` are explicit deps to work around pnpm strict hoisting on Vercel
 - Server-side `queryCollection` must be imported from `@nuxt/content/server` (not auto-imports) to satisfy typecheck
 - `defineOgImage` component props go inside the `props` key, not at the top level
+
+## Do NOT (Project-Specific)
+- Do NOT use `queryCollection` from auto-imports in server routes — import from `@nuxt/content/server`
+- Do NOT put `defineOgImage` props at top level — use the `props` key
+- Do NOT add `@shikijs/*` packages — already explicit deps for Vercel
+- Do NOT run `pnpm dev` — ask the user to start it
+
+## Blog Post Conventions
+- Numbered files: lower number = newer (993 is newer than 999)
+- Frontmatter: title, description, minRead, date, image (src + optional height), author
+- Author: Wouter Vernaillen / Full Stack Developer / /images/woutervernaillen.jpg
+- Images: `public/images/blog/{number}.{slug}/`
+- Drafts: prefix filename with dot (`.draft-title.md`)
