@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const navLinks = useNavLinks()
 </script>
 
 <template>

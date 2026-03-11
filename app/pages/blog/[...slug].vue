@@ -5,15 +5,19 @@ import { findPageBreadcrumb } from '@nuxt/content/utils'
 
 const route = useRoute()
 
-const { data: page } = await useAsyncData(route.path, () =>
-  queryCollection('blog').path(route.path).first()
+const { data: page, status } = await useAsyncData(route.path, () =>
+  queryCollection('blog').path(route.path).first(),
+{ watch: [() => route.path] }
 )
 if (!page.value) throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
 const { data: surround } = await useAsyncData(`${route.path}-surround`, () =>
   queryCollectionItemSurroundings('blog', route.path, {
     fields: ['description']
-  })
+  }),
+{ watch: [() => route.path] }
 )
+
+const loading = computed(() => status.value === 'pending')
 
 const navigation = inject<Ref<ContentNavigationItem[]>>('navigation', ref([]))
 const blogNavigation = computed(() => navigation.value.find(item => item.path === '/blog')?.children || [])
@@ -66,7 +70,29 @@ const formatDate = (dateString: string) => {
         <span>blog</span>
       </ULink>
 
-      <div class="flex flex-col gap-4 mt-8 mx-auto">
+      <!-- Skeleton state -->
+      <div
+        v-if="loading"
+        class="flex flex-col gap-4 mt-8 mx-auto"
+      >
+        <div class="flex justify-center">
+          <USkeleton class="h-4 w-48" />
+        </div>
+        <div class="flex flex-col items-center gap-3">
+          <USkeleton class="h-10 w-3/4" />
+          <USkeleton class="h-5 w-2/3" />
+        </div>
+        <USkeleton class="h-[400px] w-full rounded-lg" />
+        <div class="flex justify-center">
+          <USkeleton class="h-10 w-48" />
+        </div>
+      </div>
+
+      <!-- Loaded state -->
+      <div
+        v-else
+        class="flex flex-col gap-4 mt-8 mx-auto"
+      >
         <!-- Metadata row -->
         <Motion
           :initial="{ opacity: 0, transform: 'translateY(10px)' }"
@@ -134,7 +160,30 @@ const formatDate = (dateString: string) => {
       </div>
     </UContainer>
 
+    <!-- Skeleton body -->
+    <UContainer
+      v-if="loading"
+      class="relative min-h-screen"
+    >
+      <UPage>
+        <UPageBody class="blog-prose">
+          <div class="flex flex-col gap-4 mt-8">
+            <USkeleton class="h-4 w-full" />
+            <USkeleton class="h-4 w-full" />
+            <USkeleton class="h-4 w-5/6" />
+            <USkeleton class="h-4 w-full" />
+            <USkeleton class="h-4 w-3/4" />
+            <USkeleton class="h-4 w-full" />
+            <USkeleton class="h-4 w-4/5" />
+            <USkeleton class="h-4 w-2/3" />
+          </div>
+        </UPageBody>
+      </UPage>
+    </UContainer>
+
+    <!-- Loaded body -->
     <Motion
+      v-else
       :initial="{ opacity: 0, transform: 'translateY(10px)' }"
       :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
       :transition="{ delay: 0.2 }"

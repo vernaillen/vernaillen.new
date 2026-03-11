@@ -19,6 +19,8 @@ useSeoMeta({
   description: 'We are sorry but this page could not be found.'
 })
 
+const navLinks = useNavLinks()
+
 const [{ data: navigation }, { data: files }] = await Promise.all([
   useAsyncData('navigation', () => {
     return Promise.all([

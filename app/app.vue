@@ -22,6 +22,8 @@ useSeoMeta({
   twitterCard: 'summary_large_image'
 })
 
+const navLinks = useNavLinks()
+
 const [{ data: navigation }, { data: files }] = await Promise.all([
   useAsyncData('navigation', () => {
     return Promise.all([
