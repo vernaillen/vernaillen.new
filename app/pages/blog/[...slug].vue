@@ -17,7 +17,7 @@ const { data: surround } = await useAsyncData(`${route.path}-surround`, () =>
 { watch: [() => route.path] }
 )
 
-const loading = computed(() => status.value === 'pending')
+const loading = computed(() => status.value === 'pending' || page.value?.path !== route.path)
 
 const navigation = inject<Ref<ContentNavigationItem[]>>('navigation', ref([]))
 const blogNavigation = computed(() => navigation.value.find(item => item.path === '/blog')?.children || [])
