@@ -11,6 +11,7 @@ defineProps<{
     <div class="w-full flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
       <NuxtLink
         to="/"
+        aria-label="Wouter Vernaillen - Home"
         class="flex self-start -mt-px ml-2"
       >
         <SvgoLogo

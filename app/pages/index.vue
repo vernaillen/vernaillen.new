@@ -42,7 +42,7 @@ defineOgImage({
       <LazyLandingAbout :page />
       <LazyLandingWorkExperience :page />
     </UPageSection>
-    <LazyLandingBlog :page />
+    <LandingBlog :page />
     <LazyLandingTestimonials :page />
   </UPage>
 </template>
