@@ -135,8 +135,12 @@ const formatDate = (dateString: string) => {
           <NuxtImg
             :src="page.image?.src"
             :alt="page.title"
-            :class="`h-[${page.image?.height ? page.image.height : 300}px]`"
-            class="rounded-lg w-full blog-image-height object-cover object-center border border-dusk-200 dark:border-dusk-800/50"
+            width="900"
+            :height="page.image?.height || 300"
+            sizes="sm:100vw md:900px"
+            loading="eager"
+            :style="{ height: `${page.image?.height || 300}px` }"
+            class="rounded-lg w-full object-cover object-center border border-dusk-200 dark:border-dusk-800/50"
           />
         </Motion>
 

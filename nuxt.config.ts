@@ -65,6 +65,30 @@ export default defineNuxtConfig({
     }
   },
 
+  fonts: {
+    defaults: {
+      weights: [400, 500, 600, 700],
+      subsets: ['latin']
+    },
+    families: [
+      { name: 'Public Sans', provider: 'google' },
+      { name: 'Space Grotesk', provider: 'google' },
+      { name: 'Geist Mono', provider: 'google' }
+    ]
+  },
+
+  image: {
+    format: ['webp'],
+    quality: 80,
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280
+    }
+  },
+
   plausible: {
     apiHost: 'https://vernaillen.dev/plio'
   },

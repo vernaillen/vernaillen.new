@@ -95,11 +95,34 @@ useSeoMeta({
               />
             </ULink>
           </template>
-          <img
-            :src="project.image"
-            :alt="project.title"
+          <video
+            v-if="project.video"
+            autoplay
+            loop
+            muted
+            playsinline
+            width="640"
+            height="192"
             class="object-cover w-full h-48 rounded-lg border border-dusk-200 dark:border-dusk-800/50"
           >
+            <source
+              :src="project.image.replace('.mp4', '.webm')"
+              type="video/webm"
+            >
+            <source
+              :src="project.image"
+              type="video/mp4"
+            >
+          </video>
+          <NuxtImg
+            v-else
+            :src="project.image"
+            :alt="project.title"
+            width="640"
+            height="192"
+            loading="lazy"
+            class="object-cover w-full h-48 rounded-lg border border-dusk-200 dark:border-dusk-800/50"
+          />
         </UPageCard>
       </Motion>
     </UPageSection>

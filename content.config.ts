@@ -85,6 +85,7 @@ export default defineContentConfig({
         description: z.string().nonempty(),
         image: z.string().nonempty().editor({ input: 'media' }),
         url: z.string().nonempty(),
+        video: z.boolean().optional(),
         tags: z.array(z.string()),
         date: z.date()
       })

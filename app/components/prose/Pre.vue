@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useClipboard } from '@vueuse/core'
-
 const props = defineProps<{
   icon?: string
   code?: string
