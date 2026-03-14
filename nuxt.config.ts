@@ -36,6 +36,10 @@ export default defineNuxtConfig({
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' }
   },
 
+  sourcemap: {
+    client: true
+  },
+
   features: {
     // inline the styles to kill network requests to improve performance
     inlineStyles: true

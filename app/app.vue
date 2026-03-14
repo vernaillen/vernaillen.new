@@ -33,12 +33,13 @@ const [{ data: navigation }, { data: files }] = await Promise.all([
   }, {
     transform: data => data.flat()
   }),
+  // lazy: true prevents blocking hydration; data is prerendered into payload at build time
+  // so the client picks it up without a network request or WASM query
   useLazyAsyncData('search', () => {
     return Promise.all([
       queryCollectionSearchSections('blog')
     ])
   }, {
-    server: false,
     transform: data => data.flat()
   })
 ])
