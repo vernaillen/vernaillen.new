@@ -36,11 +36,16 @@ export default defineNuxtConfig({
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' }
   },
 
+  features: {
+    // inline the styles to kill network requests to improve performance
+    inlineStyles: true
+  },
+
   experimental: {
     componentIslands: true
   },
 
-  compatibilityDate: '2026-02-16',
+  compatibilityDate: '2026-03-14',
 
   nitro: {
     prerender: {
