@@ -90,7 +90,7 @@ export default defineNuxtConfig({
   },
 
   plausible: {
-    apiHost: 'https://vernaillen.dev/plio'
+    apiHost: 'https://www.vernaillen.dev/plio'
   },
 
   seo: {
