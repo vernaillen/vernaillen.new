@@ -39,10 +39,10 @@ defineOgImage({
         container: 'pt-0! lg:grid lg:grid-cols-2 lg:gap-8'
       }"
     >
-      <LandingAbout :page />
-      <LandingWorkExperience :page />
+      <LazyLandingAbout :page />
+      <LazyLandingWorkExperience :page />
     </UPageSection>
-    <LandingBlog :page />
-    <LandingTestimonials :page />
+    <LazyLandingBlog :page />
+    <LazyLandingTestimonials :page />
   </UPage>
 </template>

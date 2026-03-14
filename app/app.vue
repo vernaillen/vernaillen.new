@@ -10,7 +10,8 @@ useHead({
     { key: 'theme-color', name: 'theme-color', content: color }
   ],
   link: [
-    { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
+    { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+    { rel: 'preload', as: 'image', href: '/images/woutervernaillen.jpg' }
   ],
   htmlAttrs: {
     lang: 'en'

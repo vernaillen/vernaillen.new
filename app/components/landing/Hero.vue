@@ -24,46 +24,30 @@ defineProps<{
     </template>
 
     <template #headline>
-      <Motion
-        :initial="{ scale: 1.05, opacity: 0, filter: 'blur(4px)' }"
-        :animate="{ scale: 1, opacity: 1, filter: 'blur(0px)' }"
-        :transition="{ duration: 0.25, delay: 0 }"
-      >
+      <div class="hero-reveal hero-reveal-1">
         <UColorModeAvatar
           class="size-18 ring ring-default ring-offset-3 ring-offset-bg"
           :light="global.picture?.light!"
           :dark="global.picture?.dark!"
           :alt="global.picture?.alt!"
         />
-      </Motion>
+      </div>
     </template>
 
     <template #title>
-      <Motion
-        :initial="{ scale: 1.05, opacity: 0, filter: 'blur(4px)' }"
-        :animate="{ scale: 1, opacity: 1, filter: 'blur(0px)' }"
-        :transition="{ duration: 0.25, delay: 0.05 }"
-      >
+      <div class="hero-reveal hero-reveal-2">
         {{ page.title }}
-      </Motion>
+      </div>
     </template>
 
     <template #description>
-      <Motion
-        :initial="{ scale: 1.05, opacity: 0, filter: 'blur(4px)' }"
-        :animate="{ scale: 1, opacity: 1, filter: 'blur(0px)' }"
-        :transition="{ duration: 0.25, delay: 0.1 }"
-      >
+      <div class="hero-reveal hero-reveal-3">
         {{ page.description }}
-      </Motion>
+      </div>
     </template>
 
     <template #links>
-      <Motion
-        :initial="{ scale: 1.05, opacity: 0, filter: 'blur(4px)' }"
-        :animate="{ scale: 1, opacity: 1, filter: 'blur(0px)' }"
-        :transition="{ duration: 0.25, delay: 0.15 }"
-      >
+      <div class="hero-reveal hero-reveal-4">
         <div
           v-if="page.hero.links"
           class="flex items-center gap-2"
@@ -90,21 +74,41 @@ defineProps<{
             </template>
           </UButton>
         </div>
-      </Motion>
+      </div>
 
       <div class="gap-x-4 inline-flex mt-4">
-        <Motion
+        <div
           v-for="(link, index) of footer?.links"
           :key="index"
-          :initial="{ scale: 1.05, opacity: 0, filter: 'blur(8px)' }"
-          :animate="{ scale: 1, opacity: 1, filter: 'blur(0px)' }"
-          :transition="{ duration: 0.3, delay: 0.2 + index * 0.05 }"
+          class="hero-reveal"
+          :style="{ animationDelay: `${200 + index * 50}ms` }"
         >
           <UButton
             v-bind="{ size: 'md', color: 'neutral', variant: 'ghost', ...link }"
           />
-        </Motion>
+        </div>
       </div>
     </template>
   </UPageHero>
 </template>
+
+<style scoped>
+@keyframes hero-reveal {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hero-reveal {
+  animation: hero-reveal 0.25s ease-out both;
+}
+.hero-reveal-1 { animation-delay: 0ms; }
+.hero-reveal-2 { animation-delay: 50ms; }
+.hero-reveal-3 { animation-delay: 100ms; }
+.hero-reveal-4 { animation-delay: 150ms; }
+</style>
