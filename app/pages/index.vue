@@ -10,6 +10,10 @@ if (!page.value) {
   })
 }
 
+const { data: blogPosts } = await useAsyncData('index-blogs', () =>
+  queryCollection('blog').order('date', 'DESC').limit(3).all()
+)
+
 const title = page.value?.seo?.title || page.value?.title
 const description = page.value?.seo?.description || page.value?.description
 
@@ -42,7 +46,10 @@ defineOgImage({
       <LazyLandingAbout :page />
       <LazyLandingWorkExperience :page />
     </UPageSection>
-    <LandingBlog :page />
+    <LazyLandingBlog
+      :page
+      :posts="blogPosts"
+    />
     <LazyLandingTestimonials :page />
   </UPage>
 </template>
