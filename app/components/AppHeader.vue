@@ -18,7 +18,7 @@ defineProps<{
       />
     </template>
 
-    <template #right>
+    <template #default>
       <UNavigationMenu
         :items="links"
         variant="link"
@@ -28,6 +28,9 @@ defineProps<{
           linkLeadingIcon: 'hidden'
         }"
       />
+    </template>
+
+    <template #right>
       <ColorModeButton />
     </template>
 
@@ -41,7 +44,6 @@ defineProps<{
           link: 'font-mono'
         }"
       />
-      <ColorModeButton />
     </template>
   </UHeader>
 </template>
