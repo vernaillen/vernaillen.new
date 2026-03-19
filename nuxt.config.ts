@@ -75,8 +75,8 @@ export default defineNuxtConfig({
       subsets: ['latin']
     },
     families: [
-      { name: 'Public Sans', provider: 'google' },
-      { name: 'Space Grotesk', provider: 'google' },
+      { name: 'Geist Sans', provider: 'google' },
+      { name: 'Poppins', provider: 'google' },
       { name: 'Geist Mono', provider: 'google' }
     ]
   },

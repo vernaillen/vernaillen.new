@@ -121,7 +121,7 @@ const formatDate = (dateString: string) => {
           <h1 class="text-3xl sm:text-4xl text-center font-medium max-w-3xl mx-auto tracking-tight leading-tight">
             {{ page.title }}
           </h1>
-          <p class="text-muted text-center max-w-2xl mx-auto mt-3 text-base leading-relaxed text-foreground/80">
+          <p class="font-mono text-muted text-center max-w-3xl mx-auto my-3 text-base leading-relaxed text-foreground/80">
             {{ page.description }}
           </p>
         </Motion>
