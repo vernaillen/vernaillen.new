@@ -10,7 +10,7 @@ defineProps<{
   <UPageSection
     v-if="page.stats?.length"
     :ui="{
-      container: 'px-0! pt-8 lg:pt-12 pb-24 lg:pb-32'
+      container: 'pt-8 lg:pt-12 pb-24 lg:pb-32'
     }"
   >
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-px border border-dusk-200 dark:border-dusk-800/50 rounded-lg overflow-hidden">

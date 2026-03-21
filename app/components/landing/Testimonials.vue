@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <UPageSection
     :ui="{
-      container: 'px-0! py-24 lg:py-32'
+      container: 'py-24 lg:py-32'
     }"
   >
     <UCarousel

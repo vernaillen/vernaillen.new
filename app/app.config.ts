@@ -31,7 +31,7 @@ export default defineAppConfig({
     blogPost: {
       slots: {
         root: 'group overflow-hidden transition-all duration-200',
-        image: 'rounded-lg',
+        image: 'rounded-lg object-center',
         header: ''
       },
       variants: {

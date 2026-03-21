@@ -63,7 +63,7 @@ useSeoMeta({
             :ui="{
               root: 'flex flex-col h-full card-glow rounded-lg border border-dusk-200 dark:border-dusk-800/50 p-3 transition-transform duration-400 hover:scale-[1.01]',
               header: 'aspect-auto',
-              image: 'border border-dusk-200 dark:border-dusk-800/30 h-72 object-cover',
+              image: 'border border-dusk-200 dark:border-dusk-800/30 h-48 sm:h-52 md:h-52 lg:h-64 object-cover',
               date: 'font-mono text-xs',
               title: 'tracking-tight text-lg',
               description: 'text-sm line-clamp-2'
