@@ -5,7 +5,7 @@
 @source "./safelist.txt";
 
 @theme static {
-  --font-sans: 'Geist Sans', sans-serif;
+  --font-sans: 'Geist', sans-serif;
   --font-heading: 'Poppins', sans-serif;
   --font-mono: 'Geist Mono', monospace;
 

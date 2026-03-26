@@ -33,7 +33,9 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/plio/js/script.js': { proxy: 'https://plausible.io/js/script.js' },
-    '/plio/api/event': { proxy: 'https://plausible.io/api/event' }
+    '/plio/api/event': { proxy: 'https://plausible.io/api/event' },
+    '/admin/**': { ssr: true },
+    '/__nuxt_studio/**': { ssr: true }
   },
 
   sourcemap: {
@@ -75,9 +77,9 @@ export default defineNuxtConfig({
       subsets: ['latin']
     },
     families: [
-      { name: 'Geist Sans', provider: 'bunny' },
+      { name: 'Geist', provider: 'google' },
       { name: 'Poppins', provider: 'google' },
-      { name: 'Geist Mono', provider: 'bunny' }
+      { name: 'Geist Mono', provider: 'google' }
     ]
   },
 
