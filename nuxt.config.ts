@@ -75,9 +75,9 @@ export default defineNuxtConfig({
       subsets: ['latin']
     },
     families: [
-      { name: 'Geist Sans', provider: 'google' },
+      { name: 'Geist Sans', provider: 'bunny' },
       { name: 'Poppins', provider: 'google' },
-      { name: 'Geist Mono', provider: 'google' }
+      { name: 'Geist Mono', provider: 'bunny' }
     ]
   },
 
@@ -111,6 +111,7 @@ export default defineNuxtConfig({
   },
 
   studio: {
+    route: '/admin',
     repository: {
       provider: 'github',
       owner: 'vernaillen',
