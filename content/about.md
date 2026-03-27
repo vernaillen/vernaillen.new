@@ -34,4 +34,4 @@ I travel whenever I can, always looking for how different cultures approach rhyt
 
 ### Let's talk
 
-I'm currently available for new projects. If you need someone who can work across the full stack — or if you just want to geek out about Nuxt — [schedule a call](https://calendly.com/vernaillen/15min) or find me on [LinkedIn](https://www.linkedin.com/in/woutervernaillen/).
+I'm currently working on a long-term project, but feel free to contact me on [LinkedIn](https://www.linkedin.com/in/woutervernaillen/).
