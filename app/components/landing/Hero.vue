@@ -2,6 +2,8 @@
 import type { IndexCollectionItem } from '@nuxt/content'
 
 const { footer, global } = useAppConfig()
+const colorMode = useColorMode()
+const dotOpacity = computed(() => colorMode.value === 'dark' ? 0.6 : 0.2)
 
 defineProps<{
   page: IndexCollectionItem
@@ -19,7 +21,10 @@ defineProps<{
   >
     <template #top>
       <ClientOnly>
-        <DotGrid />
+        <DotGrid
+          :base-opacity="dotOpacity"
+          :center-dot-radius="3"
+        />
       </ClientOnly>
     </template>
 
