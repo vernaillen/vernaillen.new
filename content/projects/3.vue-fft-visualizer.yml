@@ -1,6 +1,6 @@
 title: Vue FFT Visualizer
 description: Real-time FFT audio visualization component for Vue. Renders frequency data as interactive WebGL visuals — where creative coding meets the web audio API.
-image: /images/projects/vue-fft-visualizer.png
+image: /images/projects/fft-visualizer.png
 url: https://github.com/vernaillen/vue-fft-visualizer
 tags:
   - Vue
