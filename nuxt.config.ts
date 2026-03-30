@@ -51,6 +51,10 @@ export default defineNuxtConfig({
     componentIslands: true
   },
 
+  runtimeConfig: {
+    githubToken: ''
+  },
+
   compatibilityDate: '2026-03-14',
 
   nitro: {
