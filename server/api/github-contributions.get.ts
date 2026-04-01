@@ -1,4 +1,4 @@
-import type { GitHubContribution } from '~/shared/types/github'
+import type { GitHubContribution } from '#shared/types/github'
 
 // Repos to hide from the Open Source section (meta repos, profiles, etc.)
 const HIDDEN_REPOS = new Set([

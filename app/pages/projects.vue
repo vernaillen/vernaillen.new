@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GitHubContributions } from '~/shared/types/github'
+import type { GitHubContributions } from '#shared/types/github'
 
 const { data: page } = await useAsyncData('projects-page', () => {
   return queryCollection('pages').path('/projects').first()

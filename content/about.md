@@ -35,3 +35,4 @@ I travel whenever I can, always looking for how different cultures approach rhyt
 ### Let's talk
 
 I'm currently working on a long-term project, but feel free to contact me on [LinkedIn](https://www.linkedin.com/in/woutervernaillen/).
+
