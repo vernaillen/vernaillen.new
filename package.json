@@ -20,6 +20,7 @@
     "@nuxt/ui": "^4.6.0",
     "@nuxtjs/plausible": "^3.0.2",
     "@nuxtjs/seo": "^5.1.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@shikijs/engine-javascript": "^4.0.2",
     "@shikijs/engine-oniguruma": "^4.0.2",
     "@takumi-rs/core": "^0.73.1",
@@ -29,6 +30,7 @@
     "nuxt": "^4.4.2",
     "nuxt-studio": "1.5.1",
     "octokit": "^5.0.5",
+    "satori": "^0.26.0",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
@@ -39,5 +41,5 @@
     "typescript": "^6.0.2",
     "vue-tsc": "^3.2.6"
   },
-  "packageManager": "pnpm@10.32.1"
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
 }

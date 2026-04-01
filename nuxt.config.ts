@@ -57,6 +57,14 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2026-03-14',
 
+  vite: {
+    optimizeDeps: {
+      exclude: [
+        '@plausible-analytics/tracker'
+      ]
+    }
+  },
+
   nitro: {
     prerender: {
       routes: [
@@ -101,6 +109,10 @@ export default defineNuxtConfig({
 
   plausible: {
     apiHost: 'https://www.vernaillen.dev/plio'
+  },
+
+  ogImage: {
+    zeroRuntime: true
   },
 
   seo: {
