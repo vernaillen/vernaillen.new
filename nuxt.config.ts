@@ -31,6 +31,10 @@ export default defineNuxtConfig({
     preference: 'dark'
   },
 
+  runtimeConfig: {
+    githubToken: ''
+  },
+
   routeRules: {
     '/plio/js/script.js': { proxy: 'https://plausible.io/js/script.js' },
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' },
@@ -51,19 +55,7 @@ export default defineNuxtConfig({
     componentIslands: true
   },
 
-  runtimeConfig: {
-    githubToken: ''
-  },
-
   compatibilityDate: '2026-03-14',
-
-  vite: {
-    optimizeDeps: {
-      exclude: [
-        '@plausible-analytics/tracker'
-      ]
-    }
-  },
 
   nitro: {
     prerender: {
@@ -71,6 +63,14 @@ export default defineNuxtConfig({
         '/'
       ],
       crawlLinks: true
+    }
+  },
+
+  vite: {
+    optimizeDeps: {
+      exclude: [
+        '@plausible-analytics/tracker'
+      ]
     }
   },
 
@@ -107,12 +107,12 @@ export default defineNuxtConfig({
     }
   },
 
-  plausible: {
-    apiHost: 'https://www.vernaillen.dev/plio'
-  },
-
   ogImage: {
     zeroRuntime: true
+  },
+
+  plausible: {
+    apiHost: 'https://www.vernaillen.dev/plio'
   },
 
   seo: {

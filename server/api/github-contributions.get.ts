@@ -103,7 +103,7 @@ export default defineCachedEventHandler(async () => {
   const contributed: GitHubContribution[] = contributedTo.user.repositoriesContributedTo.nodes
     .filter((node): node is NonNullable<typeof node> => node !== null)
     .filter(node => !node.nameWithOwner.startsWith(`${username}/`))
-    .map(node => {
+    .map((node) => {
       const pr = prMap.get(node.nameWithOwner)
       return {
         repo: node.nameWithOwner,

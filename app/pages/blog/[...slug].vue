@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import type { ContentNavigationItem } from '@nuxt/content'
-import { mapContentNavigation } from '@nuxt/ui/utils/content'
-import { findPageBreadcrumb } from '@nuxt/content/utils'
-
 const route = useRoute()
 
 const { data: page, status } = await useAsyncData(() => `blog-${route.path}`, () =>
@@ -17,19 +13,9 @@ const { data: surround } = await useAsyncData(() => `blog-surround-${route.path}
 
 const loading = computed(() => status.value === 'pending' || page.value?.path !== route.path)
 
-const navigation = inject<Ref<ContentNavigationItem[]>>('navigation', ref([]))
-const blogNavigation = computed(() => navigation.value.find(item => item.path === '/blog')?.children || [])
-
-const breadcrumb = computed(() => mapContentNavigation(findPageBreadcrumb(blogNavigation?.value, page.value?.path)).map(({ icon, ...link }) => link))
-
-defineOgImage({
-  component: 'VernaillenBlog',
-  props: {
-    title: page.value.title,
-    description: page.value.description,
-    headline: breadcrumb.value.map(item => item.label).join(' > ')
-  },
-  fonts: ['Space+Grotesk:400', 'Space+Grotesk:500']
+defineOgImage('Vernaillen', {
+  title: page.value.title,
+  description: page.value.description
 })
 
 const title = page.value?.seo?.title || page.value?.title

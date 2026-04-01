@@ -24,13 +24,9 @@ useSeoMeta({
   ogDescription: description
 })
 
-defineOgImage({
-  component: 'Vernaillen',
-  props: {
-    title,
-    description
-  },
-  fonts: ['Space+Grotesk:400', 'Space+Grotesk:500']
+defineOgImage('Vernaillen', {
+  title,
+  description
 })
 </script>
 

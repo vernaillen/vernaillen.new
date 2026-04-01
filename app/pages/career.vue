@@ -18,11 +18,19 @@ if (!page.value) {
   })
 }
 
+const title = page.value?.seo?.title || page.value?.title
+const description = page.value?.seo?.description || page.value?.description
+
 useSeoMeta({
-  title: page.value?.seo?.title || page.value?.title,
-  ogTitle: page.value?.seo?.title || page.value?.title,
-  description: page.value?.seo?.description || page.value?.description,
-  ogDescription: page.value?.seo?.description || page.value?.description
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description
+})
+
+defineOgImage('Vernaillen', {
+  title,
+  description
 })
 
 const groupedEvents = computed((): Record<Event['category'], Event[]> => {
