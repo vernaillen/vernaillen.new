@@ -61,11 +61,6 @@ export default defineAppConfig({
       'to': 'https://x.com/vernaillen',
       'target': '_blank',
       'aria-label': 'X'
-    }, {
-      'icon': 'i-simple-icons-bluesky',
-      'to': 'https://bsky.app/profile/vernaillen.dev',
-      'target': '_blank',
-      'aria-label': 'Bluesky'
     }]
   }
 })
