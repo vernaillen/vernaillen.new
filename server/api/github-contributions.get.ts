@@ -13,6 +13,11 @@ const HIDDEN_REPOS = new Set([
 ])
 
 export default defineCachedEventHandler(async () => {
+  const config = useRuntimeConfig()
+  if (!config.githubToken) {
+    return { authored: [], contributed: [] }
+  }
+
   const octokit = useOctokit()
 
   const userResponse = await octokit.request('GET /user')
@@ -121,15 +126,26 @@ export default defineCachedEventHandler(async () => {
   for (const [repo, pr] of prMap) {
     if (!contributedRepos.has(repo)) {
       const [owner, name] = repo.split('/')
-      const repoData = await fetchRepo(owner!, name!)
-      contributed.push({
-        repo,
-        description: pr.title,
-        stars: repoData.stargazers_count,
-        url: `https://github.com/${repo}`,
-        pr: pr.url,
-        category: 'contributed'
-      })
+      try {
+        const repoData = await fetchRepo(owner!, name!)
+        contributed.push({
+          repo,
+          description: pr.title,
+          stars: repoData.stargazers_count,
+          url: `https://github.com/${repo}`,
+          pr: pr.url,
+          category: 'contributed'
+        })
+      } catch {
+        contributed.push({
+          repo,
+          description: pr.title,
+          stars: 0,
+          url: `https://github.com/${repo}`,
+          pr: pr.url,
+          category: 'contributed'
+        })
+      }
     }
   }
   contributed.sort((a, b) => b.stars - a.stars)
