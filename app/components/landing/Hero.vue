@@ -21,10 +21,7 @@ defineProps<{
   >
     <template #top>
       <ClientOnly>
-        <DotGrid
-          :base-opacity="dotOpacity"
-          :center-dot-radius="3"
-        />
+        <DotGrid :base-opacity="dotOpacity" />
       </ClientOnly>
     </template>
 

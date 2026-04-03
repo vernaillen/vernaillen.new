@@ -3,7 +3,6 @@ import type { MaybeRef, Ref } from 'vue'
 interface DotGridOptions {
   spacing?: number
   dotRadius?: number
-  centerDotRadius?: number
   baseOpacity?: MaybeRef<number>
   influenceRadius?: number
   maxDisplacement?: number
@@ -19,7 +18,6 @@ export function useDotGrid(
   const {
     spacing = 14,
     dotRadius = 1,
-    centerDotRadius = 0,
     baseOpacity: rawBaseOpacity = 0.25,
     influenceRadius = 150,
     maxDisplacement = 12
@@ -139,14 +137,6 @@ export function useDotGrid(
       ctx.globalAlpha = baseOpacity.value * fade
       ctx.beginPath()
       ctx.arc(x, y, dotRadius, 0, Math.PI * 2)
-      ctx.fill()
-    }
-
-    // Draw a larger dot at the center
-    if (centerDotRadius > 0) {
-      ctx.globalAlpha = baseOpacity.value
-      ctx.beginPath()
-      ctx.arc(cx, cy, centerDotRadius, 0, Math.PI * 2)
       ctx.fill()
     }
 

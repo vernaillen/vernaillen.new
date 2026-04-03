@@ -2,12 +2,10 @@
 const props = withDefaults(defineProps<{
   spacing?: number
   dotRadius?: number
-  centerDotRadius?: number
   baseOpacity?: number
 }>(), {
   spacing: 14,
   dotRadius: 1,
-  centerDotRadius: 0,
   baseOpacity: 0.25
 })
 
@@ -16,7 +14,6 @@ const canvasRef = useTemplateRef('canvas')
 useDotGrid(canvasRef, {
   spacing: props.spacing,
   dotRadius: props.dotRadius,
-  centerDotRadius: props.centerDotRadius,
   baseOpacity: props.baseOpacity
 })
 </script>
