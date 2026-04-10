@@ -46,6 +46,14 @@
   --color-vernaillen-950: #2e1b02;
 }
 
+.dark {
+  --ui-bg: var(--ui-color-neutral-950);
+  --ui-bg-muted: var(--ui-color-neutral-900);
+  --ui-bg-elevated: var(--ui-color-neutral-900);
+  --ui-bg-accented: var(--ui-color-neutral-800);
+  --ui-border: var(--ui-color-neutral-900);
+}
+
 h1, h2, h3, h4 {
   font-family: var(--font-heading);
   font-weight: 600;

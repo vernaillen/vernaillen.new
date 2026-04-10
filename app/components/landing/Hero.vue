@@ -2,8 +2,6 @@
 import type { IndexCollectionItem } from '@nuxt/content'
 
 const { footer, global } = useAppConfig()
-const colorMode = useColorMode()
-const dotOpacity = computed(() => colorMode.value === 'dark' ? 0.6 : 0.2)
 
 defineProps<{
   page: IndexCollectionItem
@@ -13,16 +11,14 @@ defineProps<{
 <template>
   <UPageHero
     :ui="{
-      root: 'dot-pattern',
+      root: 'relative overflow-hidden',
       headline: 'flex items-center justify-center',
       title: 'text-shadow-sm',
       links: 'mt-4 flex-col justify-center items-center'
     }"
   >
     <template #top>
-      <ClientOnly>
-        <DotGrid :base-opacity="dotOpacity" />
-      </ClientOnly>
+      <HeroShaders class="absolute inset-0 opacity-20" />
     </template>
 
     <template #headline>
