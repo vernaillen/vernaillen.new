@@ -15,10 +15,11 @@ const plasmaColorB = computed(() => isDark.value ? '#0a0908' : '#f9f8f5')
 const plasmaContrast = computed(() => isDark.value ? 1.8 : 1.2)
 const plasmaIntensity = computed(() => isDark.value ? 2 : 1.4)
 const trailBlendMode = computed(() => isDark.value ? 'screen' : 'multiply')
+const opacity = computed(() => isDark.value ? ' opacity-30' : ' opacity-50')
 </script>
 
 <template>
-  <Shader>
+  <Shader :class="opacity">
     <Pixelate
       :gap="{
         type: 'map',

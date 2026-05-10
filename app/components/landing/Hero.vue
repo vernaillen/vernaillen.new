@@ -18,7 +18,7 @@ defineProps<{
     }"
   >
     <template #top>
-      <HeroShaders class="absolute inset-0 opacity-20" />
+      <HeroShaders class="absolute inset-0" />
     </template>
 
     <template #headline>
