@@ -1,0 +1,11 @@
+title: Open Source
+description: Modules, tools, and starters I built and maintain — plus pull requests merged into projects across the ecosystem.
+links:
+  - label: 'GitHub'
+    to: https://github.com/vernaillen
+    icon: i-simple-icons-github
+    color: 'neutral'
+  - label: "Let's collaborate"
+    to: https://calendly.com/vernaillen/15min
+    icon: i-lucide-calendar
+    variant: 'outline'
