@@ -110,6 +110,7 @@ export default defineContentConfig({
       type: 'page',
       source: [
         { include: 'projects.yml' },
+        { include: 'open-source.yml' },
         { include: 'blog.yml' }
       ],
       schema: z.object({

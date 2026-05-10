@@ -12,6 +12,10 @@ export function useNavLinks(): Ref<NavigationMenuItem[]> {
     icon: 'i-lucide-folder',
     to: '/projects'
   }, {
+    label: 'Open Source',
+    icon: 'i-simple-icons-github',
+    to: '/open-source'
+  }, {
     label: 'Blog',
     icon: 'i-lucide-file-text',
     to: '/blog',

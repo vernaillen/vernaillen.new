@@ -12,12 +12,39 @@ const HIDDEN_REPOS = new Set([
   'vernaillen/vernaillen-website'
 ])
 
+const EMPTY: { authored: GitHubContribution[], contributed: GitHubContribution[] } = {
+  authored: [],
+  contributed: []
+}
+
 export default defineCachedEventHandler(async () => {
   const config = useRuntimeConfig()
   if (!config.githubToken) {
-    return { authored: [], contributed: [] }
+    console.warn('[github-contributions] NUXT_GITHUB_TOKEN is not set — returning empty data.')
+    return EMPTY
   }
 
+  try {
+    return await fetchGitHubContributions()
+  } catch (error) {
+    const status = (error as { status?: number })?.status
+    const message = (error as Error)?.message ?? String(error)
+    if (status === 401) {
+      console.warn(
+        '[github-contributions] GitHub returned 401 Bad credentials — your NUXT_GITHUB_TOKEN is invalid or expired. Generate a new one at https://github.com/settings/personal-access-tokens/new'
+      )
+    } else if (status === 403) {
+      console.warn(`[github-contributions] GitHub returned 403 (rate-limited or forbidden): ${message}`)
+    } else {
+      console.warn(`[github-contributions] Failed to fetch GitHub data${status ? ` (HTTP ${status})` : ''}: ${message}`)
+    }
+    return EMPTY
+  }
+}, {
+  maxAge: 60 * 60 // cache for 1 hour
+})
+
+async function fetchGitHubContributions() {
   const octokit = useOctokit()
 
   const userResponse = await octokit.request('GET /user')
@@ -167,6 +194,4 @@ export default defineCachedEventHandler(async () => {
     authored,
     contributed
   }
-}, {
-  maxAge: 60 * 60 // cache for 1 hour
-})
+}
