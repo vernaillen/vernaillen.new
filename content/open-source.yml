@@ -5,7 +5,3 @@ links:
     to: https://github.com/vernaillen
     icon: i-simple-icons-github
     color: 'neutral'
-  - label: "Let's collaborate"
-    to: https://calendly.com/vernaillen/15min
-    icon: i-lucide-calendar
-    variant: 'outline'

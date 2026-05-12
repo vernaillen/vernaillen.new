@@ -12,6 +12,19 @@ const HIDDEN_REPOS = new Set([
   'vernaillen/vernaillen-website'
 ])
 
+// GitHub orgs where the user is the sole/primary maintainer.
+// Public, non-fork repos in these orgs appear under "Authored" instead of "Contributed".
+const MAINTAINED_ORGS = ['wpnuxt']
+
+type RepoNode = {
+  nameWithOwner: string
+  description: string | null
+  stargazerCount: number
+  url: string
+  isFork: boolean
+  pushedAt: string
+}
+
 const EMPTY: { authored: GitHubContribution[], contributed: GitHubContribution[] } = {
   authored: [],
   contributed: []
@@ -50,6 +63,14 @@ async function fetchGitHubContributions() {
   const userResponse = await octokit.request('GET /user')
   const username = userResponse.data.login
 
+  // Owners (user + maintained orgs) treated as "authored" rather than "contributed".
+  // Case-insensitive — GitHub treats logins as case-insensitive but the API may return mixed case.
+  const ownedOwners = new Set([username.toLowerCase(), ...MAINTAINED_ORGS.map(o => o.toLowerCase())])
+  const isOwnedRepo = (nameWithOwner: string) => {
+    const owner = nameWithOwner.split('/')[0]?.toLowerCase()
+    return !!owner && ownedOwners.has(owner)
+  }
+
   // Fetch contributed-to repos (excludes own repos)
   const contributedTo = await octokit.graphql<{
     user: {
@@ -79,14 +100,7 @@ async function fetchGitHubContributions() {
   const ownRepos = await octokit.graphql<{
     user: {
       repositories: {
-        nodes: Array<{
-          nameWithOwner: string
-          description: string | null
-          stargazerCount: number
-          url: string
-          isFork: boolean
-          pushedAt: string
-        }>
+        nodes: RepoNode[]
       }
     }
   }>(`{
@@ -104,9 +118,43 @@ async function fetchGitHubContributions() {
     }
   }`)
 
-  // Fetch PRs to external repos
+  // Fetch repos from maintained orgs (treated as authored)
+  const orgRepoNodes: RepoNode[] = []
+  for (const org of MAINTAINED_ORGS) {
+    try {
+      const orgData = await octokit.graphql<{
+        organization: {
+          repositories: {
+            nodes: RepoNode[]
+          }
+        } | null
+      }>(`{
+        organization(login: "${org}") {
+          repositories(first: 100, orderBy: {field: PUSHED_AT, direction: DESC}, privacy: PUBLIC, isFork: false) {
+            nodes {
+              nameWithOwner
+              description
+              stargazerCount
+              url
+              isFork
+              pushedAt
+            }
+          }
+        }
+      }`)
+      if (orgData.organization) {
+        orgRepoNodes.push(...orgData.organization.repositories.nodes)
+      }
+    } catch (error) {
+      const message = (error as Error)?.message ?? String(error)
+      console.warn(`[github-contributions] Failed to fetch repos for org "${org}": ${message}`)
+    }
+  }
+
+  // Fetch PRs to external repos (exclude PRs to own + maintained orgs)
+  const excludedUsers = [...ownedOwners].map(u => `-user:"${u}"`).join('+')
   const { data: prData } = await octokit.request('GET /search/issues', {
-    q: `type:pr+author:"${username}"+-user:"${username}"`,
+    q: `type:pr+author:"${username}"+${excludedUsers}`,
     per_page: 100,
     page: 1
   })
@@ -131,10 +179,10 @@ async function fetchGitHubContributions() {
     }
   }
 
-  // Build contributed-to list (filter nulls from deleted repos)
+  // Build contributed-to list (filter nulls from deleted repos and owned/maintained repos)
   const contributed: GitHubContribution[] = contributedTo.user.repositoriesContributedTo.nodes
     .filter((node): node is NonNullable<typeof node> => node !== null)
-    .filter(node => !node.nameWithOwner.startsWith(`${username}/`))
+    .filter(node => !isOwnedRepo(node.nameWithOwner))
     .map((node) => {
       const pr = prMap.get(node.nameWithOwner)
       return {
@@ -148,10 +196,10 @@ async function fetchGitHubContributions() {
     })
     .sort((a, b) => b.stars - a.stars)
 
-  // Also add repos with PRs that aren't in contributedTo
+  // Also add repos with PRs that aren't in contributedTo (skip owned/maintained orgs)
   const contributedRepos = new Set(contributed.map(c => c.repo))
   for (const [repo, pr] of prMap) {
-    if (!contributedRepos.has(repo)) {
+    if (!contributedRepos.has(repo) && !isOwnedRepo(repo)) {
       const [owner, name] = repo.split('/')
       try {
         const repoData = await fetchRepo(owner!, name!)
@@ -177,8 +225,8 @@ async function fetchGitHubContributions() {
   }
   contributed.sort((a, b) => b.stars - a.stars)
 
-  // Build authored list (non-fork own repos, excluding hidden, sorted by latest activity)
-  const authored: GitHubContribution[] = ownRepos.user.repositories.nodes
+  // Build authored list (non-fork user + maintained-org repos, excluding hidden, sorted by latest activity)
+  const authored: GitHubContribution[] = [...ownRepos.user.repositories.nodes, ...orgRepoNodes]
     .filter(node => !HIDDEN_REPOS.has(node.nameWithOwner))
     .map(node => ({
       repo: node.nameWithOwner,

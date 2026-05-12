@@ -21,7 +21,9 @@ const featuredRepos = computed(() =>
   new Set(projects.value?.map(p => p.title.toLowerCase()) ?? [])
 )
 
-const { data: github } = await useFetch<GitHubContributions>('/api/github-contributions')
+const { data: github, status: githubStatus } = useLazyFetch<GitHubContributions>('/api/github-contributions', {
+  server: false
+})
 
 const authoredProjects = computed(() =>
   github.value?.authored?.filter(c => !featuredRepos.value.has(c.repo.split('/').pop()?.toLowerCase() ?? '')) ?? []
@@ -58,6 +60,17 @@ defineOgImage('Vernaillen', {
         links: 'justify-start'
       }"
     />
+
+    <div
+      v-if="githubStatus === 'idle' || githubStatus === 'pending'"
+      class="flex items-center justify-center gap-3 py-12 text-muted"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-5 animate-spin"
+      />
+      <span>Fetching open source data from GitHub…</span>
+    </div>
 
     <UPageSection
       v-if="authoredProjects.length"
