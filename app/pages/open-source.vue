@@ -12,25 +12,12 @@ if (!page.value) {
   })
 }
 
-const { data: projects } = await useAsyncData('open-source-projects', () => {
-  return queryCollection('projects').all()
-})
-
-// Featured project repos to exclude from the OSS grids
-const featuredRepos = computed(() =>
-  new Set(projects.value?.map(p => p.title.toLowerCase()) ?? [])
-)
-
 const { data: github, status: githubStatus } = useLazyFetch<GitHubContributions>('/api/github-contributions', {
   server: false
 })
 
-const authoredProjects = computed(() =>
-  github.value?.authored?.filter(c => !featuredRepos.value.has(c.repo.split('/').pop()?.toLowerCase() ?? '')) ?? []
-)
-const contributedProjects = computed(() =>
-  github.value?.contributed ?? []
-)
+const authoredProjects = computed(() => github.value?.authored ?? [])
+const contributedProjects = computed(() => github.value?.contributed ?? [])
 
 const title = page.value?.seo?.title || page.value?.title
 const description = page.value?.seo?.description || page.value?.description
