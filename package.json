@@ -27,11 +27,11 @@
     "@vueuse/nuxt": "^14.3.0",
     "better-sqlite3": "^12.9.0",
     "motion-v": "2.2.1",
-    "nuxt": "^4.4.4",
+    "nuxt": "^4.4.5",
     "nuxt-studio": "1.7.0",
     "octokit": "^5.0.5",
     "satori": "^0.26.0",
-    "shaders": "^2.5.116",
+    "shaders": "^2.5.119",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
