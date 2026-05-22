@@ -11,7 +11,8 @@ export default defineNuxtConfig({
     'motion-v/nuxt',
     'nuxt-studio',
     '@nuxtjs/plausible',
-    '@nuxt/fonts'
+    '@nuxt/fonts',
+    'nuxt-llms'
   ],
 
   devtools: {
@@ -55,7 +56,7 @@ export default defineNuxtConfig({
     componentIslands: true
   },
 
-  compatibilityDate: '2026-03-14',
+  compatibilityDate: '2026-05-22',
 
   nitro: {
     prerender: {
@@ -114,6 +115,53 @@ export default defineNuxtConfig({
       lg: 1024,
       xl: 1280
     }
+  },
+
+  llms: {
+    domain: 'https://vernaillen.dev',
+    title: 'Wouter Vernaillen',
+    description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
+    full: {
+      title: 'Wouter Vernaillen — Full Documentation',
+      description: 'The complete content of vernaillen.dev (home, about, career, projects, blog) in a single Markdown file.'
+    },
+    sections: [
+      {
+        title: 'Pages',
+        links: [
+          {
+            title: 'Home',
+            description: 'Landing page with intro, featured projects, work experience, testimonials, and FAQ.',
+            href: '/'
+          },
+          {
+            title: 'About',
+            description: 'Personal background: developer, open source maker, sound healer. Building things that bridge worlds.',
+            href: '/about'
+          },
+          {
+            title: 'Career',
+            description: 'Professional timeline since 2002 — the projects, companies, and technologies across 25+ years.',
+            href: '/career'
+          },
+          {
+            title: 'Projects',
+            description: 'Open source tools, client work, and personal projects — from enterprise portals to creative coding experiments.',
+            href: '/projects'
+          },
+          {
+            title: 'Open Source',
+            description: 'Modules, tools, and starters built and maintained, plus pull requests merged into ecosystem projects.',
+            href: '/open-source'
+          },
+          {
+            title: 'Blog',
+            description: 'Articles on development, Nuxt, open source, and the tools I use.',
+            href: '/blog'
+          }
+        ]
+      }
+    ]
   },
 
   ogImage: {
