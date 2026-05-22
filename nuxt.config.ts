@@ -1,4 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { execSync } from 'node:child_process'
+
+const lastUpdated = (() => {
+  try {
+    return execSync('git log -1 --format=%cs', { encoding: 'utf8' }).trim()
+  } catch {
+    return new Date().toISOString().slice(0, 10)
+  }
+})()
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -120,11 +130,14 @@ export default defineNuxtConfig({
   llms: {
     domain: 'https://vernaillen.dev',
     title: 'Wouter Vernaillen',
-    description: 'Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.',
+    description: `Freelance Full Stack Developer, specializing in Java, Spring, Nuxt & DevOps.
+
+vernaillen.dev is the personal site of Wouter Vernaillen — a Belgian freelance Full Stack Developer with 25+ years of experience. The site covers his professional work (Java/Spring backends, Nuxt/Vue frontends), open source projects (notably WPNuxt), and writing about modern web development, AI-assisted coding, and the tools he uses. Built with Nuxt 4, Nuxt UI, and Nuxt Content.`,
     full: {
       title: 'Wouter Vernaillen — Full Documentation',
       description: 'The complete content of vernaillen.dev (home, about, career, projects, blog) in a single Markdown file.'
     },
+    notes: [`Last updated: ${lastUpdated}`],
     sections: [
       {
         title: 'Pages',
