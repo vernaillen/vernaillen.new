@@ -20,20 +20,6 @@ const shaderReady = ref(false)
 // client-side navigation there's no measurement window, so render it
 // immediately rather than late. isHydrating is only true on the first render.
 const eagerShader = !useNuxtApp().isHydrating
-
-// Preload the dark poster (the default colour-mode preference) so this
-// full-bleed, LCP-candidate image starts downloading at top priority and
-// paints early on throttled mobile rather than after HTML discovery.
-useHead({
-  link: [
-    {
-      rel: 'preload',
-      as: 'image',
-      href: '/images/hero-poster-dark.webp',
-      fetchpriority: 'high'
-    }
-  ]
-})
 </script>
 
 <template>

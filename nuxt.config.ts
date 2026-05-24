@@ -107,15 +107,19 @@ export default defineNuxtConfig({
     defaults: {
       weights: [400, 500, 600, 700],
       subsets: ['latin']
+      // font-display defaults to 'swap' in @nuxt/fonts (not configurable here),
+      // so the LCP description text paints in the fallback face immediately and
+      // swaps to the web font on arrival — no invisible-text delay.
     },
     families: [
-      // Preload the above-the-fold fonts. fontless disables preload by
-      // default once `subsets` is set, which left the hero title (Poppins)
-      // and description (Geist) discovered only after the HTML downloaded,
-      // pushing FCP/LCP to ~2s. Re-enabling preload starts them in parallel.
-      { name: 'Geist', provider: 'google', preload: true },
+      // Preload only the above-the-fold fonts that the LCP path actually needs.
+      // PSI's mobile LCP element is the hero *description* (font-mono = Geist
+      // Mono) and the title is Poppins — those two must download in parallel
+      // with the HTML. Geist (sans) is body copy below the fold, so preloading
+      // it just stole priority from the LCP fonts; leave it unpreloaded.
+      { name: 'Geist', provider: 'google' },
       { name: 'Poppins', provider: 'google', preload: true },
-      { name: 'Geist Mono', provider: 'google' }
+      { name: 'Geist Mono', provider: 'google', preload: true }
     ]
   },
 
