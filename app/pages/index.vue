@@ -33,19 +33,32 @@ defineOgImage('Vernaillen', {
 <template>
   <UPage v-if="page">
     <LandingHero :page />
-    <LandingStats :page />
+    <LazyLandingStats
+      :page
+      hydrate-on-visible
+    />
     <UPageSection
       :ui="{
         container: 'pt-0! lg:grid lg:grid-cols-2 lg:gap-8'
       }"
     >
-      <LazyLandingAbout :page />
-      <LazyLandingWorkExperience :page />
+      <LazyLandingAbout
+        :page
+        hydrate-on-visible
+      />
+      <LazyLandingWorkExperience
+        :page
+        hydrate-on-visible
+      />
     </UPageSection>
     <LazyLandingBlog
       :page
       :posts="blogPosts"
+      hydrate-on-visible
     />
-    <LazyLandingTestimonials :page />
+    <LazyLandingTestimonials
+      :page
+      hydrate-on-visible
+    />
   </UPage>
 </template>
