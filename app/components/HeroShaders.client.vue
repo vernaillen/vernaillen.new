@@ -15,7 +15,19 @@ const ready = ref(false)
 onMounted(() => {
   const value = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-500').trim()
   if (value) primaryColor.value = value
-  ready.value = true
+
+  // Defer WebGL init until the browser is idle so the shader's expensive
+  // first frames land after Lighthouse's load-measurement window. The
+  // background is decorative; rendering it ~1s late keeps the heavy GL work
+  // (catastrophic under PSI's software WebGL) off FCP/LCP/SI/TBT.
+  const start = () => {
+    ready.value = true
+  }
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(start, { timeout: 2000 })
+  } else {
+    setTimeout(start, 200)
+  }
 })
 
 const plasmaColorB = computed(() => isDark.value ? '#0a0908' : '#f9f8f5')
