@@ -19,7 +19,7 @@ defineProps<{
   >
     <template #top>
       <LazyHeroShaders
-        hydrate-on-idle
+        hydrate-on-media-query="(min-width: 1024px)"
         class="absolute inset-0"
       />
     </template>
