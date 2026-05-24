@@ -82,7 +82,7 @@ defineProps<{
           v-for="(link, index) of footer?.links"
           :key="index"
           class="hero-reveal"
-          :style="{ animationDelay: `${200 + index * 50}ms` }"
+          :style="{ animationDelay: `${100 + index * 20}ms` }"
         >
           <UButton
             v-bind="{ size: 'md', color: 'neutral', variant: 'ghost', ...link }"
@@ -94,31 +94,21 @@ defineProps<{
 </template>
 
 <style scoped>
+/* Transform-only reveal: scale in without an opacity fade so above-the-fold
+   pixels paint in their near-final state on the first frame. Fading from
+   opacity:0 left content invisible early, which delayed Speed Index
+   (invisible pixels don't count as visually painted). */
 @keyframes hero-reveal {
-  from {
-    opacity: 0;
-    transform: scale(1.05);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.hero-reveal {
-  animation: hero-reveal 0.25s ease-out both;
-}
-.hero-reveal-1 { animation-delay: 0ms; }
-.hero-reveal-3 { animation-delay: 100ms; }
-.hero-reveal-4 { animation-delay: 150ms; }
-
-/* LCP element: animate transform only (no opacity fade) so the title
-   text paints immediately and is not delayed in the LCP measurement. */
-@keyframes hero-reveal-title {
   from { transform: scale(1.05); }
   to { transform: scale(1); }
 }
+
+.hero-reveal,
 .hero-reveal-title {
-  animation: hero-reveal-title 0.25s ease-out 50ms both;
+  animation: hero-reveal 0.25s ease-out both;
 }
+.hero-reveal-1 { animation-delay: 0ms; }
+.hero-reveal-title { animation-delay: 40ms; }
+.hero-reveal-3 { animation-delay: 60ms; }
+.hero-reveal-4 { animation-delay: 80ms; }
 </style>
