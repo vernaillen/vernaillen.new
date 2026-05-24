@@ -186,7 +186,7 @@ vernaillen.dev is the personal site of Wouter Vernaillen — a Belgian freelance
   },
 
   plausible: {
-    apiHost: 'https://www.vernaillen.dev/plio'
+    apiHost: 'https://vernaillen.dev/plio'
   },
 
   seo: {
