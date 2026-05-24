@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Shader, Pixelate, Plasma, SineWave, CursorTrail } from 'shaders/vue'
 
+const emit = defineEmits<{ ready: [] }>()
+
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
@@ -15,7 +17,23 @@ const ready = ref(false)
 onMounted(() => {
   const value = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-500').trim()
   if (value) primaryColor.value = value
-  ready.value = true
+
+  // Defer the expensive WebGL init until the browser is idle. The hero's
+  // static poster already paints the shader's resting frame, so the heavy GL
+  // work (catastrophic under PageSpeed's software WebGL) lands after the
+  // load-measurement window without leaving the background blank — which is
+  // what made deferring hurt Speed Index before the poster existed.
+  const start = () => {
+    ready.value = true
+    // Once the first GL frame has painted, signal the parent to crossfade the
+    // poster out so the handoff has no blank gap.
+    requestAnimationFrame(() => requestAnimationFrame(() => emit('ready')))
+  }
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(start, { timeout: 2000 })
+  } else {
+    setTimeout(start, 200)
+  }
 })
 
 const plasmaColorB = computed(() => isDark.value ? '#0a0908' : '#f9f8f5')

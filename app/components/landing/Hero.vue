@@ -6,6 +6,28 @@ const { footer, global } = useAppConfig()
 defineProps<{
   page: IndexCollectionItem
 }>()
+
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
+
+// Static poster paints the shader's resting frame immediately (SSR'd), then
+// the lazy WebGL shader crossfades in on top once it has rendered. On mobile
+// the shader never hydrates, so the poster stays as the (zero-GL) background.
+const shaderReady = ref(false)
+
+// Preload the dark poster (the default colour-mode preference) so this
+// full-bleed, LCP-candidate image starts downloading at top priority and
+// paints early on throttled mobile rather than after HTML discovery.
+useHead({
+  link: [
+    {
+      rel: 'preload',
+      as: 'image',
+      href: '/images/hero-poster-dark.webp',
+      fetchpriority: 'high'
+    }
+  ]
+})
 </script>
 
 <template>
@@ -18,9 +40,22 @@ defineProps<{
     }"
   >
     <template #top>
+      <div
+        class="absolute inset-0 transition-opacity duration-700 ease-out"
+        :class="shaderReady ? 'opacity-0' : (isDark ? 'opacity-30' : 'opacity-50')"
+      >
+        <UColorModeImage
+          light="/images/hero-poster-light.webp"
+          dark="/images/hero-poster-dark.webp"
+          alt=""
+          aria-hidden="true"
+          class="size-full object-cover object-top"
+        />
+      </div>
       <LazyHeroShaders
         hydrate-on-media-query="(min-width: 1024px)"
         class="absolute inset-0"
+        @ready="shaderReady = true"
       />
     </template>
 
