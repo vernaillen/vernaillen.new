@@ -14,15 +14,37 @@ const primaryColor = ref('#baaf4e')
 // (which made the background flash far too bright on first load).
 const ready = ref(false)
 
+// Skip the shader entirely on devices without a hardware GPU. Under software
+// WebGL (SwiftShader in PageSpeed's headless Chrome, llvmpipe in VMs) each
+// frame costs huge main-thread time, so the continuous render loop racks up
+// ~30s of Total Blocking Time. Those devices keep the static poster instead;
+// only real GPUs get the animated shader. WEBGL_debug_renderer_info being
+// blocked (a privacy default in some browsers) still implies a real context,
+// so we assume hardware in that case rather than disabling for everyone.
+function hasGpuAcceleration() {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl')
+    if (!gl) return false
+    const ext = gl.getExtension('WEBGL_debug_renderer_info')
+    if (!ext) return true
+    const renderer = String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL))
+    return !/swiftshader|llvmpipe|software|basic render/i.test(renderer)
+  } catch {
+    return false
+  }
+}
+
 onMounted(() => {
   const value = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-500').trim()
   if (value) primaryColor.value = value
 
+  if (!hasGpuAcceleration()) return
+
   // Defer the expensive WebGL init until the browser is idle. The hero's
   // static poster already paints the shader's resting frame, so the heavy GL
-  // work (catastrophic under PageSpeed's software WebGL) lands after the
-  // load-measurement window without leaving the background blank — which is
-  // what made deferring hurt Speed Index before the poster existed.
+  // work lands after the load-measurement window without leaving the
+  // background blank — which is what made deferring hurt Speed Index before
+  // the poster existed.
   const start = () => {
     ready.value = true
     // Once the first GL frame has painted, signal the parent to crossfade the
