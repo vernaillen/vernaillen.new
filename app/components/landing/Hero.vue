@@ -18,7 +18,10 @@ defineProps<{
     }"
   >
     <template #top>
-      <HeroShaders class="absolute inset-0" />
+      <LazyHeroShaders
+        hydrate-on-idle
+        class="absolute inset-0"
+      />
     </template>
 
     <template #headline>
@@ -33,7 +36,7 @@ defineProps<{
     </template>
 
     <template #title>
-      <div class="hero-reveal hero-reveal-2">
+      <div class="hero-reveal-title">
         {{ page.title }}
       </div>
     </template>
@@ -106,7 +109,16 @@ defineProps<{
   animation: hero-reveal 0.25s ease-out both;
 }
 .hero-reveal-1 { animation-delay: 0ms; }
-.hero-reveal-2 { animation-delay: 50ms; }
 .hero-reveal-3 { animation-delay: 100ms; }
 .hero-reveal-4 { animation-delay: 150ms; }
+
+/* LCP element: animate transform only (no opacity fade) so the title
+   text paints immediately and is not delayed in the LCP measurement. */
+@keyframes hero-reveal-title {
+  from { transform: scale(1.05); }
+  to { transform: scale(1); }
+}
+.hero-reveal-title {
+  animation: hero-reveal-title 0.25s ease-out 50ms both;
+}
 </style>

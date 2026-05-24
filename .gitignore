@@ -18,6 +18,9 @@ logs
 .fleet
 .idea
 
+# Unlighthouse reports
+.unlighthouse
+
 # Local env files
 .env
 .env.*

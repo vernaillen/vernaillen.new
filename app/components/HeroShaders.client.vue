@@ -6,9 +6,16 @@ const isDark = computed(() => colorMode.value === 'dark')
 
 const primaryColor = ref('#baaf4e')
 
+// Gate WebGL init until the theme is settled. With delayed hydration the
+// shader mounts after `colorMode` is resolved, so rendering only once mounted
+// avoids initialising uniforms against the transient light-mode defaults
+// (which made the background flash far too bright on first load).
+const ready = ref(false)
+
 onMounted(() => {
   const value = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-500').trim()
   if (value) primaryColor.value = value
+  ready.value = true
 })
 
 const plasmaColorB = computed(() => isDark.value ? '#0a0908' : '#f9f8f5')
@@ -19,7 +26,10 @@ const opacity = computed(() => isDark.value ? ' opacity-30' : ' opacity-50')
 </script>
 
 <template>
-  <Shader :class="opacity">
+  <Shader
+    v-if="ready"
+    :class="opacity"
+  >
     <Pixelate
       :gap="{
         type: 'map',
