@@ -109,8 +109,12 @@ export default defineNuxtConfig({
       subsets: ['latin']
     },
     families: [
-      { name: 'Geist', provider: 'google' },
-      { name: 'Poppins', provider: 'google' },
+      // Preload the above-the-fold fonts. fontless disables preload by
+      // default once `subsets` is set, which left the hero title (Poppins)
+      // and description (Geist) discovered only after the HTML downloaded,
+      // pushing FCP/LCP to ~2s. Re-enabling preload starts them in parallel.
+      { name: 'Geist', provider: 'google', preload: true },
+      { name: 'Poppins', provider: 'google', preload: true },
       { name: 'Geist Mono', provider: 'google' }
     ]
   },
