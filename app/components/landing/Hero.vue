@@ -15,6 +15,12 @@ const isDark = computed(() => colorMode.value === 'dark')
 // the shader never hydrates, so the poster stays as the (zero-GL) background.
 const shaderReady = ref(false)
 
+// The shader's idle-deferred init only earns its keep during the initial page
+// load (keeping heavy GL frames out of the load-measurement window). On a
+// client-side navigation there's no measurement window, so render it
+// immediately rather than late. isHydrating is only true on the first render.
+const eagerShader = !useNuxtApp().isHydrating
+
 // Preload the dark poster (the default colour-mode preference) so this
 // full-bleed, LCP-candidate image starts downloading at top priority and
 // paints early on throttled mobile rather than after HTML discovery.
@@ -55,6 +61,7 @@ useHead({
       <LazyHeroShaders
         hydrate-on-media-query="(min-width: 1024px)"
         class="absolute inset-0"
+        :immediate="eagerShader"
         @ready="shaderReady = true"
       />
     </template>

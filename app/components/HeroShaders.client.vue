@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Shader, Pixelate, Plasma, SineWave, CursorTrail } from 'shaders/vue'
 
+const props = defineProps<{
+  // Skip the idle deferral and init right away (used on client-side
+  // navigation, where there is no load-measurement window to protect).
+  immediate?: boolean
+}>()
+
 const emit = defineEmits<{ ready: [] }>()
 
 const colorMode = useColorMode()
@@ -51,7 +57,9 @@ onMounted(() => {
     // poster out so the handoff has no blank gap.
     requestAnimationFrame(() => requestAnimationFrame(() => emit('ready')))
   }
-  if ('requestIdleCallback' in window) {
+  if (props.immediate) {
+    start()
+  } else if ('requestIdleCallback' in window) {
     requestIdleCallback(start, { timeout: 2000 })
   } else {
     setTimeout(start, 200)
