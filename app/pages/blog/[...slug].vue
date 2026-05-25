@@ -79,8 +79,8 @@ const formatDate = (dateString: string) => {
       >
         <!-- Metadata row -->
         <Motion
-          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :initial="{ transform: 'translateY(10px)' }"
+          :while-in-view="{ transform: 'translateY(0)' }"
         >
           <div class="flex items-center justify-center gap-3 font-mono text-xs text-muted">
             <span v-if="page.date">
@@ -100,8 +100,8 @@ const formatDate = (dateString: string) => {
 
         <!-- Title & description -->
         <Motion
-          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :initial="{ transform: 'translateY(10px)' }"
+          :while-in-view="{ transform: 'translateY(0)' }"
           :transition="{ delay: 0.07 }"
         >
           <h1 class="text-3xl sm:text-4xl text-center font-medium max-w-3xl mx-auto tracking-tight leading-tight">
@@ -114,8 +114,8 @@ const formatDate = (dateString: string) => {
 
         <!-- Hero image -->
         <Motion
-          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :initial="{ transform: 'translateY(10px)' }"
+          :while-in-view="{ transform: 'translateY(0)' }"
           :transition="{ delay: 0.1 }"
         >
           <NuxtImg
@@ -132,8 +132,8 @@ const formatDate = (dateString: string) => {
 
         <!-- Author -->
         <Motion
-          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :initial="{ transform: 'translateY(10px)' }"
+          :while-in-view="{ transform: 'translateY(0)' }"
           :transition="{ delay: 0.15 }"
         >
           <div class="flex items-center justify-center">
