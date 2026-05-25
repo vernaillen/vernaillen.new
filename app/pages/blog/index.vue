@@ -66,7 +66,13 @@ defineOgImage('Vernaillen', {
             variant="naked"
             :to="post.path"
             v-bind="post"
-            :image="post.image.src"
+            :image="{
+              src: post.image.src,
+              width: 600,
+              height: 256,
+              sizes: '92vw md:45vw lg:600px',
+              loading: index === 0 ? 'eager' : 'lazy'
+            }"
             orientation="vertical"
             :ui="{
               root: 'flex flex-col h-full card-glow rounded-lg border border-dusk-200 dark:border-dusk-800/50 p-3 transition-transform duration-400 hover:scale-[1.01]',
@@ -76,7 +82,11 @@ defineOgImage('Vernaillen', {
               title: 'tracking-tight text-lg',
               description: 'text-sm line-clamp-2'
             }"
-          />
+          >
+            <template #date>
+              {{ formatPostDate(post.date) }}
+            </template>
+          </UBlogPost>
         </Motion>
       </div>
     </UPageSection>

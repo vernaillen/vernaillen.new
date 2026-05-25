@@ -29,14 +29,6 @@ useSeoMeta({
 })
 
 const articleLink = computed(() => `${window?.location}`)
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 </script>
 
 <template>
@@ -84,7 +76,7 @@ const formatDate = (dateString: string) => {
         >
           <div class="flex items-center justify-center gap-3 font-mono text-xs text-muted">
             <span v-if="page.date">
-              {{ formatDate(page.date) }}
+              {{ formatPostDate(page.date) }}
             </span>
             <span
               v-if="page.date && page.minRead"

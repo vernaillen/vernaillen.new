@@ -88,7 +88,7 @@ defineOgImage('Vernaillen', {
         >
           <template #leading>
             <span class="font-mono text-xs text-muted">
-              {{ new Date(project.date).getFullYear() }}
+              {{ new Date(project.date).getUTCFullYear() }}
             </span>
           </template>
           <template #footer>
