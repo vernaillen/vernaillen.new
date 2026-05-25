@@ -22,6 +22,6 @@ const props = defineProps<{
     :width="props.width"
     :height="props.height"
     v-bind="$attrs"
-    sizes="(max-width: 768px) 100vw, 768px"
+    sizes="sm:100vw md:768px"
   />
 </template>
