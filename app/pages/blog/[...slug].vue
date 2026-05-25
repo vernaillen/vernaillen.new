@@ -117,6 +117,7 @@ const articleLink = computed(() => `${window?.location}`)
             :height="page.image?.height || 300"
             sizes="sm:100vw md:900px"
             loading="eager"
+            fetchpriority="high"
             :style="{ height: `${page.image?.height || 300}px` }"
             class="rounded-lg w-full object-cover object-center border border-dusk-200 dark:border-dusk-800/50"
           />
