@@ -54,8 +54,8 @@ defineOgImage('Vernaillen', {
       }"
     >
       <Motion
-        :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-        :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+        :initial="{ transform: 'translateY(10px)' }"
+        :while-in-view="{ transform: 'translateY(0)' }"
         :transition="{ delay: 0.1 }"
         :in-view-options="{ once: true }"
       >
