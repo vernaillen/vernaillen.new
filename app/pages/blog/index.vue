@@ -72,7 +72,6 @@ defineOgImage('Vernaillen', {
               height: 256,
               sizes: '92vw md:45vw lg:600px',
               loading: index === 0 ? 'eager' : 'lazy',
-              preload: index === 0 ? { fetchPriority: 'high' } : false,
               fetchpriority: index === 0 ? 'high' : 'auto'
             }"
             orientation="vertical"
