@@ -28,7 +28,26 @@ useSeoMeta({
   ogTitle: title
 })
 
-const articleLink = computed(() => `${window?.location}`)
+// Per-post BlogPosting structured data for rich search results. The author is
+// matched to the site-wide Person node defined in app.vue.
+useSchemaOrg([
+  defineArticle({
+    '@type': 'BlogPosting',
+    'headline': page.value.title,
+    'description': page.value.description,
+    'image': page.value.image?.src,
+    'datePublished': page.value.date,
+    'dateModified': page.value.date,
+    'author': { name: page.value.author?.name ?? 'Wouter Vernaillen' }
+  })
+])
+
+// Build the canonical share URL from site config + route path so it is correct
+// during prerender (where `window` is undefined) and identical on server and
+// client — `window.location` baked the literal string "undefined" into the
+// static HTML and caused a hydration mismatch.
+const site = useSiteConfig()
+const articleLink = computed(() => `${site.url}${route.path}`)
 </script>
 
 <template>

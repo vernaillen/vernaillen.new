@@ -153,9 +153,12 @@ async function fetchGitHubContributions() {
   }
 
   // Fetch PRs to external repos (exclude PRs to own + maintained orgs)
-  const excludedUsers = [...ownedOwners].map(u => `-user:"${u}"`).join('+')
+  // GitHub search qualifiers are space-separated. octokit percent-encodes the
+  // `q` value, so a literal `+` would arrive as %2B (a plus character) and fuse
+  // the qualifiers into one malformed token — breaking the search. Use spaces.
+  const excludedUsers = [...ownedOwners].map(u => `-user:${u}`).join(' ')
   const { data: prData } = await octokit.request('GET /search/issues', {
-    q: `type:pr+author:"${username}"+${excludedUsers}`,
+    q: `type:pr author:${username} ${excludedUsers}`,
     per_page: 100,
     page: 1
   })

@@ -23,6 +23,24 @@ useSeoMeta({
   twitterCard: 'summary_large_image'
 })
 
+// Site-wide structured data: a Person identity (linked as author on blog
+// Article schema) and the WebSite node, emitted as JSON-LD for rich results.
+useSchemaOrg([
+  definePerson({
+    name: 'Wouter Vernaillen',
+    image: '/images/woutervernaillen.jpg',
+    jobTitle: 'Freelance Full Stack Developer',
+    sameAs: [
+      'https://github.com/vernaillen',
+      'https://www.linkedin.com/in/woutervernaillen/',
+      'https://x.com/vernaillen'
+    ]
+  }),
+  defineWebSite({
+    name: 'Wouter Vernaillen'
+  })
+])
+
 const navLinks = useNavLinks()
 
 const [{ data: navigation }, { data: files }] = await Promise.all([

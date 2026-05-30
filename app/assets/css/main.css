@@ -208,6 +208,21 @@ h1::after,
 }
 
 
+/* Accessibility: collapse animations, transitions and smooth scrolling for
+   users who request reduced motion (WCAG 2.3.3 / 2.2.2). The auto-playing
+   carousel and WebGL hero shader are additionally disabled in their components,
+   since JS-driven motion can't be stopped from CSS. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Card hover — subtle border accent */
 .card-glow {
   transition: border-color 0.3s ease;

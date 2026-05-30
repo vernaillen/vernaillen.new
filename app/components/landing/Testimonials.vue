@@ -4,6 +4,11 @@ import type { IndexCollectionItem } from '@nuxt/content'
 defineProps<{
   page: IndexCollectionItem
 }>()
+
+// Respect prefers-reduced-motion: stop the auto-advancing carousel (autonomous
+// continuous motion is a WCAG 2.2.2 concern). Dots still allow manual paging.
+const reducedMotion = usePreferredReducedMotion()
+const autoplay = computed(() => reducedMotion.value === 'reduce' ? false : { delay: 4000 })
 </script>
 
 <template>
@@ -15,7 +20,7 @@ defineProps<{
     <UCarousel
       v-slot="{ item }"
       :items="page.testimonials"
-      :autoplay="{ delay: 4000 }"
+      :autoplay="autoplay"
       loop
       dots
       :ui="{

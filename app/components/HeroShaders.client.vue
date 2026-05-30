@@ -46,6 +46,10 @@ onMounted(() => {
 
   if (!hasGpuAcceleration()) return
 
+  // Respect prefers-reduced-motion: keep the static poster and never start the
+  // continuous WebGL animation for users who asked for reduced motion.
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+
   // Defer the expensive WebGL init until the browser is idle. The hero's
   // static poster already paints the shader's resting frame, so the heavy GL
   // work lands after the load-measurement window without leaving the

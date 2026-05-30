@@ -8,7 +8,7 @@ export default defineSitemapEventHandler(async (e) => {
     return asSitemapUrl({
       loc: post.path,
       lastmod: new Date(post.date),
-      images: post.image ? [{ loc: post.image }] : []
+      images: post.image?.src ? [{ loc: post.image.src }] : []
     })
   })
 })

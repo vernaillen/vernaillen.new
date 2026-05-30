@@ -101,7 +101,7 @@ export default defineContentConfig({
         date: z.date(),
         image: z.object({
           src: z.string().nonempty().editor({ input: 'media' }),
-          height: z.number()
+          height: z.number().optional()
         }),
         author: createAuthorSchema()
       })
