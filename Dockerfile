@@ -16,7 +16,7 @@ ENV NUXT_GITHUB_TOKEN=$NUXT_GITHUB_TOKEN
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm i --frozen-lockfile
 # Vite build with client sourcemaps needs more than Node's default ~2GB heap
-ENV NODE_OPTIONS=--max-old-space-size=3072
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN pnpm build
 
 # --- Runtime stage ---
