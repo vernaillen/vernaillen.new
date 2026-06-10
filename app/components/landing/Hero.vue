@@ -41,6 +41,7 @@ const eagerShader = !useNuxtApp().isHydrating
           dark="/images/hero-poster-dark.webp"
           alt=""
           aria-hidden="true"
+          sizes="sm:100vw lg:1280px"
           class="size-full object-cover object-top"
         />
       </div>
@@ -65,7 +66,10 @@ const eagerShader = !useNuxtApp().isHydrating
 
     <template #title>
       <div class="hero-reveal-title">
-        {{ page.title }}
+        {{ page.title }}<br>
+      </div>
+      <div class="hero-reveal-title pt-5 text-xl sm:text-2xl lg:text-3xl">
+        {{ page.title2 }}
       </div>
     </template>
 

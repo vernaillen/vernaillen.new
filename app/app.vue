@@ -10,8 +10,7 @@ useHead({
     { key: 'theme-color', name: 'theme-color', content: color }
   ],
   link: [
-    { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-    { rel: 'preload', as: 'image', href: '/images/woutervernaillen.jpg' }
+    { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
   ],
   htmlAttrs: {
     lang: 'en'
@@ -40,27 +39,6 @@ useSchemaOrg([
     name: 'Wouter Vernaillen'
   })
 ])
-
-const navLinks = useNavLinks()
-
-const [{ data: navigation }, { data: files }] = await Promise.all([
-  useAsyncData('navigation', () => {
-    return Promise.all([
-      queryCollectionNavigation('blog')
-    ])
-  }, {
-    transform: data => data.flat()
-  }),
-  // lazy: true prevents blocking hydration; data is prerendered into payload at build time
-  // so the client picks it up without a network request or WASM query
-  useLazyAsyncData('search', () => {
-    return Promise.all([
-      queryCollectionSearchSections('blog')
-    ])
-  }, {
-    transform: data => data.flat()
-  })
-])
 </script>
 
 <template>
@@ -71,14 +49,6 @@ const [{ data: navigation }, { data: files }] = await Promise.all([
       </UMain>
     </NuxtLayout>
 
-    <ClientOnly>
-      <LazyUContentSearch
-        :files="files"
-        :navigation="navigation"
-        shortcut="meta_k"
-        :links="navLinks"
-        :fuse="{ resultLimit: 42 }"
-      />
-    </ClientOnly>
+    <AppSearch />
   </UApp>
 </template>

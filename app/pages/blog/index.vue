@@ -10,7 +10,10 @@ if (!page.value) {
   })
 }
 const { data: posts } = await useAsyncData('blogs', () =>
-  queryCollection('blog').order('date', 'DESC').all()
+  queryCollection('blog')
+    .order('date', 'DESC')
+    .select('path', 'title', 'description', 'date', 'image', 'minRead', 'author')
+    .all()
 )
 if (!posts.value) {
   throw createError({
@@ -70,7 +73,7 @@ defineOgImage('Vernaillen', {
               src: post.image.src,
               width: 600,
               height: 256,
-              sizes: '92vw md:45vw lg:600px',
+              sizes: 'sm:92vw md:45vw lg:600px',
               loading: index === 0 ? 'eager' : 'lazy',
               fetchpriority: index === 0 ? 'high' : 'auto'
             }"

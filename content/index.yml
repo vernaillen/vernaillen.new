@@ -1,8 +1,9 @@
 seo:
-  title: "Wouter Vernaillen - Freelance Full Stack Developer"
-  description: "Freelance Full Stack Developer specializing in Java/Spring backends and Nuxt/Vue frontends. 25+ years of experience building web solutions. Open source contributor and creator of WPNuxt."
-title: "Hi, I'm Wouter Vernaillen. Freelance Full Stack Developer"
-description: "I build robust web solutions from backend to frontend — bridging enterprise Java with modern JavaScript, and now embracing agentic workflows. Loving every bit of it."
+  title: "Wouter Vernaillen - Enterprise Full-Stack Java Developer"
+  description: "Freelance Developer specializing in Java/Spring backends and Nuxt/Vue frontends. 25+ years of experience building web solutions. Open source contributor and creator of WPNuxt."
+title: "Hi, I'm Wouter Vernaillen"
+title2: "Enterprise Full-Stack Java Developer"
+description: "Spring Boot, Vue/Nuxt & Angular, DevOps, Secure delivery, AI-enabled development."
 hero:
   images:
     - src: /images/projects/harmonics.png
@@ -25,18 +26,17 @@ stats:
 about:
   title: "About Me"
   description: |
-    Full stack developer with 25+ years of experience, from the first static HTML sites to cutting-edge web portals with seamless backend integrations.
+    I build robust web solutions from backend to frontend — bridging enterprise Java with modern JavaScript, and now embracing agentic workflows.<br>Loving every bit of it!
+    <br><br>
+    As a full stack developer with 25+ years of experience, I've gone from the first static HTML sites to cutting-edge web portals with seamless backend integrations.
     I combine deep Java/Spring expertise with a passion for modern frontend development using Nuxt and Vue. Creator of WPNuxt, an open source module for headless WordPress with Nuxt.
+    <br><br>
+    I'm also a sound healing practitioner, an ecstatic dance DJ, and a trance dance facilitator. I run [Harmonics.be](https://harmonics.be) — organizing events around sound, music, and movement.
+    <br><br>
+    I'm based in Belgium (Europe/Brussels timezone) and work primarily remotely, for Belgian and international clients alike.
 experience:
   title: Work Experience
   items:
-    - position: "Full Stack Developer at"
-      date: "2019 - Present"
-      company:
-        name: Opgroeien / Kind & Gezin
-        logo: "i-lucide-landmark"
-        url: "https://www.opgroeien.be"
-        color: "#A50050"
     - position: "Creator & Maintainer of"
       date: "2023 - Present"
       company:
@@ -44,6 +44,13 @@ experience:
         logo: "i-simple-icons-nuxtdotjs"
         url: "https://wpnuxt.com"
         color: "#00DC82"
+    - position: "Full Stack Developer at"
+      date: "2019 - Present"
+      company:
+        name: Opgroeien / Kind & Gezin
+        logo: "i-lucide-landmark"
+        url: "https://www.opgroeien.be"
+        color: "#A50050"
     - position: "Full Stack Developer at"
       date: "2018 - 2019"
       company:
@@ -58,6 +65,48 @@ experience:
         logo: "i-lucide-landmark"
         url: "https://www.kindengezin.be"
         color: "#cbe0e9"
+    - position: "Lead Developer at"
+      date: "2013 - 2014"
+      company:
+        name: Colruyt
+        logo: "i-lucide-baby"
+        url: "https://www.colruytgroup.com"
+        color: "#EF7D00"
+    - position: "Portal Architect at"
+      date: "2010 - 2013"
+      company:
+        name: Van Marcke
+        logo: "i-lucide-wrench"
+        url: "https://www.vanmarcke.com"
+        color: "#0072BC"
+    - position: "WebSphere Portal Consultant at"
+      date: "2006 - 2010"
+      company:
+        name: IBM
+        logo: "i-simple-icons-ibm"
+        url: "https://www.ibm.com"
+        color: "#0F62FE"
+    - position: "Java Software Engineer at"
+      date: "2003 - 2006"
+      company:
+        name: UPM-Kymmene
+        logo: "i-lucide-trees"
+        url: "https://www.upm.com"
+        color: "#5A8F3C"
+    - position: "Lotus Notes Developer at"
+      date: "2000 - 2003"
+      company:
+        name: Atos Origin
+        logo: "i-lucide-building-2"
+        url: "https://atos.net"
+        color: "#0066A1"
+    - position: "Lotus Notes Developer at"
+      date: "1999 - 2000"
+      company:
+        name: Alcatel e-Com
+        logo: "i-lucide-phone"
+        url: "https://en.wikipedia.org/wiki/Alcatel"
+        color: "#3A4A9F"
 testimonials:
   - quote: "Wouter's expertise in IBM Websphere portal helped us in reaching key projects. His ability to think user-led allows to work rapidly and meet expectations."
     author:
@@ -105,7 +154,7 @@ faq:
             Yes, I've been freelancing since 2013. I'm available for both long-term engagements and shorter project-based work. Feel free to schedule a call via Calendly to discuss your project.
         - label: Where are you based?
           content: |
-            I'm based in Belgium (Europe/Brussels timezone). I work both on-site for Belgian clients and remotely for international projects.
+            I'm based in Belgium (Europe/Brussels timezone). I work primarily remotely, for Belgian and international clients alike — for clients in Belgium I'm available on-site up to one day a week.
         - label: How can I get in touch?
           content: |
             The easiest way is to schedule a 15-minute call on [Calendly](https://calendly.com/vernaillen/15min). You can also reach me on [LinkedIn](https://www.linkedin.com/in/woutervernaillen/) or [GitHub](https://github.com/vernaillen/).

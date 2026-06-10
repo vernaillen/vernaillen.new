@@ -47,15 +47,18 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    '/links': { redirect: { to: '/', statusCode: 301 } },
     '/plio/js/script.js': { proxy: 'https://plausible.io/js/script.js' },
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' },
     '/admin/**': { ssr: true },
     '/__nuxt_studio/**': { ssr: true }
   },
 
-  sourcemap: {
-    client: true
-  },
+  // Sourcemaps roughly double the build's heap; the Docker build sets
+  // NUXT_SOURCEMAPS=false so it fits on an 8GB host
+  sourcemap: process.env.NUXT_SOURCEMAPS === 'false'
+    ? false
+    : { client: true },
 
   features: {
     // inline the styles to kill network requests to improve performance
@@ -71,7 +74,8 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: [
-        '/'
+        '/',
+        '/api/search-index.json'
       ],
       crawlLinks: true
     }

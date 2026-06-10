@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { IndexCollectionItem, BlogCollectionItem } from '@nuxt/content'
 
+type BlogPostCard = Pick<BlogCollectionItem, 'path' | 'title' | 'description' | 'date' | 'image' | 'minRead' | 'author'>
+
 defineProps<{
   page: IndexCollectionItem
-  posts?: BlogCollectionItem[] | null
+  posts?: BlogPostCard[] | null
 }>()
 </script>
 
@@ -28,6 +30,12 @@ defineProps<{
         orientation="horizontal"
         variant="naked"
         v-bind="post"
+        :image="{
+          ...post.image,
+          width: 600,
+          sizes: 'sm:92vw lg:600px',
+          loading: 'lazy'
+        }"
         :to="post.path"
         class="card-glow"
         :ui="{

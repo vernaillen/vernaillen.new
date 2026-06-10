@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/links",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/plio/js/script.js",

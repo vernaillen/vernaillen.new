@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 
 # --- Build stage ---
-FROM node:22-slim AS build
+FROM node:24-slim AS build
 WORKDIR /app
 
 # Pin pnpm to match the packageManager field (nixpacks/corepack lag behind pnpm 11)
-RUN npm i -g pnpm@11.5.2
+RUN npm i -g pnpm@11.5.3
 
 COPY . .
 
@@ -15,12 +15,15 @@ ENV NUXT_GITHUB_TOKEN=$NUXT_GITHUB_TOKEN
 
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm i --frozen-lockfile
-# Vite build with client sourcemaps needs more than Node's default ~2GB heap
-ENV NODE_OPTIONS=--max-old-space-size=4096
+# Skip sourcemaps (the main heap driver) and cap the heap below the Coolify
+# VPS's 8GB total, so a runaway build aborts instead of waking the kernel
+# OOM killer
+ENV NUXT_SOURCEMAPS=false
+ENV NODE_OPTIONS=--max-old-space-size=6144
 RUN pnpm build
 
 # --- Runtime stage ---
-FROM node:22-slim
+FROM node:24-slim
 WORKDIR /app
 ENV NODE_ENV=production
 

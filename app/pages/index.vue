@@ -11,7 +11,11 @@ if (!page.value) {
 }
 
 const { data: blogPosts } = await useAsyncData('index-blogs', () =>
-  queryCollection('blog').order('date', 'DESC').limit(3).all()
+  queryCollection('blog')
+    .order('date', 'DESC')
+    .limit(3)
+    .select('path', 'title', 'description', 'date', 'image', 'minRead', 'author')
+    .all()
 )
 
 const title = page.value?.seo?.title || page.value?.title

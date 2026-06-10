@@ -11,7 +11,7 @@ defineProps<{
     :title="page.experience.title"
     :ui="{
       container: 'p-0! gap-4 sm:gap-4',
-      title: 'text-left text-2xl sm:text-2xl lg:text-3xl font-medium section-title',
+      title: 'mb-4 text-left text-2xl sm:text-2xl lg:text-3xl font-medium section-title',
       description: 'mt-2'
     }"
   >
@@ -22,7 +22,7 @@ defineProps<{
           :key="index"
           :initial="{ opacity: 0, transform: 'translateY(20px)' }"
           :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-          :transition="{ delay: 0.4 + 0.2 * index }"
+          :transition="{ delay: 0.1 + 0.03 * index }"
           :in-view-options="{ once: true }"
           class="text-muted flex items-center text-nowrap gap-2"
         >
@@ -39,8 +39,8 @@ defineProps<{
               {{ experience.position }}
             </span>
             <div
-              class="inline-flex items-center gap-1"
-              :style="{ color: experience.company.color }"
+              class="inline-flex items-center gap-1 text-sm"
+              :style="{ color: `color-mix(in oklch, ${experience.company.color} 60%, var(--ui-text-muted))` }"
             >
               <span class="font-medium">{{ experience.company.name }}</span>
               <UIcon :name="experience.company.logo" />
