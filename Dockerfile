@@ -15,11 +15,11 @@ ENV NUXT_GITHUB_TOKEN=$NUXT_GITHUB_TOKEN
 
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm i --frozen-lockfile
-# Skip sourcemaps (the main heap driver) and cap the heap below the Coolify
-# VPS's 8GB total, so a runaway build aborts instead of waking the kernel
-# OOM killer
+# Skip sourcemaps (the main heap driver) and cap the heap well below the
+# Coolify VPS's 8GB total — Node needs ~1-2GB on top of the V8 heap, and a
+# runaway build should abort instead of waking the kernel OOM killer
 ENV NUXT_SOURCEMAPS=false
-ENV NODE_OPTIONS=--max-old-space-size=6144
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN pnpm build
 
 # --- Runtime stage ---

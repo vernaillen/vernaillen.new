@@ -26,6 +26,7 @@
     "@takumi-rs/core": "^1.7.0",
     "@vueuse/nuxt": "^14.3.0",
     "better-sqlite3": "^12.10.0",
+    "h3": "^1.15.11",
     "motion-v": "2.3.0",
     "nuxt": "^4.4.8",
     "nuxt-llms": "^0.2.0",
