@@ -44,7 +44,7 @@ export default defineAppConfig({
     }
   },
   footer: {
-    credits: `Built with Nuxt UI • © ${new Date().getFullYear()} Wouter Vernaillen`,
+    credits: `Built with Nuxt UI, self-hosted with Coolify • © ${new Date().getFullYear()} Wouter Vernaillen<br><span class="text-xs">Harmonics BV - BE 0503.971.022</span>`,
     colorMode: false,
     links: [{
       'icon': 'i-simple-icons-github',
