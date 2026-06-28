@@ -30,4 +30,6 @@ ENV NODE_ENV=production
 COPY --from=build /app/.output ./.output
 
 EXPOSE 3000
+# Drop root privileges — node:24-slim ships a built-in non-root `node` user (UID 1000)
+USER node
 CMD ["node", ".output/server/index.mjs"]
