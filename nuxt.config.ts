@@ -90,7 +90,8 @@ export default defineNuxtConfig({
         // "Maximum call stack size exceeded" when pre-bundling
         // the large shaders/vue chunk. Skip optimization until
         // we upgrade Vite past 8.0.1.
-        'shaders/vue'
+        'shaders/vue',
+        '@unhead/schema-org/vue'
       ]
     }
   },
