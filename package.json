@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.114",
-    "@iconify-json/simple-icons": "^1.2.86",
+    "@iconify-json/simple-icons": "^1.2.87",
     "@nuxt/content": "^3.14.0",
     "@nuxt/image": "^2.0.0",
     "@nuxt/ui": "^4.9.0",
@@ -44,5 +44,5 @@
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.5"
   },
-  "packageManager": "pnpm@11.5.2"
+  "packageManager": "pnpm@11.9.0"
 }
