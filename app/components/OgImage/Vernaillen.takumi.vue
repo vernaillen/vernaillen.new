@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import DOMPurify from 'dompurify';
+
 defineOptions({
   inheritAttrs: false
 })
@@ -13,6 +15,15 @@ const props = withDefaults(defineProps<{
 const titleHtml = computed(() => {
   return `${props.title}<svg xmlns="http://www.w3.org/2000/svg" width="14" height="56" viewBox="0 0 14 56" style="display:inline;vertical-align:bottom;margin-left:14px;margin-top:6px;"><circle cx="7" cy="45" r="7" fill="#9c8e1b"/></svg>`
 })
+
+function sanitizeHtml(html: string) {
+  return html
+    ? DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['span', 'p', 'svg', 'circle'],
+        ALLOWED_ATTR: ['class', 'xmlns', 'width', 'height', 'viewBox', 'style', 'cx', 'cy', 'r', 'fill'],
+      })
+    : '';
+}
 </script>
 
 <template>
@@ -49,7 +60,7 @@ const titleHtml = computed(() => {
       <!-- eslint-disable vue/no-v-html -->
       <div
         style="font-size: 52px; font-weight: 500; color: #f9f8f5; line-height: 1.5; margin: 0;"
-        v-html="titleHtml"
+        v-html="sanitizeHtml(titleHtml)"
       />
       <p style="font-size: 24px; font-family: 'Geist Mono', serif; font-weight: 400; color: #918d82; margin-top: 16px; line-height: 1.4;">
         {{ description }}
