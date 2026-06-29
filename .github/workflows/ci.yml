@@ -9,14 +9,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node: [24]
+        node: [26]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
 
       - name: Install node
         uses: actions/setup-node@v6
