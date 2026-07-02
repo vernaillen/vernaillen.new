@@ -81,6 +81,21 @@ export default defineNuxtConfig({
     }
   },
 
+  vite: {
+    optimizeDeps: {
+      exclude: [
+        '@plausible-analytics/tracker',
+        // Vite 7.3.x has a catastrophic-backtracking regex bug
+        // (vitejs/vite#21800, fixed in 8.0.1) that throws
+        // "Maximum call stack size exceeded" when pre-bundling
+        // the large shaders/vue chunk. Skip optimization until
+        // we upgrade Vite past 8.0.1.
+        'shaders/vue',
+        '@unhead/schema-org/vue'
+      ]
+    }
+  },
+
   eslint: {
     config: {
       stylistic: {
