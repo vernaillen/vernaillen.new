@@ -1,5 +1,15 @@
 <script setup lang="ts">
 const { footer } = useAppConfig()
+const { deployedAt } = useRuntimeConfig().public
+
+const deployedAtLabel = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: 'Europe/Brussels'
+}).format(new Date(deployedAt))
 </script>
 
 <template>
@@ -8,7 +18,7 @@ const { footer } = useAppConfig()
     :ui="{ left: 'text-muted text-xs font-mono' }"
   >
     <template #left>
-      {{ footer.credits1 }}<br><br>{{ footer.credits2 }}
+      {{ footer.credits1 }}<br>last deployed {{ deployedAtLabel }}<br><br>{{ footer.credits2 }}
     </template>
 
     <template #right>

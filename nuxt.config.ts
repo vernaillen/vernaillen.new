@@ -43,7 +43,10 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    githubToken: ''
+    githubToken: '',
+    public: {
+      deployedAt: new Date().toISOString()
+    }
   },
 
   routeRules: {
