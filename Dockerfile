@@ -9,19 +9,24 @@ RUN npm i -g pnpm@11.5.3
 
 COPY . .
 
+# Needed at build time so the prerender of /open-source bakes in real GitHub data.
+# Plain ARG/ENV (not a BuildKit secret mount) because this image is also built by
+# Coolify's deploy pipeline, which only supports build-time env vars, not --secret.
+# The token doesn't leak into the runtime image since only .output is copied out below.
+ARG NUXT_GITHUB_TOKEN
+ENV NUXT_GITHUB_TOKEN=$NUXT_GITHUB_TOKEN
+
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm i --frozen-lockfile
-# Skip sourcemaps (the main heap driver) and cap the heap to fit inside the
-# --memory=4g container limit the Jenkinsfile applies to this build (Coolify
-# deploys share the same 8GB VPS and need headroom of their own) — Node needs
-# ~1GB on top of the V8 heap, and a runaway build should abort instead of
-# waking the kernel OOM killer
+# Skip sourcemaps (the main heap driver) and cap the heap well below the
+# Coolify VPS's 8GB total — Node needs ~1-2GB on top of the V8 heap, and a
+# runaway build should abort instead of waking the kernel OOM killer.
+# Jenkins CI builds get their own container-level --memory cap in the
+# Jenkinsfile on top of this — don't shrink this heap to fit that; size the
+# Jenkins container cap around this value instead.
 ENV NUXT_SOURCEMAPS=false
-ENV NODE_OPTIONS=--max-old-space-size=3072
-# Needed at build time so the prerender of /open-source bakes in real GitHub data.
-# BuildKit secret mount keeps the token out of the image layer history (unlike ARG/ENV).
-RUN --mount=type=secret,id=nuxt_github_token \
-    NUXT_GITHUB_TOKEN="$(cat /run/secrets/nuxt_github_token)" pnpm build
+ENV NODE_OPTIONS=--max-old-space-size=4096
+RUN pnpm build
 
 # --- Runtime stage ---
 FROM node:24-slim
