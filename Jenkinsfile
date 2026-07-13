@@ -34,7 +34,7 @@ pipeline {
           sh '''
             DOCKER_BUILDKIT=1 docker build \
               --progress=plain \
-              --build-arg NUXT_GITHUB_TOKEN="$NUXT_GITHUB_TOKEN" \
+              --secret id=nuxt_github_token,env=NUXT_GITHUB_TOKEN \
               -t "$IMAGE_NAME:$IMAGE_TAG" \
               .
           '''

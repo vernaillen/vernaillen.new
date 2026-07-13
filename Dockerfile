@@ -9,10 +9,6 @@ RUN npm i -g pnpm@11.5.3
 
 COPY . .
 
-# Needed at build time so the prerender of /open-source bakes in real GitHub data
-ARG NUXT_GITHUB_TOKEN
-ENV NUXT_GITHUB_TOKEN=$NUXT_GITHUB_TOKEN
-
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm i --frozen-lockfile
 # Skip sourcemaps (the main heap driver) and cap the heap well below the
@@ -20,7 +16,10 @@ RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
 # runaway build should abort instead of waking the kernel OOM killer
 ENV NUXT_SOURCEMAPS=false
 ENV NODE_OPTIONS=--max-old-space-size=4096
-RUN pnpm build
+# Needed at build time so the prerender of /open-source bakes in real GitHub data.
+# BuildKit secret mount keeps the token out of the image layer history (unlike ARG/ENV).
+RUN --mount=type=secret,id=nuxt_github_token \
+    NUXT_GITHUB_TOKEN="$(cat /run/secrets/nuxt_github_token)" pnpm build
 
 # --- Runtime stage ---
 FROM node:24-slim
