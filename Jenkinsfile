@@ -34,6 +34,8 @@ pipeline {
           sh '''
             DOCKER_BUILDKIT=1 docker build \
               --progress=plain \
+              --memory=4g \
+              --memory-swap=4g \
               --secret id=nuxt_github_token,env=NUXT_GITHUB_TOKEN \
               -t "$IMAGE_NAME:$IMAGE_TAG" \
               .
@@ -46,7 +48,7 @@ pipeline {
       options { timeout(time: 3, unit: 'MINUTES') }
       steps {
         sh '''
-          docker run -d --rm --name "$CONTAINER_NAME" -p 127.0.0.1::3000 "$IMAGE_NAME:$IMAGE_TAG"
+          docker run -d --rm --name "$CONTAINER_NAME" --memory=256m --memory-swap=256m -p 127.0.0.1::3000 "$IMAGE_NAME:$IMAGE_TAG"
           PORT=$(docker port "$CONTAINER_NAME" 3000/tcp | cut -d: -f2)
           for i in $(seq 1 15); do
             curl -fsS "http://localhost:$PORT" > /dev/null && { echo "container is serving"; exit 0; }
