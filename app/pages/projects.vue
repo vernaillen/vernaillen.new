@@ -74,7 +74,38 @@ defineOgImage('Vernaillen', {
         :transition="{ delay: 0.2 * index }"
         :in-view-options="{ once: true }"
       >
+        <div
+          v-if="project.demo === 'fft'"
+          class="mb-16"
+        >
+          <div class="mb-2 flex items-center gap-3">
+            <span class="font-mono text-xs text-muted">
+              {{ new Date(project.date).getUTCFullYear() }}
+            </span>
+            <h2 class="text-lg font-semibold text-highlighted">
+              {{ project.title }}
+            </h2>
+          </div>
+          <p class="mb-5 max-w-2xl text-muted">
+            {{ project.description }}
+          </p>
+          <LazyFftVisualizerDemo
+            poster="/images/projects/fft-visualizer-hero.png"
+            hydrate-on-visible
+          />
+          <ULink
+            :to="project.url"
+            class="group mt-5 inline-flex items-center text-sm text-primary"
+          >
+            View Project
+            <UIcon
+              name="i-lucide-arrow-right"
+              class="size-4 text-primary transition-all opacity-0 group-hover:translate-x-1 group-hover:opacity-100"
+            />
+          </ULink>
+        </div>
         <UPageCard
+          v-else
           :title="project.title"
           :description="project.description"
           :to="project.url"
