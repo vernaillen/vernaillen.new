@@ -85,3 +85,11 @@ jobs:
         run: |
           docker push "${IMAGE}:latest"
           docker push "${IMAGE}:${{ github.sha }}"
+
+      # Coolify pulls :latest but won't redeploy on its own — hit its deploy API
+      # so the new image goes live. COOLIFY_DEPLOY_URL is the full deploy endpoint
+      # incl. ?uuid=<resource-uuid>; must be reachable from GitHub-hosted runners.
+      - name: Trigger Coolify redeploy
+        run: |
+          curl --fail-with-body -sS "${{ secrets.COOLIFY_DEPLOY_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
