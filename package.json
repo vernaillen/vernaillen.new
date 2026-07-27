@@ -13,6 +13,7 @@
     "check": "nuxt prepare && pnpm run lint && pnpm run typecheck && pnpm run build"
   },
   "dependencies": {
+    "@fft-visualizer/vue": "^1.0.0",
     "@iconify-json/lucide": "^1.2.120",
     "@iconify-json/simple-icons": "^1.2.92",
     "@nuxt/content": "^3.15.2",
@@ -36,10 +37,10 @@
     "octokit": "^5.0.5",
     "satori": "^0.29.0",
     "shaders": "^3.0.444",
-    "tailwindcss": "^4.3.3",
-    "@fft-visualizer/vue": "^1.0.0"
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "@iconify-json/logos": "^1.2.11",
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/fonts": "^0.14.0",
     "eslint": "^10.8.0",

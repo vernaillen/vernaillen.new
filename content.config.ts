@@ -105,7 +105,16 @@ export default defineContentConfig({
           src: z.string().nonempty().editor({ input: 'media' }),
           height: z.number().optional()
         }),
-        author: createAuthorSchema()
+        author: createAuthorSchema(),
+        // Where the post was announced, linked as "comment //" under the post.
+        // `icon` defaults to the platform's simple-icons glyph — override it only
+        // with another monochrome set. Full-colour `i-logos-*` glyphs ignore
+        // currentColor, so e.g. `i-logos-x` stays black and vanishes in dark mode.
+        social: z.array(z.object({
+          name: z.string().nonempty(),
+          url: z.string().nonempty(),
+          icon: z.string().optional()
+        })).optional()
       })
     }),
     pages: defineCollection({

@@ -191,6 +191,15 @@ const articleLink = computed(() => `${site.url}${route.path}`)
               />
             </Motion>
 
+            <!-- Below `lg` the TOC aside sits collapsed at the top of the page and
+                 its #bottom slot is hidden by the theme, so the comment card is
+                 repeated here, where it reads as the end of the article. -->
+            <SocialComments
+              v-if="page.social?.length"
+              :social="page.social"
+              class="mt-10 lg:hidden"
+            />
+
             <!-- Share row -->
             <div class="flex items-center justify-end gap-2 mt-10 pt-6 border-t border-dusk-200 dark:border-dusk-800/50">
               <span class="font-mono text-xs text-muted mr-1">share //</span>
@@ -231,10 +240,17 @@ const articleLink = computed(() => `${site.url}${route.path}`)
         </UPageBody>
         <template #right>
           <UContentToc
-            v-if="!loading && page?.body?.toc?.links?.length"
-            :links="page.body.toc.links"
+            v-if="!loading && (page?.body?.toc?.links?.length || page?.social?.length)"
+            :links="page.body?.toc?.links"
             highlight
-          />
+          >
+            <template
+              v-if="page.social?.length"
+              #bottom
+            >
+              <SocialComments :social="page.social" />
+            </template>
+          </UContentToc>
         </template>
       </UPage>
     </UContainer>
