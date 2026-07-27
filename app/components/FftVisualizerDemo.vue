@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
-import { FFTVisualizer } from 'vue-fft-visualizer'
-import 'vue-fft-visualizer/style.css'
-import { createRadioAudio, type RadioAudio, SOMA } from './fftRadio'
+import { FFTVisualizer } from '@fft-visualizer/vue'
+import '@fft-visualizer/vue/style.css'
+import { createDemoAudio, type AudioSource, type DemoAudio, SOMA } from './fftRadio'
 
 const { poster } = defineProps<{
   // Optional still shown before playback starts (e.g. the project image).
@@ -15,9 +15,31 @@ const data = ref<Uint8Array>(new Uint8Array(BANDS))
 const dataLeft = ref<Uint8Array>(new Uint8Array(BANDS))
 const dataRight = ref<Uint8Array>(new Uint8Array(BANDS))
 
-const playing = ref(false)
-const loading = ref(false)
-let radio: RadioAudio | null = null
+// The source currently playing, the one being connected, and the last failure.
+const source = ref<AudioSource | null>(null)
+const pending = ref<AudioSource | null>(null)
+const error = ref('')
+const playing = computed(() => source.value !== null)
+let audio: DemoAudio | null = null
+
+const sources: { id: AudioSource, icon: string, label: string }[] = [
+  { id: 'radio', icon: 'i-lucide-radio', label: 'Play radio' },
+  { id: 'mic', icon: 'i-lucide-mic', label: 'Microphone' }
+]
+
+// One button per source: it starts that source, or stops it when it's the one
+// playing. Picking the other source while one plays just switches over.
+function sourceButton(s: typeof sources[number]) {
+  const isActive = source.value === s.id
+  const isPending = pending.value === s.id
+  return {
+    icon: isActive ? 'i-lucide-square' : (isPending ? 'i-lucide-loader-circle' : s.icon),
+    label: isActive ? 'Stop' : (isPending ? 'Connecting…' : s.label),
+    color: isActive ? 'neutral' as const : 'primary' as const,
+    variant: isActive ? 'subtle' as const : 'solid' as const,
+    ui: { leadingIcon: isPending ? 'animate-spin' : '' }
+  }
+}
 
 const nowPlaying = ref('')
 let npTimer: ReturnType<typeof setInterval> | null = null
@@ -26,7 +48,7 @@ type VizProps = Partial<InstanceType<typeof FFTVisualizer>['$props']>
 
 // Curated looks — each is guaranteed to read well, and together they show the
 // component's range. Selecting one only swaps the look via v-bind; it never
-// touches the audio (radio playback is driven solely by the Play/Stop button).
+// touches the audio (playback is driven solely by the source buttons).
 const presets: { name: string, props: VizProps }[] = [
   {
     name: 'Radial',
@@ -98,29 +120,47 @@ function clearBars() {
   dataRight.value = new Uint8Array(BANDS)
 }
 
-async function toggle() {
-  if (playing.value) {
-    stop()
-    return
-  }
-  loading.value = true
-  radio = createRadioAudio(BANDS)
+// Bumped by every start and stop, so a source that is still connecting when the
+// user clicks again knows it has been superseded and tears itself down instead
+// of coming up alongside the newer one.
+let runId = 0
+
+async function toggle(next: AudioSource) {
+  const wasActive = source.value === next
+  stop()
+  if (wasActive) return
+
+  const id = runId
+  pending.value = next
+  const instance = createDemoAudio(next, BANDS)
   try {
-    await radio.start(feed)
+    await instance.start(feed)
   } catch {
-    stop()
-    loading.value = false
+    instance.stop()
+    if (id !== runId) return
+    pending.value = null
+    error.value = next === 'mic'
+      ? 'No microphone — permission denied, or no input device available.'
+      : 'Could not connect to the radio stream.'
     return
   }
-  loading.value = false
-  playing.value = true
-  startNowPlaying()
+  if (id !== runId) {
+    instance.stop()
+    return
+  }
+  audio = instance
+  pending.value = null
+  source.value = next
+  if (next === 'radio') startNowPlaying()
 }
 
 function stop() {
-  radio?.stop()
-  radio = null
-  playing.value = false
+  runId++
+  audio?.stop()
+  audio = null
+  source.value = null
+  pending.value = null
+  error.value = ''
   stopNowPlaying()
   clearBars()
 }
@@ -186,33 +226,27 @@ onBeforeUnmount(stop)
         class="absolute inset-0 size-full object-contain"
       />
 
-      <button
+      <div
         v-if="!playing"
-        type="button"
-        class="absolute inset-0 grid place-items-center bg-black/40 backdrop-blur-[1px] transition hover:bg-black/25"
-        :aria-label="loading ? 'Loading radio' : 'Play live radio'"
-        @click="toggle"
+        class="absolute inset-0 grid place-items-center bg-black/40 backdrop-blur-[1px]"
       >
-        <span class="flex flex-col items-center gap-2 text-white">
-          <UIcon
-            :name="loading ? 'i-lucide-loader-circle' : 'i-lucide-play'"
-            :class="['size-12', loading && 'animate-spin']"
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          <UButton
+            v-for="s in sources"
+            :key="s.id"
+            v-bind="sourceButton(s)"
+            @click="toggle(s.id)"
           />
-          <span class="text-sm font-medium">
-            {{ loading ? 'Connecting…' : 'Play live radio' }}
-          </span>
-        </span>
-      </button>
+        </div>
+      </div>
     </div>
 
     <div class="mt-4 flex flex-wrap items-center gap-2">
       <UButton
-        :icon="playing ? 'i-lucide-square' : (loading ? 'i-lucide-loader-circle' : 'i-lucide-radio')"
-        :label="playing ? 'Stop' : (loading ? 'Connecting…' : 'Play radio')"
-        :color="playing ? 'neutral' : 'primary'"
-        :variant="playing ? 'subtle' : 'solid'"
-        :ui="{ leadingIcon: loading && !playing ? 'animate-spin' : '' }"
-        @click="toggle"
+        v-for="s in sources"
+        :key="s.id"
+        v-bind="sourceButton(s)"
+        @click="toggle(s.id)"
       />
       <div class="ml-auto flex flex-wrap gap-1.5">
         <UButton
@@ -228,23 +262,32 @@ onBeforeUnmount(stop)
     </div>
 
     <p class="mt-3 text-xs text-muted">
-      <span v-if="nowPlaying">♫ {{ nowPlaying }} · </span>
-      <ULink
-        :to="SOMA.station"
-        target="_blank"
-        class="text-primary"
-      >{{ SOMA.name }}</ULink>
-      on
-      <ULink
-        to="https://somafm.com"
-        target="_blank"
-        class="text-primary"
-      >SomaFM</ULink> ·
-      <ULink
-        :to="SOMA.support"
-        target="_blank"
-        class="text-primary"
-      >support them</ULink>
+      <span
+        v-if="error"
+        class="text-error"
+      >{{ error }}</span>
+      <template v-else-if="source === 'mic'">
+        ♫ Live from your microphone — analysed in the page, never sent anywhere.
+      </template>
+      <template v-else>
+        <span v-if="nowPlaying">♫ {{ nowPlaying }} · </span>
+        <ULink
+          :to="SOMA.station"
+          target="_blank"
+          class="text-primary"
+        >{{ SOMA.name }}</ULink>
+        on
+        <ULink
+          to="https://somafm.com"
+          target="_blank"
+          class="text-primary"
+        >SomaFM</ULink> ·
+        <ULink
+          :to="SOMA.support"
+          target="_blank"
+          class="text-primary"
+        >support them</ULink>
+      </template>
     </p>
   </div>
 </template>

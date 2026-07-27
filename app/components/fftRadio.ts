@@ -1,14 +1,17 @@
 /**
- * SomaFM "Groove Salad Classic" radio source for the FFT Visualizer demo.
+ * Audio sources for the FFT Visualizer demo: a SomaFM live stream, or the
+ * visitor's own microphone.
  *
- * Plays the live stream through an <audio> element and analyses the LEFT / RIGHT
- * channels with the same Rust/WASM FFT the component uses, feeding the visualizer
- * real, genuinely-stereo data.
+ * Both analyse the signal with the same Rust/WASM FFT the component uses and
+ * hand the result to the visualizer through its external-data API. The radio is
+ * genuinely stereo (left / right analysed separately); a mic is treated as mono
+ * and fed to both channels.
  *
  * SomaFM is listener-supported — the UI shows attribution + a support link.
- * Autoplay policy: start() must be called from a user gesture (a click).
+ * Autoplay policy and mic permission: start() must be called from a user
+ * gesture (a click).
  */
-import type { FftProcessor } from 'vue-fft-visualizer/wasm'
+import type { FftProcessor } from '@fft-visualizer/vue/wasm'
 
 export const SOMA = {
   name: 'Groove Salad Classic',
@@ -23,14 +26,17 @@ export const SOMA = {
 // pipes it back same-origin, which the browser plays cleanly.
 const STREAM_URL = '/api/radio'
 
-export interface RadioAudio {
+export type AudioSource = 'radio' | 'mic'
+
+export interface DemoAudio {
   start: (onData: (mono: Uint8Array, left: Uint8Array, right: Uint8Array) => void) => Promise<void>
   stop: () => void
 }
 
-export function createRadioAudio(bins: number, fftSize = 2048): RadioAudio {
+export function createDemoAudio(source: AudioSource, bins: number, fftSize = 2048): DemoAudio {
   let ctx: AudioContext | null = null
   let audioEl: HTMLAudioElement | null = null
+  let stream: MediaStream | null = null
   let analyserL: AnalyserNode | null = null
   let analyserR: AnalyserNode | null = null
   let procL: FftProcessor | null = null
@@ -40,53 +46,89 @@ export function createRadioAudio(bins: number, fftSize = 2048): RadioAudio {
   let rafId: number | null = null
 
   function analyse(onData: (mono: Uint8Array, left: Uint8Array, right: Uint8Array) => void) {
-    if (!analyserL || !analyserR || !procL || !procR || !bufL || !bufR) return
+    if (!analyserL || !procL || !bufL) return
     analyserL.getFloatTimeDomainData(bufL)
-    analyserR.getFloatTimeDomainData(bufR)
     const left = new Uint8Array(procL.process(bufL))
-    const right = new Uint8Array(procR.process(bufR))
-    const mono = new Uint8Array(bins)
-    for (let i = 0; i < bins; i++) mono[i] = (left[i]! + right[i]!) >> 1
+
+    // Mono sources (mic) have no second analyser: the same spectrum drives both
+    // channels, so stereo presets render a symmetric mirror.
+    let right = left
+    let mono = left
+    if (analyserR && procR && bufR) {
+      analyserR.getFloatTimeDomainData(bufR)
+      right = new Uint8Array(procR.process(bufR))
+      mono = new Uint8Array(bins)
+      for (let i = 0; i < bins; i++) mono[i] = (left[i]! + right[i]!) >> 1
+    }
+
     onData(mono, left, right)
     rafId = requestAnimationFrame(() => analyse(onData))
   }
 
-  async function start(onData: (mono: Uint8Array, left: Uint8Array, right: Uint8Array) => void) {
-    stop()
-
+  function openRadioStream() {
     // Same-origin stream (via the proxy), so no crossOrigin needed and the
     // analyser is never tainted. Kick it off before the WASM import so it can
     // buffer while that loads.
     audioEl = new Audio()
     audioEl.preload = 'auto'
     audioEl.src = STREAM_URL
+  }
 
-    const { FftProcessor } = await import('vue-fft-visualizer/wasm')
+  async function openMic() {
+    // No browser DSP in the path: echo cancellation, noise suppression and AGC
+    // all reshape the very spectrum this demo exists to show.
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    })
+  }
+
+  async function start(onData: (mono: Uint8Array, left: Uint8Array, right: Uint8Array) => void) {
+    stop()
+
+    if (source === 'radio') {
+      openRadioStream()
+    } else {
+      await openMic()
+    }
+
+    const { FftProcessor } = await import('@fft-visualizer/vue/wasm')
 
     ctx = new AudioContext()
     await ctx.resume()
 
-    const srcNode = ctx.createMediaElementSource(audioEl)
-    srcNode.connect(ctx.destination) // audible
-
-    const splitter = ctx.createChannelSplitter(2)
-    srcNode.connect(splitter)
     analyserL = ctx.createAnalyser()
     analyserL.fftSize = fftSize
-    analyserR = ctx.createAnalyser()
-    analyserR.fftSize = fftSize
-    splitter.connect(analyserL, 0)
-    splitter.connect(analyserR, 1)
-
     procL = new FftProcessor(fftSize, bins, 100, 18000, ctx.sampleRate)
-    procR = new FftProcessor(fftSize, bins, 100, 18000, ctx.sampleRate)
     bufL = new Float32Array(fftSize)
-    bufR = new Float32Array(fftSize)
 
-    // Fire-and-forget: do NOT await or fail on the initial Range 403 — let the
-    // browser settle the connection on its own. The bars stay flat until audio
-    // actually starts flowing, then react.
-    void audioEl.play().catch(() => {})
+    if (source === 'radio') {
+      const srcNode = ctx.createMediaElementSource(audioEl!)
+      srcNode.connect(ctx.destination) // audible
+
+      const splitter = ctx.createChannelSplitter(2)
+      srcNode.connect(splitter)
+      analyserR = ctx.createAnalyser()
+      analyserR.fftSize = fftSize
+      splitter.connect(analyserL, 0)
+      splitter.connect(analyserR, 1)
+
+      procR = new FftProcessor(fftSize, bins, 100, 18000, ctx.sampleRate)
+      bufR = new Float32Array(fftSize)
+
+      // Fire-and-forget: do NOT await or fail on the initial Range 403 — let the
+      // browser settle the connection on its own. The bars stay flat until audio
+      // actually starts flowing, then react.
+      void audioEl!.play().catch(() => {})
+    } else {
+      // Deliberately not connected to ctx.destination: routing a mic back to the
+      // speakers is a feedback loop.
+      ctx.createMediaStreamSource(stream!).connect(analyserL)
+    }
+
     analyse(onData)
   }
 
@@ -108,6 +150,10 @@ export function createRadioAudio(bins: number, fftSize = 2048): RadioAudio {
       audioEl.removeAttribute('src')
       audioEl.load()
       audioEl = null
+    }
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop())
+      stream = null
     }
     if (ctx) {
       ctx.close()
