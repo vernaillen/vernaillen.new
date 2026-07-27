@@ -11,3 +11,7 @@ allowBuilds:
   esbuild: false
   unrs-resolver: false
   vue-demi: false
+
+minimumReleaseAgeExclude:
+  - '@fft-visualizer/core@1.0.0'
+  - '@fft-visualizer/vue@1.0.0'
