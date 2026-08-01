@@ -6,11 +6,13 @@ const HIDDEN_REPOS = new Set([
   'vernaillen/.github',
   'vernaillen/vernaillen.github.io',
   'vernaillen/renovate-config',
+  'vernaillen/roon-extension-test',
   'vernaillen/woonuxt-wpnuxt-test',
   'vernaillen/vue-typescript-tonejs-test',
   'vernaillen/vernaillen.dev.old',
   'vernaillen/vernaillen-website',
-  'wpnuxt/.github'
+  'wpnuxt/.github',
+  'harmonics-audio/.github'
 ])
 
 // GitHub orgs where the user is the sole/primary maintainer.
