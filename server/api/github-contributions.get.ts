@@ -15,7 +15,7 @@ const HIDDEN_REPOS = new Set([
 
 // GitHub orgs where the user is the sole/primary maintainer.
 // Public, non-fork repos in these orgs appear under "Authored" instead of "Contributed".
-const MAINTAINED_ORGS = ['wpnuxt']
+const MAINTAINED_ORGS = ['wpnuxt', 'harmonics-audio']
 
 type RepoNode = {
   nameWithOwner: string
@@ -26,16 +26,21 @@ type RepoNode = {
   pushedAt: string
 }
 
-const EMPTY: { authored: GitHubContribution[], contributed: GitHubContribution[] } = {
-  authored: [],
-  contributed: []
-}
+const NEW_TOKEN_URL = 'https://github.com/settings/personal-access-tokens/new'
+
+// This response is public, so it stays generic: enough for an uptime monitor to
+// alert on, no config internals. The actionable detail goes to the server log.
+const credentialsError = () => createError({
+  statusCode: 503,
+  statusMessage: 'GitHub credentials rejected',
+  message: 'GitHub data is unavailable because the configured credentials were rejected.'
+})
 
 export default defineCachedEventHandler(async () => {
   const config = useRuntimeConfig()
   if (!config.githubToken) {
-    console.warn('[github-contributions] NUXT_GITHUB_TOKEN is not set — returning empty data.')
-    return EMPTY
+    console.warn(`[github-contributions] NUXT_GITHUB_TOKEN is not set. Generate a token at ${NEW_TOKEN_URL}`)
+    throw credentialsError()
   }
 
   try {
@@ -43,19 +48,27 @@ export default defineCachedEventHandler(async () => {
   } catch (error) {
     const status = (error as { status?: number })?.status
     const message = (error as Error)?.message ?? String(error)
+
     if (status === 401) {
       console.warn(
-        '[github-contributions] GitHub returned 401 Bad credentials — your NUXT_GITHUB_TOKEN is invalid or expired. Generate a new one at https://github.com/settings/personal-access-tokens/new'
+        `[github-contributions] GitHub returned 401 Bad credentials — NUXT_GITHUB_TOKEN is invalid or expired. Generate a new one at ${NEW_TOKEN_URL}`
       )
-    } else if (status === 403) {
-      console.warn(`[github-contributions] GitHub returned 403 (rate-limited or forbidden): ${message}`)
-    } else {
-      console.warn(`[github-contributions] Failed to fetch GitHub data${status ? ` (HTTP ${status})` : ''}: ${message}`)
+      throw credentialsError()
     }
-    return EMPTY
+
+    console.warn(`[github-contributions] GitHub request failed${status ? ` (HTTP ${status})` : ''}: ${message}`)
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'GitHub request failed',
+      message: `GitHub data is unavailable because the upstream request failed${status ? ` (HTTP ${status})` : ''}.`
+    })
   }
 }, {
-  maxAge: 60 * 60 // cache for 1 hour
+  maxAge: 60 * 60, // cache successful responses for 1 hour
+  // Failures must surface immediately: with SWR, nitro keeps serving the last
+  // good 200 forever while every background refresh silently fails, so an
+  // expired token would stay invisible to uptime monitoring.
+  swr: false
 })
 
 async function fetchGitHubContributions() {
