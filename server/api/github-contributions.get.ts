@@ -45,8 +45,9 @@ export default defineCachedEventHandler(async () => {
     throw credentialsError()
   }
 
+  let data: Awaited<ReturnType<typeof fetchGitHubContributions>>
   try {
-    return await fetchGitHubContributions()
+    data = await fetchGitHubContributions()
   } catch (error) {
     const status = (error as { status?: number })?.status
     const message = (error as Error)?.message ?? String(error)
@@ -65,6 +66,18 @@ export default defineCachedEventHandler(async () => {
       message: `GitHub data is unavailable because the upstream request failed${status ? ` (HTTP ${status})` : ''}.`
     })
   }
+
+  // A token can authenticate yet still see nothing — a fine-grained PAT without
+  // repository permissions returns 200 with empty result sets instead of a 401.
+  // There is always at least one authored repo, so zero means broken access.
+  if (!data.authored.length) {
+    console.warn(
+      `[github-contributions] GitHub returned 0 authored repos — NUXT_GITHUB_TOKEN authenticates but cannot read repositories. Check its permissions, or issue a new one at ${NEW_TOKEN_URL}`
+    )
+    throw credentialsError()
+  }
+
+  return data
 }, {
   maxAge: 60 * 60, // cache successful responses for 1 hour
   // Failures must surface immediately: with SWR, nitro keeps serving the last
