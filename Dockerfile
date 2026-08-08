@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # --- Build stage ---
-FROM node:24-slim AS build
+FROM node:26-slim AS build
 WORKDIR /app
 
 # Toolchain for the node-gyp fallback of native deps (better-sqlite3, via @nuxt/content).
@@ -34,9 +34,10 @@ ENV NODE_OPTIONS=--max-old-space-size=4096
 # for plain ARG/ENV no longer applies.
 RUN --mount=type=secret,id=nuxt_github_token \
     NUXT_GITHUB_TOKEN="$(cat /run/secrets/nuxt_github_token)" pnpm build
+RUN test -f .output/server/index.mjs
 
 # --- Runtime stage ---
-FROM node:24-slim
+FROM node:26-slim
 WORKDIR /app
 ENV NODE_ENV=production
 
@@ -47,6 +48,6 @@ EXPOSE 3000
 # needs an in-image HEALTHCHECK to report container health
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD node -e "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
-# Drop root privileges — node:24-slim ships a built-in non-root `node` user (UID 1000)
+# Drop root privileges — node:26-slim ships a built-in non-root `node` user (UID 1000)
 USER node
 CMD ["node", ".output/server/index.mjs"]
