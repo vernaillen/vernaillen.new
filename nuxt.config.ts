@@ -28,6 +28,18 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true
   },
+  app: {
+    head: {
+      script: [
+        {
+          'src': 'https://c.analytics.apps.vernaillen.dev/oa.js',
+          'data-key': 'oa_pk_37j7lnJbTNclWg143o0NpWP6oMmJBw11',
+          'data-collector': 'https://c.analytics.apps.vernaillen.dev',
+          'async': true
+        }
+      ]
+    }
+  },
 
   css: ['~/assets/css/main.css'],
 

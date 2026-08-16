@@ -71,7 +71,7 @@ defineOgImage('Vernaillen', {
         name="i-lucide-loader-circle"
         class="size-5 animate-spin"
       />
-      <span>Fetching open source data from GitHub…</span>
+      <span>Fetching data from GitHub…</span>
     </div>
 
     <UPageSection
