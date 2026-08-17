@@ -91,5 +91,5 @@ jobs:
       # incl. ?uuid=<resource-uuid>; must be reachable from GitHub-hosted runners.
       - name: Trigger Coolify redeploy
         run: |
-          curl --fail-with-body -sS "${{ secrets.COOLIFY_DEPLOY_URL }}" \
+          curl --fail-with-body -sS -X POST "${{ secrets.COOLIFY_DEPLOY_URL }}" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
