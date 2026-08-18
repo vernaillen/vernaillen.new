@@ -32,7 +32,7 @@ events:
         variant: soft
   - category: Freelance
     title: Senior Full Stack Java Developer — Governmental citizen portal
-    date: "2023 - Present"
+    date: "2019 - Present"
     location: Opgroeien / Kind & Gezin
     stack:
       - Spring Boot
@@ -46,7 +46,7 @@ events:
       - Liferay
   - category: Freelance
     title: Senior Full Stack Java Developer — Customer Portal
-    date: 2018
+    date: 2018 - 2019
     location: IDEWE (via Cronos)
     stack:
       - Liferay DXP
@@ -128,7 +128,7 @@ events:
       - jUnit
   - category: Employed
     title: Lotus Notes Developer
-    date: 2000 - 2003
+    date: 2000 - 2001
     location: Atos Origin
     stack:
       - Lotus Notes
