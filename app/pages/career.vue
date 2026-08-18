@@ -109,9 +109,6 @@ const groupedEvents = computed((): Record<CareerEvent['category'], CareerEvent[]
                 v-for="link in event.links"
                 :key="link.label"
                 v-bind="link"
-                target="_blank"
-                size="sm"
-                variant="subtle"
                 class="mr-2"
               />
             </div>

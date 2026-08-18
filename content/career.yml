@@ -7,13 +7,22 @@ events:
     location: Harmonics.be
     links:
       - label: WPNuxt
-        size: md
+        size: sm
         to: https://wpnuxt.com
         icon: i-simple-icons-nuxtdotjs
+        target: _blank
+        variant: subtle
       - label: FFT Visualizer
-        size: md
+        size: sm
         to: https://www.fftvisualizer.com
         icon: i-mage-sound-waves
+        target: _blank
+        variant: subtle
+      - label: More projects
+        size: sm
+        to: /open-source
+        icon: i-material-symbols-arrow-right-alt
+        variant: ghost
   - category: Freelance
     title: Senior Full Stack Java Developer — Governmental citizen portal
     date: "2023 - Present"
