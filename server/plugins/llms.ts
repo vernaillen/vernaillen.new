@@ -1,10 +1,5 @@
 import { queryCollection } from '@nuxt/content/server'
 
-const formatYear = (date: Date | string): string => {
-  const d = typeof date === 'string' ? new Date(date) : date
-  return String(d.getFullYear())
-}
-
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('content:llms:generate:document', (_event, doc, options) => {
     if (!doc?.body?.value || !doc?.path) return
@@ -62,10 +57,9 @@ export default defineNitroPlugin((nitroApp) => {
     }
 
     if (career?.events?.length) {
-      const events = [...career.events].sort((a, b) => +new Date(b.date) - +new Date(a.date))
-      const lines = events.map((e: { date: string, category: string, title: string, location: string, url?: string }) => {
+      const lines = career.events.map((e: { date: string, category: string, title: string, location: string, url?: string }) => {
         const location = e.url ? `[${e.location}](${e.url})` : e.location
-        return `- **${formatYear(e.date)}** — *${e.category}* — ${e.title} @ ${location}`
+        return `- **${e.date}** — *${e.category}* — ${e.title} @ ${location}`
       })
       const description = career.description ? `${career.description}\n\n` : ''
       contents.push(`# Career\n\nSource: ${options.domain}/career\n\n${description}${lines.join('\n')}`)

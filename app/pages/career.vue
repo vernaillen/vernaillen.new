@@ -1,18 +1,4 @@
 <script setup lang="ts">
-type Event = {
-  title: string
-  date: string
-  location: string
-  url?: string
-  category: 'Open Source' | 'Freelance' | 'Employed'
-  links?: {
-    label: string
-    size: 'sm' | 'md' | 'lg'
-    to: string
-    icon: string
-  }[]
-}
-
 const { data: page } = await useAsyncData('career', () => {
   return queryCollection('career').first()
 })
@@ -39,15 +25,16 @@ defineOgImage('Vernaillen', {
   description
 })
 
-const groupedEvents = computed((): Record<Event['category'], Event[]> => {
-  const events = page.value?.events || []
-  const grouped: Record<Event['category'], Event[]> = {
+type CareerEvent = NonNullable<typeof page.value>['events'][number]
+
+const groupedEvents = computed((): Record<CareerEvent['category'], CareerEvent[]> => {
+  const grouped: Record<CareerEvent['category'], CareerEvent[]> = {
     'Open Source': [],
     'Freelance': [],
     'Employed': []
   }
-  for (const event of events) {
-    if (grouped[event.category]) grouped[event.category].push(event)
+  for (const event of page.value?.events || []) {
+    grouped[event.category].push(event)
   }
   return grouped
 })
@@ -111,9 +98,7 @@ const groupedEvents = computed((): Record<Event['category'], Event[]> => {
               </div>
 
               <h3 class="text-lg font-semibold text-highlighted">
-                <ClientOnly>
-                  <div v-html="event.title" />
-                </ClientOnly>
+                {{ event.title }}
               </h3>
             </div>
             <div
