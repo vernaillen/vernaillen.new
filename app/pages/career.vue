@@ -100,6 +100,20 @@ const groupedEvents = computed((): Record<CareerEvent['category'], CareerEvent[]
               <h3 class="text-lg font-semibold text-highlighted">
                 {{ event.title }}
               </h3>
+
+              <div
+                v-if="event.stack"
+                class="mt-2 flex flex-wrap gap-1.5"
+              >
+                <UBadge
+                  v-for="tech in event.stack"
+                  :key="tech"
+                  :label="tech"
+                  size="sm"
+                  variant="soft"
+                  class="opacity-80 hover:opacity-100 transition-opacity"
+                />
+              </div>
             </div>
             <div
               v-if="event.links"
@@ -109,6 +123,7 @@ const groupedEvents = computed((): Record<CareerEvent['category'], CareerEvent[]
                 v-for="link in event.links"
                 :key="link.label"
                 v-bind="link"
+                color="neutral"
                 class="mr-2"
               />
             </div>

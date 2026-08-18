@@ -138,6 +138,7 @@ export default defineContentConfig({
           title: z.string(),
           date: z.date(),
           location: z.string(),
+          stack: z.array(z.string()).optional(),
           links: z.array(createButtonSchema()).optional()
         }))
       })
