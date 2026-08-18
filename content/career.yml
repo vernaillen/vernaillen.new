@@ -1,43 +1,55 @@
 title: Career
 description: The projects and companies I've worked with over 25+ years, and the technologies I've used along the way.
 events:
+  - category: Open Source
+    title: Creator & Maintainer of WPNuxt, FFT Visualizer, etc
+    date: "2023 - Present"
+    location: Harmonics.be
+    links:
+      - label: WPNuxt
+        size: md
+        to: https://wpnuxt.com
+        icon: i-simple-icons-nuxtdotjs
+      - label: FFT Visualizer
+        size: md
+        to: https://www.fftvisualizer.com
+        icon: i-mage-sound-waves
   - category: Freelance
     title: Senior Full Stack Java Developer — Governmental citizen portal
-    date: 2019-01-01
+    date: "2023 - Present"
     location: Opgroeien / Kind & Gezin
-    url: https://www.opgroeien.be
   - category: Freelance
     title: Senior Full Stack Java Developer — Customer Portal
-    date: 2018-01-01
+    date: 2018
     location: IDEWE (via Cronos)
   - category: Freelance
     title: Senior Full Stack Java Developer — Governmental citizen portal
-    date: 2014-01-01
+    date: 2014 - 2017
     location: Kind & Gezin (via Cronos)
   - category: Freelance
     title: Lead Developer — Dreambaby community portal
-    date: 2013-01-01
+    date: 2013
     location: Colruyt (via TCS)
-  - category: Employment
+  - category: Employed
     title: Portal Architect / Project Leader Intranet
-    date: 2010-01-01
+    date: 2010 - 2013
     location: Van Marcke
-  - category: Employment
+  - category: Employed
     title: "WebSphere Portal & J2EE Developer/Consultant — clients: UZ Gent, VDAB, European Commission, Eandis"
-    date: 2006-01-01
+    date: 2006 - 2010
     location: IBM
-  - category: Employment
+  - category: Employed
     title: Java Software Engineer & Lead Developer
-    date: 2003-01-01
+    date: 2003 - 2006
     location: UPM-Kymmene
-  - category: Employment
+  - category: Employed
     title: Lotus Notes Developer
-    date: 2000-01-01
+    date: 2000 - 2003
     location: Atos Origin
-  - category: Employment
+  - category: Employed
     title: Lotus Notes Developer
     location: Alcatel e-Com / the e-Corporation
-    date: 1999-01-01
+    date: 1999 - 2000
 links:
   - label: LinkedIn
     size: md

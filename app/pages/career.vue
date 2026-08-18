@@ -4,7 +4,13 @@ type Event = {
   date: string
   location: string
   url?: string
-  category: 'Freelance' | 'Employment'
+  category: 'Open Source' | 'Freelance' | 'Employed'
+  links?: {
+    label: string
+    size: 'sm' | 'md' | 'lg'
+    to: string
+    icon: string
+  }[]
 }
 
 const { data: page } = await useAsyncData('career', () => {
@@ -36,18 +42,15 @@ defineOgImage('Vernaillen', {
 const groupedEvents = computed((): Record<Event['category'], Event[]> => {
   const events = page.value?.events || []
   const grouped: Record<Event['category'], Event[]> = {
-    Freelance: [],
-    Employment: []
+    'Open Source': [],
+    'Freelance': [],
+    'Employed': []
   }
   for (const event of events) {
     if (grouped[event.category]) grouped[event.category].push(event)
   }
   return grouped
 })
-
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric' })
-}
 </script>
 
 <template>
@@ -76,9 +79,9 @@ function formatDate(dateString: string): string {
       <div
         v-for="(eventsInCategory, category) in groupedEvents"
         :key="category"
-        class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8 mb-16 last:mb-0"
+        class="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 last:mb-0"
       >
-        <div class="lg:col-span-1 mb-4 lg:mb-0">
+        <div class="lg:col-span-1 mb-2 lg:mb-0">
           <h2
             class="lg:sticky lg:top-16 text-xl font-semibold tracking-tight text-highlighted"
           >
@@ -98,24 +101,34 @@ function formatDate(dateString: string): string {
             <div
               class="group relative pl-6 border-l border-default"
             >
-              <NuxtLink
-                v-if="event.url"
-                :to="event.url"
-                target="_blank"
-                class="absolute inset-0"
-              />
               <div class="mb-1 text-sm font-medium text-muted">
                 <span>{{ event.location }}</span>
                 <span
                   v-if="event.location && event.date"
                   class="mx-1"
                 >&middot;</span>
-                <span v-if="event.date">{{ formatDate(event.date) }}</span>
+                <span v-if="event.date">{{ event.date }}</span>
               </div>
 
               <h3 class="text-lg font-semibold text-highlighted">
-                {{ event.title }}
+                <ClientOnly>
+                  <div v-html="event.title" />
+                </ClientOnly>
               </h3>
+            </div>
+            <div
+              v-if="event.links"
+              class="mt-2 pl-6"
+            >
+              <UButton
+                v-for="link in event.links"
+                :key="link.label"
+                v-bind="link"
+                target="_blank"
+                size="sm"
+                variant="subtle"
+                class="mr-2"
+              />
             </div>
           </Motion>
         </div>

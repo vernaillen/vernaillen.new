@@ -134,11 +134,11 @@ export default defineContentConfig({
       schema: z.object({
         links: z.array(createButtonSchema()),
         events: z.array(z.object({
-          category: z.enum(['Freelance', 'Employment']),
+          category: z.enum(['Open Source', 'Freelance', 'Employed']),
           title: z.string(),
           date: z.date(),
           location: z.string(),
-          url: z.string().optional()
+          links: z.array(createButtonSchema()).optional()
         }))
       })
     }),
