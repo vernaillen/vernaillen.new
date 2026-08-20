@@ -16,7 +16,7 @@ defineProps<{
     :description="page.blog.description"
     :ui="{
       container: 'py-24 lg:py-32 sm:gap-6 lg:gap-8',
-      title: 'text-left text-2xl sm:text-2xl lg:text-3xl font-medium section-title',
+      title: 'text-left text-2xl sm:text-2xl lg:text-3xl section-title',
       description: 'text-left mt-2 text-sm sm:text-md lg:text-sm text-muted'
     }"
   >

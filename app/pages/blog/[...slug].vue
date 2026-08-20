@@ -115,7 +115,7 @@ const articleLink = computed(() => `${site.url}${route.path}`)
           :while-in-view="{ transform: 'translateY(0)' }"
           :transition="{ delay: 0.07 }"
         >
-          <h1 class="text-3xl sm:text-4xl text-center font-medium max-w-3xl mx-auto tracking-tight leading-tight">
+          <h1 class="text-3xl sm:text-4xl text-center max-w-3xl mx-auto tracking-tight leading-tight">
             {{ page.title }}
           </h1>
           <p class="font-mono text-muted text-center max-w-3xl mx-auto my-3 text-base leading-relaxed text-foreground/80">

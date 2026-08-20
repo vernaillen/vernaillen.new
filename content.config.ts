@@ -42,8 +42,7 @@ export default defineContentConfig({
       schema: z.object({
         title2: z.string(),
         hero: z.object({
-          links: z.array(createButtonSchema()),
-          images: z.array(createImageSchema())
+          links: z.array(createButtonSchema())
         }),
         stats: z.array(z.object({
           value: z.string(),

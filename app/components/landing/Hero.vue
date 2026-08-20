@@ -81,12 +81,14 @@ const eagerShader = !useNuxtApp().isHydrating
 
     <template #links>
       <div class="hero-reveal hero-reveal-4">
-        <div
-          v-if="page.hero.links"
-          class="flex items-center gap-2"
-        >
-          <UButton v-bind="page.hero.links[0]" />
+        <div class="flex flex-wrap items-center justify-center gap-2">
           <UButton
+            v-for="link in page.hero.links"
+            :key="link.label"
+            v-bind="link"
+          />
+          <UButton
+            v-if="global.available"
             :color="global.available ? 'success' : 'error'"
             variant="ghost"
             class="gap-2"

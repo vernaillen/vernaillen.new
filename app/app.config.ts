@@ -7,7 +7,7 @@ export default defineAppConfig({
     },
     meetingLink: 'https://calendly.com/vernaillen/15min',
     email: 'wouter@vernaillen.com',
-    available: true
+    available: false
   },
   ui: {
     colors: {

@@ -50,5 +50,7 @@ useSchemaOrg([
     </NuxtLayout>
 
     <AppSearch />
+
+    <UToaster />
   </UApp>
 </template>

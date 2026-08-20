@@ -5,15 +5,16 @@ title: "Hi, I'm Wouter Vernaillen"
 title2: "Enterprise Full-Stack Java Developer"
 description: "Spring Boot, Vue/Nuxt & Angular, DevOps, Secure delivery, AI-enabled development."
 hero:
-  images:
-    - src: /images/projects/harmonics.png
-      alt: Harmonics.be
-    - src: /images/projects/vernaillendev.png
-      alt: Vernaillen.dev
-    - src: /images/projects/vue-audiomotion-analyzer.gif
-      alt: Vue AudioMotion Analyzer
-    - src: /images/projects/wpnuxt.png
-      alt: WPnuxt
+  links:
+    - label: Career
+      to: /career
+      icon: i-lucide-briefcase
+      size: lg
+    - label: Blog
+      to: /blog
+      icon: i-lucide-book
+      size: lg
+      variant: outline
 stats:
   - value: "25+"
     label: "Years Experience"
