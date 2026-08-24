@@ -117,6 +117,21 @@ export default defineNuxtConfig({
     }
   },
 
+  hooks: {
+    // Nuxt prefetches every lazy chunk reachable from a route, which on the
+    // homepage meant ~3.5MB of speculative JS — including the 2.5MB shaders
+    // library that only ever hydrates at >=1024px. That download competes with
+    // the critical path for bandwidth and CPU on exactly the mobile connections
+    // that never use it. Dropping prefetch costs the desktop shader a slightly
+    // later start (its init is idle-deferred anyway); modulepreload of the
+    // chunks a route actually needs is untouched.
+    'build:manifest': (manifest) => {
+      for (const chunk of Object.values(manifest)) {
+        chunk.prefetch = false
+      }
+    }
+  },
+
   eslint: {
     config: {
       stylistic: {
