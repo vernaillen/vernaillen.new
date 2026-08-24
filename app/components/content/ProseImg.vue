@@ -23,5 +23,6 @@ const props = defineProps<{
     :height="props.height"
     v-bind="$attrs"
     sizes="sm:100vw md:768px"
+    format="avif"
   />
 </template>

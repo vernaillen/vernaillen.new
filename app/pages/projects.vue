@@ -157,6 +157,7 @@ defineOgImage('Vernaillen', {
             v-else
             :src="project.image"
             :alt="project.title"
+            format="avif"
             width="640"
             height="192"
             loading="lazy"

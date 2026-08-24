@@ -67,7 +67,11 @@ export default defineNuxtConfig({
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' },
     '/admin/**': { ssr: true },
     '/__nuxt_studio/**': { ssr: true },
-    '/images/**': { headers: { 'cache-control': 'public, max-age=31536000' } }
+    '/images/**': { headers: { 'cache-control': 'public, max-age=31536000' } },
+    // ipx URLs encode every transform modifier (format/quality/size) in the path
+    // and the source images never change in place, so the rendered variants are
+    // safe to treat as immutable.
+    '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000' } }
   },
 
   // Sourcemaps roughly double the build's heap; the Docker build sets
@@ -209,7 +213,13 @@ vernaillen.dev is the personal site of Wouter Vernaillen — a Belgian freelance
   },
 
   ogImage: {
-    zeroRuntime: true
+    zeroRuntime: true,
+    security: {
+      // AVIF encoding saturates the CPU during prerender and starves the OG
+      // renderer, which otherwise gives up after the 15s default and fails the
+      // build with 408s. zeroRuntime means this budget only applies at build time.
+      renderTimeout: 60000
+    }
   },
 
   plausible: {

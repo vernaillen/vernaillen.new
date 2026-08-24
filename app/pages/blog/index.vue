@@ -71,6 +71,7 @@ defineOgImage('Vernaillen', {
             v-bind="post"
             :image="{
               src: post.image.src,
+              format: 'avif',
               width: 600,
               height: 256,
               sizes: 'sm:92vw md:45vw lg:600px',

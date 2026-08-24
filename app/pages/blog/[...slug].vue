@@ -132,6 +132,7 @@ const articleLink = computed(() => `${site.url}${route.path}`)
           <NuxtImg
             :src="page.image?.src"
             :alt="page.title"
+            format="avif"
             width="900"
             :height="page.image?.height || 300"
             sizes="sm:100vw md:900px"

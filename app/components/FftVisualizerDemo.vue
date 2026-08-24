@@ -9,6 +9,12 @@ const { poster } = defineProps<{
   poster?: string
 }>()
 
+// Only raster stills go through ipx's AVIF transform — a video or vector poster
+// would be mangled by it, so those are left untouched.
+const posterFormat = computed(() =>
+  /\.(mp4|webm|mov|gif|svg)$/i.test(poster ?? '') ? undefined : 'avif'
+)
+
 const BANDS = 80
 
 const data = ref<Uint8Array>(new Uint8Array(BANDS))
@@ -220,6 +226,7 @@ onBeforeUnmount(stop)
       <NuxtImg
         v-if="poster && !playing"
         :src="poster"
+        :format="posterFormat"
         alt=""
         aria-hidden="true"
         loading="lazy"

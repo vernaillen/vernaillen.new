@@ -32,6 +32,7 @@ defineProps<{
         v-bind="post"
         :image="{
           ...post.image,
+          format: 'avif',
           width: 600,
           sizes: 'sm:92vw lg:600px',
           loading: 'lazy'

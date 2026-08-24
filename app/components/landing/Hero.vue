@@ -36,13 +36,28 @@ const eagerShader = !useNuxtApp().isHydrating
         class="absolute inset-0 transition-opacity duration-700 ease-out"
         :class="shaderReady ? 'opacity-0' : (isDark ? 'opacity-30' : 'opacity-50')"
       >
-        <UColorModeImage
-          light="/images/hero-poster-light.webp"
-          dark="/images/hero-poster-dark.webp"
+        <!-- Not UColorModeImage: it forwards one identical set of attrs to both
+             variants, and the two posters need opposite loading priorities. The
+             dark poster is the LCP element (colorMode defaults to dark), so it is
+             preloaded at high priority; the light one is display:none there and
+             only needs to load lazily. Kept as WebP on purpose — re-encoding to
+             AVIF would add encode latency to the critical path. -->
+        <NuxtImg
+          src="/images/hero-poster-light.webp"
           alt=""
           aria-hidden="true"
           sizes="sm:100vw lg:1280px"
-          class="size-full object-cover object-top"
+          loading="lazy"
+          class="dark:hidden size-full object-cover object-top"
+        />
+        <NuxtImg
+          src="/images/hero-poster-dark.webp"
+          alt=""
+          aria-hidden="true"
+          sizes="sm:100vw lg:1280px"
+          fetchpriority="high"
+          :preload="{ fetchPriority: 'high' }"
+          class="hidden dark:block size-full object-cover object-top"
         />
       </div>
       <LazyHeroShaders

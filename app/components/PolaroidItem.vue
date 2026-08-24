@@ -19,6 +19,7 @@ defineProps<{
     <NuxtImg
       :src="image.src"
       :alt="image.alt"
+      format="avif"
       width="128"
       height="128"
       loading="lazy"
