@@ -66,7 +66,8 @@ export default defineNuxtConfig({
     '/plio/js/script.js': { proxy: 'https://plausible.io/js/script.js' },
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' },
     '/admin/**': { ssr: true },
-    '/__nuxt_studio/**': { ssr: true }
+    '/__nuxt_studio/**': { ssr: true },
+    '/images/**': { headers: { 'cache-control': 'public, max-age=31536000' } }
   },
 
   // Sourcemaps roughly double the build's heap; the Docker build sets
@@ -87,6 +88,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-05-22',
 
   nitro: {
+    compressPublicAssets: true,
     prerender: {
       routes: [
         '/',
@@ -145,7 +147,7 @@ export default defineNuxtConfig({
   },
 
   image: {
-    format: ['webp'],
+    format: ['avif', 'webp'],
     quality: 80,
     screens: {
       xs: 320,
