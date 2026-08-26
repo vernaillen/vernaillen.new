@@ -10,8 +10,22 @@ const props = withDefaults(defineProps<{
   description: 'Freelance Full Stack Developer'
 })
 
+// The title is interpolated into v-html to append the accent-dot SVG, so it
+// must be escaped: only the constant SVG may reach the renderer as markup.
+// (DOM-based sanitizers like DOMPurify can't run here — this component only
+// renders server-side during OG-image generation, where there is no DOM.)
+function escapeHtml(text: string) {
+  return text.replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    '\'': '&#39;'
+  }[c] ?? c))
+}
+
 const titleHtml = computed(() => {
-  return `${props.title}<svg xmlns="http://www.w3.org/2000/svg" width="14" height="56" viewBox="0 0 14 56" style="display:inline;vertical-align:bottom;margin-left:14px;margin-top:6px;"><circle cx="7" cy="45" r="7" fill="#9c8e1b"/></svg>`
+  return `${escapeHtml(props.title)}<svg xmlns="http://www.w3.org/2000/svg" width="14" height="56" viewBox="0 0 14 56" style="display:inline;vertical-align:bottom;margin-left:14px;margin-top:6px;"><circle cx="7" cy="45" r="7" fill="#9c8e1b"/></svg>`
 })
 </script>
 

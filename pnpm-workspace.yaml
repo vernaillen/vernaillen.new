@@ -2,6 +2,9 @@ strictDepBuilds: false
 
 overrides:
   nuxt-og-image: ^6.5.1
+  # nuxt-studio's ipx@3 and nuxt-og-image pin sharp 0.34.x, which inherits
+  # libvips CVEs (GHSA-f88m-g3jw-g9cj); force the patched line everywhere.
+  sharp: '>=0.35.0'
 
 allowBuilds:
   better-sqlite3: true

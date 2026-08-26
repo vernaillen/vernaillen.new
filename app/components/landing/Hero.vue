@@ -19,7 +19,11 @@ const shaderReady = ref(false)
 // load (keeping heavy GL frames out of the load-measurement window). On a
 // client-side navigation there's no measurement window, so render it
 // immediately rather than late. isHydrating is only true on the first render.
-const eagerShader = !useNuxtApp().isHydrating
+// The import.meta.client guard keeps the value identical on both sides of
+// hydration (false), where bare !isHydrating reads true on the server and
+// false on the client — a divergence that leaks into the SSR HTML as an
+// attribute the client would never render.
+const eagerShader = import.meta.client && !useNuxtApp().isHydrating
 </script>
 
 <template>

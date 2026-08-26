@@ -20,22 +20,24 @@ pnpm typecheck
 
 ## Deployment
 
-- Deployed to **Vercel** as static site (`nuxt generate`)
-- Plausible analytics proxied via Vercel rewrites in `vercel.json`
+- Runs as a **Nitro node server in Docker on Coolify** (Hetzner VPS): push to `main` → GitHub Actions `ci` workflow builds and pushes the image to `registry.apps.vernaillen.dev`, then triggers the Coolify deploy (~10 min end to end; AVIF encoding during prerender is the slow part)
+- **Cloudflare** proxies the apex + www (DNS for the whole zone lives there since 2026-08-25); long-lived cache headers on `/_nuxt`, `/images/**` and `/_ipx/**` make the edge cache do the heavy lifting
+- Plausible analytics proxied via the `/plio/**` routeRules in `nuxt.config.ts`
 
 ## Known Quirks
 
-- `@shikijs/engine-javascript` and `@shikijs/engine-oniguruma` are explicit deps to work around pnpm strict hoisting on Vercel
+- Prerender is CPU-heavy because every `/_ipx` AVIF variant is encoded at build time — `ogImage.security.renderTimeout` is raised to 60s so OG-image renders don't 408 while starved; don't lower it
+- `@shikijs/engine-javascript` and `@shikijs/engine-oniguruma` are explicit deps to work around pnpm strict hoisting
 - `@nuxtjs/mdc` is an explicit dep (pinned to match `@nuxt/content`) so Vite can resolve it at the root node_modules — otherwise its `optimizeDeps.include` entries (`@nuxtjs/mdc > remark-gfm`, etc.) are unresolvable under pnpm strict hoisting and `pnpm dev` logs a warning. Same shiki/h3 pattern.
-- `@nuxt/image` is held at `~2.0.0`. 2.1.0 migrated to ipx v4 and wraps ipx's Node handler in h3's `fromNodeMiddleware`; the request promise never settles, so `nuxt build` **exits 0 partway through prerendering** and never runs the final Nitro server build — `.output/server/` is empty and `.output/nitro.json` still says `preset: "nitro-prerender"`. There is no error in the log. Upstream: nuxt/image#2297 (open)
+- `sharp` is force-overridden to `>=0.35.0` in `pnpm-workspace.yaml` (libvips CVEs in 0.34.x via nuxt-studio's ipx@3 and nuxt-og-image)
+- `image.format` in `nuxt.config.ts` only affects `<NuxtPicture>`; `<NuxtImg>` needs an explicit `format="avif"` prop — that's why the prop appears on each usage
 - Server-side `queryCollection` must be imported from `@nuxt/content/server` (not auto-imports) to satisfy typecheck
 - `defineOgImage` v6 API: first arg is component name string, second arg is props object directly (e.g. `defineOgImage('Vernaillen', { title, description })`)
 
 ## Do NOT (Project-Specific)
 - Do NOT use `queryCollection` from auto-imports in server routes — import from `@nuxt/content/server`
 - Do NOT use old `defineOgImage({ component, props })` syntax — use v6 API: `defineOgImage('Name', { ...props })`
-- Do NOT bump `@nuxt/image` past 2.0.x until nuxt/image#2297 is fixed — 2.1.0 silently breaks the build (see Known Quirks). Symptom to check first: `.output/nitro.json` shows `preset: "nitro-prerender"`
-- Do NOT add `@shikijs/*` packages — already explicit deps for Vercel
+- Do NOT add `@shikijs/*` packages — already explicit deps
 - Do NOT remove the explicit `@nuxtjs/mdc` dep — it looks redundant (it's transitive via `@nuxt/content`) but is needed at root so Vite can pre-bundle MDC's remark/rehype deps
 - Do NOT run `pnpm dev` — ask the user to start it
 
