@@ -65,13 +65,27 @@ export default defineNuxtConfig({
     '/links': { redirect: { to: '/', statusCode: 301 } },
     '/plio/js/script.js': { proxy: 'https://plausible.io/js/script.js' },
     '/plio/api/event': { proxy: 'https://plausible.io/api/event' },
-    '/admin/**': { ssr: true },
-    '/__nuxt_studio/**': { ssr: true },
+    '/admin/**': { ssr: true, headers: { 'cache-control': 'no-store' } },
+    '/__nuxt_studio/**': { ssr: true, headers: { 'cache-control': 'no-store' } },
     '/images/**': { headers: { 'cache-control': 'public, max-age=31536000' } },
     // ipx URLs encode every transform modifier (format/quality/size) in the path
     // and the source images never change in place, so the rendered variants are
     // safe to treat as immutable.
-    '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000' } }
+    '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000' } },
+    // Every page is prerendered and only changes on deploy, so let Cloudflare
+    // cache the HTML at the edge (s-maxage) while browsers always revalidate
+    // (max-age=0). CI purges the zone after each Coolify deploy. Listed
+    // per-route rather than '/**' so dynamic routes and Nitro's immutable
+    // /_nuxt headers are left alone. Needs the "eligible for cache" Cache Rule
+    // in the Cloudflare dashboard — by default Cloudflare never caches HTML.
+    ...Object.fromEntries([
+      '/', '/about', '/career', '/projects', '/open-source',
+      '/blog', '/blog/**', '/_payload.json', '/about/_payload.json',
+      '/career/_payload.json', '/projects/_payload.json',
+      '/open-source/_payload.json'
+    ].map(route => [route, {
+      headers: { 'cache-control': 'public, max-age=0, s-maxage=31536000' }
+    }]))
   },
 
   // Sourcemaps roughly double the build's heap; the Docker build sets

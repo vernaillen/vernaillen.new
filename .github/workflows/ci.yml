@@ -90,6 +90,50 @@ jobs:
       # so the new image goes live. COOLIFY_DEPLOY_URL is the full deploy endpoint
       # incl. ?uuid=<resource-uuid>; must be reachable from GitHub-hosted runners.
       - name: Trigger Coolify redeploy
+        id: coolify
         run: |
-          curl --fail-with-body -sS -X POST "${{ secrets.COOLIFY_DEPLOY_URL }}" \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
+          resp=$(curl --fail-with-body -sS -X POST "${{ secrets.COOLIFY_DEPLOY_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}")
+          echo "$resp"
+          echo "deployment_uuid=$(echo "$resp" | jq -r '.deployments[0].deployment_uuid // empty')" >> "$GITHUB_OUTPUT"
+
+      # Pages are edge-cached at Cloudflare (s-maxage route rules), so the zone
+      # must be purged once the NEW container is live — purging before the swap
+      # would just refill the edge from the old build. Waits for the Coolify
+      # deployment to finish (fixed fallback wait if its uuid can't be read),
+      # then purges everything (assets are content-hashed, so this is safe).
+      # Skips gracefully while the CLOUDFLARE_* secrets aren't configured.
+      - name: Purge Cloudflare cache after deploy
+        env:
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_PURGE_TOKEN }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_DEPLOY_URL: ${{ secrets.COOLIFY_DEPLOY_URL }}
+          DEPLOYMENT_UUID: ${{ steps.coolify.outputs.deployment_uuid }}
+        run: |
+          if [ -z "$CF_PURGE_TOKEN" ] || [ -z "$CF_ZONE_ID" ]; then
+            echo "CLOUDFLARE_ZONE_ID / CLOUDFLARE_PURGE_TOKEN not set; skipping edge purge"
+            exit 0
+          fi
+          api_base="${COOLIFY_DEPLOY_URL%%/deploy*}"
+          if [ -n "$DEPLOYMENT_UUID" ]; then
+            echo "Waiting for Coolify deployment $DEPLOYMENT_UUID to finish..."
+            for i in $(seq 1 60); do
+              status=$(curl -fsS "$api_base/deployments/$DEPLOYMENT_UUID" \
+                -H "Authorization: Bearer $COOLIFY_TOKEN" | jq -r '.status // empty' || true)
+              echo "  status: ${status:-unknown}"
+              case "$status" in
+                finished) break ;;
+                failed|cancelled) echo "::error::Coolify deployment $status"; exit 1 ;;
+              esac
+              sleep 10
+            done
+          else
+            echo "No deployment uuid returned; falling back to a fixed wait"
+            sleep 150
+          fi
+          curl -fsS -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_cache" \
+            -H "Authorization: Bearer $CF_PURGE_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
+          echo "Edge cache purged"
