@@ -26,6 +26,17 @@
   Header set Cache-Control "public, max-age=31536000, immutable" env=long_cache
 </IfModule>
 
+# --- Canonical host: vernaillen.com -> vernaillen.dev ------------------------
+# The static site is deployed into the vernaillen.com pack; vernaillen.dev is the
+# canonical hostname (site.url in nuxt.config). When .com (or its www) resolves
+# to this docroot, 301 it to the matching path on .dev. Query strings are carried
+# over automatically. Dormant when .com is handled by a panel-level redirect.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^(www\.)?vernaillen\.com$ [NC]
+  RewriteRule ^ https://vernaillen.dev%{REQUEST_URI} [R=301,L]
+</IfModule>
+
 # --- Redirects (were Nuxt routeRules; static hosts need them here) -----------
 Redirect 301 /links /
 
