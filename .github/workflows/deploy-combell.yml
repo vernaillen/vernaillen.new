@@ -1,24 +1,32 @@
 name: deploy-combell
 
-# Builds the static site and publishes it to Combell over FTPS. Manual for now;
-# uncomment the `push` trigger once the secrets/vars below are set to deploy on
-# every commit to main. Independent of the Coolify `ci` workflow — during the
-# trial both can run; delete one once you have chosen a host.
+# Builds the static site and publishes it to Combell over rsync-over-SSH.
+# Runs on every push to the static-combell branch during the trial; switch the
+# branch filter to main (and merge) once you commit to the hosting move.
+# Independent of the Coolify `ci` workflow — during the trial both can run.
 on:
+  push:
+    branches: [static-combell]
   workflow_dispatch:
-  # push:
-  #   branches: [main]
 
-# Required repository configuration (Settings → Secrets and variables → Actions):
+# Required repository configuration (Settings -> Secrets and variables -> Actions):
 #   Secrets:
-#     COMBELL_FTP_HOST       - FTP host of the hosting pack (e.g. ftp.vernaillen.dev)
-#     COMBELL_FTP_USER       - FTP username for that pack
-#     COMBELL_FTP_PASSWORD   - FTP password for that pack
-#     NUXT_GITHUB_TOKEN      - same token the Coolify build uses (bakes the Open Source data)
+#     COMBELL_SSH_KEY   - PRIVATE deploy key (full contents incl. the BEGIN/END
+#                         lines). Its public half is authorized on the Combell
+#                         account. Use a DEDICATED key, not a personal one.
+#     NUXT_GITHUB_TOKEN - same token the Coolify build uses (bakes the Open Source data)
 #   Variables:
-#     COMBELL_DOCROOT        - remote web root, WITH trailing slash (e.g. /www/ or /httpdocs/)
-#     RADIO_ORIGIN_URL       - absolute URL of the radio proxy on the Coolify API
-#                              origin (e.g. https://origin.vernaillen.dev/api/radio)
+#     COMBELL_DOCROOT   - remote web root as an rsync target, WITH trailing slash.
+#                         Find it by running `pwd` in the web root over SSH (e.g. ~/www/).
+#     RADIO_ORIGIN_URL  - absolute URL of the radio proxy on the Coolify API
+#                         origin (https://origin.apps.vernaillen.dev/api/radio)
+
+env:
+  # Combell SSH endpoint for this pack (from the working `ssh vernaillen` config).
+  # Not secret — the private key is the protected part; safe to keep in the file.
+  SSH_HOST: ssh076.webhosting.be
+  SSH_USER: vernaillencom
+  SSH_PORT: '22'
 
 jobs:
   build-deploy:
@@ -47,16 +55,16 @@ jobs:
           # crossorigin; falls back to same-origin /api/radio if the var is unset.
           NUXT_PUBLIC_RADIO_URL: ${{ vars.RADIO_ORIGIN_URL }}
 
-      # Delta upload: the action keeps a state file on the server and only
-      # transfers changed files, which matters given the many prerendered AVIF
-      # variants. First run uploads everything; later runs are incremental.
-      # TODO: pin to a commit SHA to match this repo's other pinned actions.
-      - name: Deploy to Combell over FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.COMBELL_FTP_HOST }}
-          username: ${{ secrets.COMBELL_FTP_USER }}
-          password: ${{ secrets.COMBELL_FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: ./.output/public/
-          server-dir: ${{ vars.COMBELL_DOCROOT }}
+      # rsync delta sync over SSH. Only changed files transfer, which matters
+      # given the many prerendered AVIF variants. --delete mirrors the docroot to
+      # the build so stale files are removed; dotfiles (.htaccess) are included.
+      - name: Deploy to Combell over rsync/SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.COMBELL_SSH_KEY }}" > ~/.ssh/combell_deploy
+          chmod 600 ~/.ssh/combell_deploy
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/combell_deploy -p $SSH_PORT -o StrictHostKeyChecking=yes" \
+            ./.output/public/ \
+            "$SSH_USER@$SSH_HOST:${{ vars.COMBELL_DOCROOT }}"
