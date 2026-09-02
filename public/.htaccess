@@ -14,13 +14,20 @@
 </IfModule>
 
 # --- Long-cache immutable assets ---------------------------------------------
-# All content-hashed or never-changed-in-place, so safe to cache hard. On the
-# Nitro deploy Cloudflare does this via route rules; a plain static host needs it
-# here since there is no CDN in front.
+# All content-hashed or never-changed-in-place, so safe to cache hard (1yr). The
+# Bunny CDN edge that fronts the site respects this header, so these are cached
+# both at the edge and in the browser. Fonts (/_fonts/) and baked OG images
+# (/_og/) are hashed/stable too, so they're listed here to get the explicit 1yr
+# header instead of Bunny's 30-day default for headerless static files. Content
+# that changes in place on deploy (HTML, _payload.json, search-index.json,
+# sitemap.xml) carries no header, so Bunny serves it no-cache — always
+# revalidated, never stale after a deploy.
 <IfModule mod_setenvif.c>
   SetEnvIf Request_URI "^/_nuxt/"  long_cache=1
   SetEnvIf Request_URI "^/_ipx/"   long_cache=1
   SetEnvIf Request_URI "^/images/" long_cache=1
+  SetEnvIf Request_URI "^/_fonts/" long_cache=1
+  SetEnvIf Request_URI "^/_og/"    long_cache=1
 </IfModule>
 <IfModule mod_headers.c>
   Header set Cache-Control "public, max-age=31536000, immutable" env=long_cache
