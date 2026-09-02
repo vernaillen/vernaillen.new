@@ -33,6 +33,10 @@
 # over automatically. Dormant when .com is handled by a panel-level redirect.
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  # Let ACME HTTP-01 through untouched: the pack cert is one multi-SAN cert that
+  # includes vernaillen.com, so Combell's challenge responder must be able to
+  # serve the .com token. Redirecting it here fails that SAN and the whole cert.
+  RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/ [NC]
   RewriteCond %{HTTP_HOST} ^(www\.)?vernaillen\.com$ [NC]
   RewriteRule ^ https://vernaillen.dev%{REQUEST_URI} [R=301,L]
 </IfModule>
