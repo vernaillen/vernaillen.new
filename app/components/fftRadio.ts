@@ -20,11 +20,15 @@ export const SOMA = {
   songs: 'https://somafm.com/songs/gsclassic.json'
 }
 
-// Same-origin proxy (server/api/radio.get.ts). SomaFM 403s the `Range: bytes=0-`
-// header every browser sends on a media fetch, so we can't point <audio> straight
-// at it — the proxy fetches the stream server-side without a Range header and
-// pipes it back same-origin, which the browser plays cleanly.
-const STREAM_URL = '/api/radio'
+// The stream comes through a proxy (server/api/radio.get.ts): SomaFM 403s the
+// `Range: bytes=0-` header every browser sends on a media fetch, so we can't
+// point <audio> straight at it — the proxy fetches server-side without a Range
+// header and pipes it back, which the browser plays cleanly. Same-origin by
+// default (`/api/radio`); NUXT_PUBLIC_RADIO_URL overrides it with the absolute
+// URL of a separate API origin for static deploys (see below).
+function resolveStreamUrl() {
+  return useRuntimeConfig().public.radioUrl || '/api/radio'
+}
 
 export type AudioSource = 'radio' | 'mic'
 
@@ -66,12 +70,16 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
   }
 
   function openRadioStream() {
-    // Same-origin stream (via the proxy), so no crossOrigin needed and the
-    // analyser is never tainted. Kick it off before the WASM import so it can
-    // buffer while that loads.
+    // Kick the stream off before the WASM import so it can buffer while that
+    // loads. A same-origin proxy URL needs no crossOrigin (never tainted); an
+    // absolute cross-origin URL (static deploy → separate API origin) must set
+    // crossOrigin=anonymous so WebAudio can read the samples — the proxy sends
+    // the matching Access-Control-Allow-Origin header.
+    const streamUrl = resolveStreamUrl()
     audioEl = new Audio()
     audioEl.preload = 'auto'
-    audioEl.src = STREAM_URL
+    if (/^https?:\/\//.test(streamUrl)) audioEl.crossOrigin = 'anonymous'
+    audioEl.src = streamUrl
   }
 
   async function openMic() {

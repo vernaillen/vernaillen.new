@@ -1,0 +1,62 @@
+name: deploy-combell
+
+# Builds the static site and publishes it to Combell over FTPS. Manual for now;
+# uncomment the `push` trigger once the secrets/vars below are set to deploy on
+# every commit to main. Independent of the Coolify `ci` workflow — during the
+# trial both can run; delete one once you have chosen a host.
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+# Required repository configuration (Settings → Secrets and variables → Actions):
+#   Secrets:
+#     COMBELL_FTP_HOST       - FTP host of the hosting pack (e.g. ftp.vernaillen.dev)
+#     COMBELL_FTP_USER       - FTP username for that pack
+#     COMBELL_FTP_PASSWORD   - FTP password for that pack
+#     NUXT_GITHUB_TOKEN      - same token the Coolify build uses (bakes the Open Source data)
+#   Variables:
+#     COMBELL_DOCROOT        - remote web root, WITH trailing slash (e.g. /www/ or /httpdocs/)
+#     RADIO_ORIGIN_URL       - absolute URL of the radio proxy on the Coolify API
+#                              origin (e.g. https://origin.vernaillen.dev/api/radio)
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Install node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate static site
+        run: pnpm generate
+        env:
+          NUXT_GITHUB_TOKEN: ${{ secrets.NUXT_GITHUB_TOKEN }}
+          # Absolute so the static page's <audio> reaches the Coolify API origin
+          # crossorigin; falls back to same-origin /api/radio if the var is unset.
+          NUXT_PUBLIC_RADIO_URL: ${{ vars.RADIO_ORIGIN_URL }}
+
+      # Delta upload: the action keeps a state file on the server and only
+      # transfers changed files, which matters given the many prerendered AVIF
+      # variants. First run uploads everything; later runs are incremental.
+      # TODO: pin to a commit SHA to match this repo's other pinned actions.
+      - name: Deploy to Combell over FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.COMBELL_FTP_HOST }}
+          username: ${{ secrets.COMBELL_FTP_USER }}
+          password: ${{ secrets.COMBELL_FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./.output/public/
+          server-dir: ${{ vars.COMBELL_DOCROOT }}

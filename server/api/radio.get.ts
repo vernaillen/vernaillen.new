@@ -37,5 +37,10 @@ export default defineEventHandler(async (event) => {
 
   setHeader(event, 'Content-Type', upstream.headers.get('content-type') ?? 'audio/mpeg')
   setHeader(event, 'Cache-Control', 'no-store')
+  // Public stream, no credentials. When the site is served statically from a
+  // different origin, the player loads this crossorigin=anonymous so WebAudio
+  // can analyse it — which requires this header, or the media element is
+  // "tainted" and the analyser only ever reads silence.
+  setHeader(event, 'Access-Control-Allow-Origin', '*')
   return upstream.body
 })

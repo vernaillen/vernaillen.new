@@ -42,6 +42,12 @@ export default defineCachedEventHandler(async () => {
   const config = useRuntimeConfig()
   if (!config.githubToken) {
     console.warn(`[github-contributions] NUXT_GITHUB_TOKEN is not set. Generate a token at ${NEW_TOKEN_URL}`)
+    // This route is prerendered into a static file. A missing token must not
+    // abort the whole static build — ship empty sections (the Open Source page
+    // hides them) and warn. CI passes the token so real builds bake real data.
+    if (import.meta.prerender) {
+      return { authored: [], contributed: [] }
+    }
     throw credentialsError()
   }
 

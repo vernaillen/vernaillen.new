@@ -12,7 +12,7 @@ if (!page.value) {
   })
 }
 
-const { data: github, status: githubStatus } = useLazyFetch<GitHubContributions>('/api/github-contributions', {
+const { data: github, status: githubStatus } = useLazyFetch<GitHubContributions>('/api/github-contributions.json', {
   server: false
 })
 

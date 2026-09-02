@@ -20,7 +20,6 @@ export default defineNuxtConfig({
     'nuxt-svgo',
     'motion-v/nuxt',
     'nuxt-studio',
-    '@nuxtjs/plausible',
     '@nuxt/fonts',
     'nuxt-llms'
   ],
@@ -57,14 +56,19 @@ export default defineNuxtConfig({
   runtimeConfig: {
     githubToken: '',
     public: {
-      deployedAt: new Date().toISOString()
+      deployedAt: new Date().toISOString(),
+      // Where the FFT demo's <audio> fetches the SomaFM stream. Empty = the
+      // same-origin proxy (server/api/radio.get.ts), used by the full Nitro
+      // deploy. On a static host set NUXT_PUBLIC_RADIO_URL to the absolute URL
+      // of the Coolify API origin (e.g. https://origin.vernaillen.dev/api/radio);
+      // the player then loads it crossorigin=anonymous and the proxy's CORS
+      // header keeps the WebAudio analyser untainted.
+      radioUrl: ''
     }
   },
 
   routeRules: {
     '/links': { redirect: { to: '/', statusCode: 301 } },
-    '/plio/js/script.js': { proxy: 'https://plausible.io/js/script.js' },
-    '/plio/api/event': { proxy: 'https://plausible.io/api/event' },
     '/admin/**': { ssr: true, headers: { 'cache-control': 'no-store' } },
     '/__nuxt_studio/**': { ssr: true, headers: { 'cache-control': 'no-store' } },
     '/images/**': { headers: { 'cache-control': 'public, max-age=31536000' } },
@@ -121,7 +125,12 @@ export default defineNuxtConfig({
     prerender: {
       routes: [
         '/',
-        '/api/search-index.json'
+        '/api/search-index.json',
+        // Baked at build time so the Open Source page has data without a live
+        // server — the static-host equivalent of the cached endpoint. Needs
+        // NUXT_GITHUB_TOKEN at build; without it the handler ships empty rather
+        // than failing the build (see server/api/github-contributions.json.get.ts).
+        '/api/github-contributions.json'
       ],
       crawlLinks: true
     }
@@ -130,7 +139,6 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       exclude: [
-        '@plausible-analytics/tracker',
         // Vite 7.3.x has a catastrophic-backtracking regex bug
         // (vitejs/vite#21800, fixed in 8.0.1) that throws
         // "Maximum call stack size exceeded" when pre-bundling
@@ -260,10 +268,6 @@ vernaillen.dev is the personal site of Wouter Vernaillen — a Belgian freelance
       // build with 408s. zeroRuntime means this budget only applies at build time.
       renderTimeout: 60000
     }
-  },
-
-  plausible: {
-    apiHost: 'https://vernaillen.dev/plio'
   },
 
   seo: {

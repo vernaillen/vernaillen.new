@@ -1,0 +1,33 @@
+# Static-hosting rules for Apache (Combell). Files under public/ are copied to
+# the site root by `nuxt generate`, so this lands at the docroot. It is inert on
+# the Nitro/Coolify deploy (served as a plain file), so both targets share it.
+
+# --- AVIF content type -------------------------------------------------------
+# Prerendered AVIF variants keep their source extension (/_ipx/f_avif...,*.png),
+# so Apache would label them image/png. Force the right type by URL prefix. This
+# is the static-host equivalent of server/middleware/avif-content-type.ts.
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "^/_ipx/f_avif" is_avif=1
+</IfModule>
+<IfModule mod_headers.c>
+  Header set Content-Type "image/avif" env=is_avif
+</IfModule>
+
+# --- Long-cache immutable assets ---------------------------------------------
+# All content-hashed or never-changed-in-place, so safe to cache hard. On the
+# Nitro deploy Cloudflare does this via route rules; a plain static host needs it
+# here since there is no CDN in front.
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "^/_nuxt/"  long_cache=1
+  SetEnvIf Request_URI "^/_ipx/"   long_cache=1
+  SetEnvIf Request_URI "^/images/" long_cache=1
+</IfModule>
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=31536000, immutable" env=long_cache
+</IfModule>
+
+# --- Redirects (were Nuxt routeRules; static hosts need them here) -----------
+Redirect 301 /links /
+
+# --- 404 ---------------------------------------------------------------------
+ErrorDocument 404 /404.html
