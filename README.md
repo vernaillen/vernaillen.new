@@ -87,14 +87,17 @@ pnpm check        # prepare + lint + typecheck + generate, same as CI
 ## Deployment
 
 **`main` → `nuxt generate` → Combell → Bunny.** A single `ci` workflow runs on
-every branch — lint, typecheck, then the production build. On `main`, and only
-if all of that passed, the same output is rsynced to a Combell shared-hosting
-pack over SSH and the Bunny.net pull zone in front of it is purged.
-`public/.htaccess` supplies the cache headers and redirects the Nitro
+every branch as two chained jobs — `check` (lint, typecheck), then
+`build-deploy` behind a `needs:`, which runs the production build. On `main`,
+and only if all of that passed, that build output is rsynced to a Combell
+shared-hosting pack over SSH and the Bunny.net pull zone in front of it is
+purged. `public/.htaccess` supplies the cache headers and redirects the Nitro
 `routeRules` can't provide on a plain static host. AVIF encoding during
-prerender is the slow part of the build, which is why the deploy steps are
-`if:`-gated inside the build job rather than split into a second job that would
-have to build all over again.
+prerender is the slow part of the build, which is why the split is on the
+checks rather than the deploy: a deploy job would get a fresh runner and have
+to build all over again, or take the output as an artifact — and
+`upload-artifact` excludes dotfiles by default, which would silently drop that
+`.htaccess` and with it every production cache header.
 
 DNS lives at LuaDNS: the apex is an ALIAS to the Bunny pull zone, `www` a CNAME
 to it, and Bunny origin-pulls from `https://vernaillencom.webhosting.be` — a

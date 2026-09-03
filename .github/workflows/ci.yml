@@ -1,13 +1,23 @@
 name: ci
 
-# One pipeline for every branch: lint, typecheck, then the real production
-# build. On main — and only once all of that has passed — that same build is
-# rsynced to Combell and the Bunny edge is purged.
+# Two chained jobs on every branch:
 #
-# `pnpm generate` is a superset of `pnpm build` here (nitro.prerender is
-# configured, so `build` already prerenders and encodes every AVIF variant), so
-# building once and deploying that output replaces the two full prerenders the
-# old split ci/deploy-combell workflows did on every push to main.
+#   check  ──▶  build-deploy
+#   (lint,      (pnpm generate; on main only, rsync to Combell + purge Bunny)
+#    typecheck)
+#
+# `needs: check` means a lint or type error never reaches the build, let alone
+# the docroot. The split is on the CHECKS, not on the build, on purpose: a
+# second job gets a fresh runner, so moving the build there too would either
+# repeat the prerender (nitro.prerender means `nuxt build` already encodes every
+# AVIF variant — that duplication is why this replaced the old ci +
+# deploy-combell pair) or need an artifact round-trip, and upload-artifact
+# excludes dotfiles by default, which would silently drop public/.htaccess —
+# the file that supplies every production cache header. Building and deploying
+# in one job costs one cached `pnpm install` instead.
+#
+# build-deploy runs on every branch so a broken build is caught on feature
+# branches too; only its last two steps are gated on main.
 
 on:
   push:
@@ -37,9 +47,7 @@ env:
   SSH_PORT: '22'
 
 jobs:
-  # Deliberately not a matrix: the deploy steps live in this job, and a second
-  # matrix leg would rsync the same docroot twice.
-  ci:
+  check:
     runs-on: ubuntu-latest
 
     steps:
@@ -66,6 +74,26 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+  build-deploy:
+    needs: check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Install node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
       # Also the deploy artifact — a green run here is exactly what gets rsynced.
       - name: Build static site
         run: pnpm generate
@@ -75,8 +103,7 @@ jobs:
           # crossorigin; falls back to same-origin /api/radio if the var is unset.
           NUXT_PUBLIC_RADIO_URL: ${{ vars.RADIO_ORIGIN_URL }}
 
-      # From here on: main only. Every step above is a hard gate — a failed
-      # lint, typecheck or build never reaches the docroot.
+      # From here on: main only.
       #
       # rsync delta sync over SSH. Only changed files transfer, which matters
       # given the many prerendered AVIF variants. --delete mirrors the docroot to
