@@ -20,9 +20,11 @@ pnpm typecheck
 
 ## Deployment
 
-- Runs as a **Nitro node server in Docker on Coolify** (Hetzner VPS): push to `main` → GitHub Actions `ci` workflow builds and pushes the image to `registry.apps.vernaillen.dev`, then triggers the Coolify deploy (~10 min end to end; AVIF encoding during prerender is the slow part)
-- **Cloudflare** proxies the apex + www (DNS for the whole zone lives there since 2026-08-25); long-lived cache headers on `/_nuxt`, `/images/**` and `/_ipx/**` make the edge cache do the heavy lifting
-- Plausible analytics proxied via the `/plio/**` routeRules in `nuxt.config.ts`
+- **Static site on Combell, fronted by Bunny.net.** Push to `main` → GitHub Actions `deploy-combell` workflow runs `pnpm generate` and rsyncs `.output/public/` to the Combell shared-hosting pack over SSH, then purges the Bunny pull zone. `ci.yml` is only the `pnpm check` gate (runs on every branch) — it no longer builds or deploys anything.
+- **DNS lives at LuaDNS** (`~/git/luadns/vernaillen.dev.lua`, zone-as-Lua-code). Apex is an `alias()` to the Bunny pull zone, `www` a CNAME to it; Bunny origin-pulls from `https://vernaillencom.webhosting.be` (a valid SAN on the Combell pack cert, so origin SSL verify stays on).
+- **Caching headers come from `public/.htaccess`, not `nuxt.config.ts`.** The Nitro `routeRules` headers are inert on a plain static host — Apache at the Combell origin sets the long-lived headers on `/_nuxt`, `/_ipx/**` and `/images/**` that Bunny then inherits at the edge.
+- The FFT radio demo needs a live server, so it stays on Coolify at `radio.vernaillen.dev`; the static build points at it via the `RADIO_ORIGIN_URL` repo variable → `NUXT_PUBLIC_RADIO_URL`.
+- Self-hosted analytics script loaded from `c.analytics.apps.vernaillen.dev` (see `app.head.script` in `nuxt.config.ts`)
 
 ## Known Quirks
 

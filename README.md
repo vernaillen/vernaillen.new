@@ -18,7 +18,7 @@ app/          Nuxt app — pages, components, composables, layouts, assets
 content/      Markdown + YAML content (blog posts, per-page data)
 server/       Nitro routes: sitemap, search index, GitHub contributions, radio proxy
 public/       Static assets (images, fonts, .htaccess for the static host)
-scripts/      Manual Docker build/push/deploy helpers
+scripts/      Local Docker build + smoke-test helper
 ```
 
 `content.config.ts` defines the Zod schema for every collection, which is what
@@ -58,9 +58,11 @@ performance.
 - **OG images are baked at build time** (`ogImage.zeroRuntime`) with
   `@takumi-rs`. `renderTimeout` is raised to 60s because AVIF encoding saturates
   the CPU during prerender and starves the OG renderer — don't lower it.
-- **Edge caching.** Prerendered HTML gets `max-age=0, s-maxage=31536000` so
-  Cloudflare holds it and browsers always revalidate; `/images/**` and
-  `/_ipx/**` are immutable for a year. CI purges the zone after each deploy.
+- **Edge caching.** Prerendered HTML gets `max-age=0, s-maxage=31536000` so the
+  CDN holds it and browsers always revalidate; `/images/**` and `/_ipx/**` are
+  immutable for a year. On the static deploy those headers come from
+  `public/.htaccess` (Nitro `routeRules` are inert without a server), and CI
+  purges the Bunny pull zone after each deploy.
 - **`/api/radio`** proxies a SomaFM stream so the FFT visualizer demo can read
   untainted PCM (SomaFM 403s the `Range` header browsers send). Set
   `NUXT_PUBLIC_RADIO_URL` to an absolute URL when the site is served statically
@@ -84,26 +86,25 @@ pnpm check        # prepare + lint + typecheck + build, same as CI
 
 ## Deployment
 
-**`main` → Docker → Coolify.** The `ci` workflow runs `pnpm check`, builds the
-production image, boots it and smoke-tests `:3000`, pushes
-`registry.apps.vernaillen.dev/vernaillen-dev:{latest,<sha>}`, triggers the
-Coolify redeploy on the Hetzner VPS, waits for it to finish, then purges the
-Cloudflare zone. End to end ~10 minutes — AVIF encoding during prerender is the
-slow part.
+**`main` → `nuxt generate` → Combell → Bunny.** The `deploy-combell` workflow
+builds the static site and rsyncs `.output/public/` to a Combell
+shared-hosting pack over SSH, then purges the Bunny.net pull zone that fronts
+it. `public/.htaccess` supplies the cache headers and redirects the Nitro
+`routeRules` can't provide on a plain static host. AVIF encoding during
+prerender is the slow part of the build.
 
-Secrets: `REGISTRY_USERNAME`, `REGISTRY_PASSWORD`, `NUXT_GITHUB_TOKEN`,
-`COOLIFY_DEPLOY_URL`, `COOLIFY_TOKEN`, `CLOUDFLARE_ZONE_ID`,
-`CLOUDFLARE_PURGE_TOKEN`.
+DNS lives at LuaDNS: the apex is an ALIAS to the Bunny pull zone, `www` a CNAME
+to it, and Bunny origin-pulls from `https://vernaillencom.webhosting.be` — a
+valid SAN on the Combell pack's certificate, so origin SSL verification stays
+on and the edge cert is Bunny's own.
 
-**`static-combell` → `nuxt generate` → Combell.** A parallel trial that rsyncs
-`.output/public/` to a Combell shared-hosting pack over SSH. That branch also
-carries `public/.htaccess` (cache headers and redirects the Nitro `routeRules`
-can't provide on a plain static host) and points the radio player at
-`radio.vernaillen.dev` via `RADIO_ORIGIN_URL`. See `.github/workflows/deploy-combell.yml`
-for the full list of required secrets and variables.
+The one route that needs a live server, `/api/radio`, runs as a small Nitro app
+on Coolify at `radio.vernaillen.dev`; the static build points at it via
+`RADIO_ORIGIN_URL` → `NUXT_PUBLIC_RADIO_URL`. See
+`.github/workflows/deploy-combell.yml` for the full list of required secrets
+and variables.
 
-`scripts/` holds manual equivalents (`pnpm docker:build`, `docker:push`,
-`deploy:trigger`, `deploy:manual`) for when you need to bypass CI.
+The `ci` workflow is just the check gate — `pnpm check` on every branch.
 
 ## Known quirks
 

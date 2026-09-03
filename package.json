@@ -12,10 +12,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "nuxt typecheck",
     "check": "nuxt prepare && pnpm run lint && pnpm run typecheck && pnpm run build",
-    "docker:build": "./scripts/dockerBuildRun.sh",
-    "docker:push": "docker push registry.apps.vernaillen.dev/vernaillen-dev:latest",
-    "deploy:trigger": "./scripts/triggerDeploy.sh",
-    "deploy:manual": "./scripts/buildPushDeploy.sh"
+    "docker:build": "./scripts/dockerBuildRun.sh"
   },
   "dependencies": {
     "@fft-visualizer/vue": "^1.0.0",

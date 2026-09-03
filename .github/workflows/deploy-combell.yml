@@ -1,12 +1,11 @@
 name: deploy-combell
 
-# Builds the static site and publishes it to Combell over rsync-over-SSH.
-# Runs on every push to the static-combell branch during the trial; switch the
-# branch filter to main (and merge) once you commit to the hosting move.
-# Independent of the Coolify `ci` workflow — during the trial both can run.
+# Builds the static site and publishes it to Combell over rsync-over-SSH, then
+# purges the Bunny edge. This is the only deploy path — the Docker/Coolify
+# pipeline it replaced is gone, and `ci.yml` is now just the check gate.
 on:
   push:
-    branches: [static-combell]
+    branches: [main]
   workflow_dispatch:
 
 # Required repository configuration (Settings -> Secrets and variables -> Actions):
@@ -14,16 +13,16 @@ on:
 #     COMBELL_SSH_KEY   - PRIVATE deploy key (full contents incl. the BEGIN/END
 #                         lines). Its public half is authorized on the Combell
 #                         account. Use a DEDICATED key, not a personal one.
-#     NUXT_GITHUB_TOKEN - same token the Coolify build uses (bakes the Open Source data)
-#     BUNNY_API_KEY     - Bunny.net account API key, only needed once the Bunny CDN
-#                         fronts the site. Absent = the purge step below is skipped.
+#     NUXT_GITHUB_TOKEN - read-only GitHub token; bakes the Open Source page data
+#                         into the static build.
+#     BUNNY_API_KEY     - Bunny.net account API key for the post-deploy edge purge.
 #   Variables:
 #     COMBELL_DOCROOT   - remote web root as an rsync target, WITH trailing slash.
 #                         Find it by running `pwd` in the web root over SSH (e.g. ~/www/).
 #     RADIO_ORIGIN_URL  - absolute URL of the radio app's stream proxy
 #                         (https://radio.vernaillen.dev/api/radio)
-#     BUNNY_PULLZONE_ID - Bunny pull-zone numeric id. Setting it turns on the
-#                         post-deploy edge purge; leave it unset until Bunny is live.
+#     BUNNY_PULLZONE_ID - Bunny pull-zone numeric id. Unset = the purge step
+#                         no-ops, so a deploy still succeeds without Bunny.
 
 env:
   # Combell SSH endpoint for this pack (from the working `ssh vernaillen` config).

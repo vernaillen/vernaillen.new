@@ -76,12 +76,13 @@ export default defineNuxtConfig({
     // and the source images never change in place, so the rendered variants are
     // safe to treat as immutable.
     '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000' } },
-    // Every page is prerendered and only changes on deploy, so let Cloudflare
-    // cache the HTML at the edge (s-maxage) while browsers always revalidate
-    // (max-age=0). CI purges the zone after each Coolify deploy. Listed
-    // per-route rather than '/**' so dynamic routes and Nitro's immutable
-    // /_nuxt headers are left alone. Needs the "eligible for cache" Cache Rule
-    // in the Cloudflare dashboard — by default Cloudflare never caches HTML.
+    // Every page is prerendered and only changes on deploy, so the edge can
+    // hold the HTML (s-maxage) while browsers always revalidate (max-age=0).
+    // Listed per-route rather than '/**' so dynamic routes and Nitro's
+    // immutable /_nuxt headers are left alone. NOTE: these headers are inert
+    // on the static Combell deploy — `nuxt generate` emits files, not a Nitro
+    // server, so public/.htaccess is what actually sets caching in production.
+    // Kept for `pnpm dev`/`pnpm build` parity and in case a node deploy returns.
     ...Object.fromEntries([
       '/', '/about', '/career', '/projects', '/open-source',
       '/blog', '/blog/**', '/_payload.json', '/about/_payload.json',
