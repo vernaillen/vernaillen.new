@@ -20,8 +20,8 @@ on:
 #   Variables:
 #     COMBELL_DOCROOT   - remote web root as an rsync target, WITH trailing slash.
 #                         Find it by running `pwd` in the web root over SSH (e.g. ~/www/).
-#     RADIO_ORIGIN_URL  - absolute URL of the radio proxy on the Coolify API
-#                         origin (https://origin.apps.vernaillen.dev/api/radio)
+#     RADIO_ORIGIN_URL  - absolute URL of the radio app's stream proxy
+#                         (https://radio.vernaillen.dev/api/radio)
 #     BUNNY_PULLZONE_ID - Bunny pull-zone numeric id. Setting it turns on the
 #                         post-deploy edge purge; leave it unset until Bunny is live.
 
@@ -55,7 +55,7 @@ jobs:
         run: pnpm generate
         env:
           NUXT_GITHUB_TOKEN: ${{ secrets.NUXT_GITHUB_TOKEN }}
-          # Absolute so the static page's <audio> reaches the Coolify API origin
+          # Absolute so the static page's <audio> reaches the radio app's proxy
           # crossorigin; falls back to same-origin /api/radio if the var is unset.
           NUXT_PUBLIC_RADIO_URL: ${{ vars.RADIO_ORIGIN_URL }}
 
