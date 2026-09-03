@@ -19,9 +19,7 @@
 # both at the edge and in the browser. Fonts (/_fonts/) and baked OG images
 # (/_og/) are hashed/stable too, so they're listed here to get the explicit 1yr
 # header instead of Bunny's 30-day default for headerless static files. Content
-# that changes in place on deploy (HTML, _payload.json, search-index.json,
-# sitemap.xml) carries no header, so Bunny serves it no-cache — always
-# revalidated, never stale after a deploy.
+# that changes in place on deploy is handled separately below.
 <IfModule mod_setenvif.c>
   SetEnvIf Request_URI "^/_nuxt/"  long_cache=1
   SetEnvIf Request_URI "^/_ipx/"   long_cache=1
@@ -31,6 +29,23 @@
 </IfModule>
 <IfModule mod_headers.c>
   Header set Cache-Control "public, max-age=31536000, immutable" env=long_cache
+</IfModule>
+
+# --- Deploy-scoped content: cache at the edge, revalidate in the browser -----
+# HTML, payloads, the search index and sitemap change in place on every deploy.
+# Sending no header meant Bunny fell back to no-cache and MISSed every single
+# HTML request, so each page view paid a full round trip to Ghent *plus* the
+# extra CDN hop — measurably slower than not having a CDN at all (161ms vs
+# 106ms TTFB). s-maxage lets the edge hold them while max-age=0 keeps browsers
+# revalidating, which is safe because ci.yml purges the pull zone after every
+# rsync. This restores the same intent as the (inert) routeRules in
+# nuxt.config.ts. NOTE: the purge step is skipped when BUNNY_PULLZONE_ID is
+# unset — leave that variable set, or a deploy can leave the edge stale.
+# env=!long_cache so the immutable prefixes above always win.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|json|xml|txt)(\.(br|gz))?$">
+    Header set Cache-Control "public, max-age=0, s-maxage=31536000" env=!long_cache
+  </FilesMatch>
 </IfModule>
 
 # --- Canonical host: vernaillen.com -> vernaillen.dev ------------------------
@@ -46,10 +61,29 @@
   RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/ [NC]
   RewriteCond %{HTTP_HOST} ^(www\.)?vernaillen\.com$ [NC]
   RewriteRule ^ https://vernaillen.dev%{REQUEST_URI} [R=301,L]
+
+  # --- Extensionless URLs: serve, don't redirect -----------------------------
+  # `nuxt generate` writes blog/index.html, never blog.html, so mod_dir would
+  # answer /blog with a DirectorySlash 301 to /blog/. Apache builds that
+  # redirect from the Host it was given, and Bunny origin-pulls with
+  # Host: vernaillencom.webhosting.be — so the 301 pointed at the ORIGIN
+  # hostname and threw visitors off the CDN onto the raw Combell pack. Every
+  # <link rel="canonical"> and every sitemap.xml entry is slash-less, so before
+  # this rule the canonical URL of every page 301'd to vernaillencom.webhosting.be
+  # (crawlers, unlighthouse included, dropped the site as off-domain).
+  # Mapping to index.html internally means no redirect at all, and the
+  # slash-less canonical form is the one that answers 200.
+  # Must stay AFTER the .com rule above, which terminates with [R=301,L].
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteCond %{REQUEST_FILENAME}/index.html -f
+  RewriteRule ^(.+?)/?$ $1/index.html [L]
 </IfModule>
 
 # --- Redirects (were Nuxt routeRules; static hosts need them here) -----------
-Redirect 301 /links /
+# Absolute on purpose: mod_alias expands a relative target against the request
+# Host, and Bunny origin-pulls as vernaillencom.webhosting.be, so `Redirect 301
+# /links /` sent visitors to the origin hostname instead of back to the site.
+Redirect 301 /links https://vernaillen.dev/
 
 # --- 404 ---------------------------------------------------------------------
 ErrorDocument 404 /404.html
