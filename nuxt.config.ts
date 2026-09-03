@@ -60,9 +60,9 @@ export default defineNuxtConfig({
       // Where the FFT demo's <audio> fetches the SomaFM stream. Empty = the
       // same-origin proxy (server/api/radio.get.ts), used by the full Nitro
       // deploy. On a static host set NUXT_PUBLIC_RADIO_URL to the absolute URL
-      // of the Coolify API origin (e.g. https://origin.apps.vernaillen.dev/api/radio);
-      // the player then loads it crossorigin=anonymous and the proxy's CORS
-      // header keeps the WebAudio analyser untainted.
+      // of the radio app's proxy (https://radio.vernaillen.dev/api/radio); the
+      // player then loads it crossorigin=anonymous and the proxy's CORS header
+      // keeps the WebAudio analyser untainted.
       radioUrl: ''
     }
   },

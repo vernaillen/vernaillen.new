@@ -97,44 +97,69 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
   async function start(onData: (mono: Uint8Array, left: Uint8Array, right: Uint8Array) => void) {
     stop()
 
+    // Everything the autoplay policy cares about is done here, synchronously,
+    // while we are still in the task the click created: a browser only lets
+    // audio through if the AudioContext is constructed — and the element played
+    // — inside that gesture. Awaiting the WASM chunk first pushed both into a
+    // later task, so the context came up suspended and the element stayed
+    // silent, with no error to show for it since play() rejections are
+    // deliberately swallowed below. That is what made it look like play needed
+    // two clicks: the second one found the module cached, collapsing the await
+    // to a microtask that stays inside the gesture. Load the FFT only once the
+    // graph is wired, never before.
+    const own = new AudioContext()
+    ctx = own
+    void own.resume() // a no-op when it already came up running
+
+    analyserL = own.createAnalyser()
+    analyserL.fftSize = fftSize
+
     if (source === 'radio') {
       openRadioStream()
-    } else {
-      await openMic()
-    }
 
-    const { FftProcessor } = await import('@fft-visualizer/vue/wasm')
+      const srcNode = own.createMediaElementSource(audioEl!)
+      srcNode.connect(own.destination) // audible
 
-    ctx = new AudioContext()
-    await ctx.resume()
-
-    analyserL = ctx.createAnalyser()
-    analyserL.fftSize = fftSize
-    procL = new FftProcessor(fftSize, bins, 100, 18000, ctx.sampleRate)
-    bufL = new Float32Array(fftSize)
-
-    if (source === 'radio') {
-      const srcNode = ctx.createMediaElementSource(audioEl!)
-      srcNode.connect(ctx.destination) // audible
-
-      const splitter = ctx.createChannelSplitter(2)
+      const splitter = own.createChannelSplitter(2)
       srcNode.connect(splitter)
-      analyserR = ctx.createAnalyser()
+      analyserR = own.createAnalyser()
       analyserR.fftSize = fftSize
       splitter.connect(analyserL, 0)
       splitter.connect(analyserR, 1)
-
-      procR = new FftProcessor(fftSize, bins, 100, 18000, ctx.sampleRate)
-      bufR = new Float32Array(fftSize)
 
       // Fire-and-forget: do NOT await or fail on the initial Range 403 — let the
       // browser settle the connection on its own. The bars stay flat until audio
       // actually starts flowing, then react.
       void audioEl!.play().catch(() => {})
     } else {
+      await openMic()
+      if (ctx !== own) return
+
       // Deliberately not connected to ctx.destination: routing a mic back to the
       // speakers is a feedback loop.
-      ctx.createMediaStreamSource(stream!).connect(analyserL)
+      own.createMediaStreamSource(stream!).connect(analyserL)
+    }
+
+    const wasm = await import('@fft-visualizer/vue/wasm')
+    // The import resolving is not the same as the FFT being usable: the package
+    // is bundled with vite-plugin-top-level-await, so `FftProcessor` stays
+    // undefined until the WASM instance has initialised, and the plugin hands
+    // that out as a separate `__tla` promise on the module. Constructing one
+    // before it settles throws, which rejected start() and tore the audio back
+    // down. That was the real "click play twice": by the second click the module
+    // had finished initialising, so the same code worked.
+    await (wasm as { __tla?: Promise<void> }).__tla
+
+    // Superseded while the chunk loaded (a source switch, or a stop): the
+    // context we built is already closed, so there is nothing left to drive.
+    if (ctx !== own) return
+
+    procL = new wasm.FftProcessor(fftSize, bins, 100, 18000, own.sampleRate)
+    bufL = new Float32Array(fftSize)
+
+    if (source === 'radio') {
+      procR = new wasm.FftProcessor(fftSize, bins, 100, 18000, own.sampleRate)
+      bufR = new Float32Array(fftSize)
     }
 
     analyse(onData)
