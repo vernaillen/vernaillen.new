@@ -20,7 +20,7 @@ pnpm typecheck
 
 ## Deployment
 
-- **Static site on Combell, fronted by Bunny.net.** Push to `main` → GitHub Actions `deploy-combell` workflow runs `pnpm generate` and rsyncs `.output/public/` to the Combell shared-hosting pack over SSH, then purges the Bunny pull zone. `ci.yml` is only the `pnpm check` gate (runs on every branch) — it no longer builds or deploys anything.
+- **Static site on Combell, fronted by Bunny.net.** One workflow, `ci.yml`, runs on every branch: lint → typecheck → `pnpm generate`. On `main` only, and only if all of that passed, it rsyncs `.output/public/` to the Combell shared-hosting pack over SSH and purges the Bunny pull zone. Deploy steps are `if:`-gated inside the build job (not a separate job) so the build happens once — `nuxt generate` already prerenders, and a second job would repeat the expensive AVIF encoding.
 - **DNS lives at LuaDNS** (`~/git/luadns/vernaillen.dev.lua`, zone-as-Lua-code). Apex is an `alias()` to the Bunny pull zone, `www` a CNAME to it; Bunny origin-pulls from `https://vernaillencom.webhosting.be` (a valid SAN on the Combell pack cert, so origin SSL verify stays on).
 - **Caching headers come from `public/.htaccess`, not `nuxt.config.ts`.** The Nitro `routeRules` headers are inert on a plain static host — Apache at the Combell origin sets the long-lived headers on `/_nuxt`, `/_ipx/**` and `/images/**` that Bunny then inherits at the edge.
 - The FFT radio demo needs a live server, so it stays on Coolify at `radio.vernaillen.dev`; the static build points at it via the `RADIO_ORIGIN_URL` repo variable → `NUXT_PUBLIC_RADIO_URL`.

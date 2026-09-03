@@ -81,17 +81,20 @@ After every change:
 ```bash
 pnpm lint:fix
 pnpm typecheck
-pnpm check        # prepare + lint + typecheck + build, same as CI
+pnpm check        # prepare + lint + typecheck + generate, same as CI
 ```
 
 ## Deployment
 
-**`main` → `nuxt generate` → Combell → Bunny.** The `deploy-combell` workflow
-builds the static site and rsyncs `.output/public/` to a Combell
-shared-hosting pack over SSH, then purges the Bunny.net pull zone that fronts
-it. `public/.htaccess` supplies the cache headers and redirects the Nitro
+**`main` → `nuxt generate` → Combell → Bunny.** A single `ci` workflow runs on
+every branch — lint, typecheck, then the production build. On `main`, and only
+if all of that passed, the same output is rsynced to a Combell shared-hosting
+pack over SSH and the Bunny.net pull zone in front of it is purged.
+`public/.htaccess` supplies the cache headers and redirects the Nitro
 `routeRules` can't provide on a plain static host. AVIF encoding during
-prerender is the slow part of the build.
+prerender is the slow part of the build, which is why the deploy steps are
+`if:`-gated inside the build job rather than split into a second job that would
+have to build all over again.
 
 DNS lives at LuaDNS: the apex is an ALIAS to the Bunny pull zone, `www` a CNAME
 to it, and Bunny origin-pulls from `https://vernaillencom.webhosting.be` — a
@@ -101,10 +104,7 @@ on and the edge cert is Bunny's own.
 The one route that needs a live server, `/api/radio`, runs as a small Nitro app
 on Coolify at `radio.vernaillen.dev`; the static build points at it via
 `RADIO_ORIGIN_URL` → `NUXT_PUBLIC_RADIO_URL`. See
-`.github/workflows/deploy-combell.yml` for the full list of required secrets
-and variables.
-
-The `ci` workflow is just the check gate — `pnpm check` on every branch.
+`.github/workflows/ci.yml` for the full list of required secrets and variables.
 
 ## Known quirks
 
