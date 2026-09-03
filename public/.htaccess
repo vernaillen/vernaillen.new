@@ -48,6 +48,30 @@
   </FilesMatch>
 </IfModule>
 
+# --- No trailing-slash redirect ----------------------------------------------
+# `nuxt generate` writes blog/index.html, never blog.html, so a request for
+# /blog is a request for a directory and mod_dir answers it with a
+# DirectorySlash 301 to /blog/. Apache builds that redirect from the Host it was
+# given, and Bunny origin-pulls with Host: vernaillencom.webhosting.be — so the
+# 301 pointed at the ORIGIN hostname and threw visitors off the CDN onto the raw
+# Combell pack. Every <link rel="canonical"> and every sitemap.xml entry is
+# slash-less, so the canonical URL of every page on the site did this; crawlers
+# (unlighthouse included) dropped it as a cross-domain redirect.
+#
+# The rewrite below alone is NOT enough: mod_dir's fixup hook beats mod_rewrite's
+# internal redirect, so the 301 still wins. Verified against Apache 2.4 locally —
+# with this Off and the rewrite on, /blog answers 200 with blog/index.html.
+#
+# DirectorySlash needs AllowOverride Indexes, and a pack that disallows it would
+# 500 the whole site. Verified permitted on this pack with a throwaway
+# subdirectory (200, not 500). Apache warns Off can expose autoindex listings at
+# slash-less URLs; not a risk here — this pack returns 403 for index-less
+# directories, so autoindex is off.
+<IfModule mod_dir.c>
+  DirectorySlash Off
+  DirectoryIndex index.html
+</IfModule>
+
 # --- Canonical host: vernaillen.com -> vernaillen.dev ------------------------
 # The static site is deployed into the vernaillen.com pack; vernaillen.dev is the
 # canonical hostname (site.url in nuxt.config). When .com (or its www) resolves
@@ -63,20 +87,15 @@
   RewriteRule ^ https://vernaillen.dev%{REQUEST_URI} [R=301,L]
 
   # --- Extensionless URLs: serve, don't redirect -----------------------------
-  # `nuxt generate` writes blog/index.html, never blog.html, so mod_dir would
-  # answer /blog with a DirectorySlash 301 to /blog/. Apache builds that
-  # redirect from the Host it was given, and Bunny origin-pulls with
-  # Host: vernaillencom.webhosting.be — so the 301 pointed at the ORIGIN
-  # hostname and threw visitors off the CDN onto the raw Combell pack. Every
-  # <link rel="canonical"> and every sitemap.xml entry is slash-less, so before
-  # this rule the canonical URL of every page 301'd to vernaillencom.webhosting.be
-  # (crawlers, unlighthouse included, dropped the site as off-domain).
-  # Mapping to index.html internally means no redirect at all, and the
-  # slash-less canonical form is the one that answers 200.
+  # Map /blog to blog/index.html internally. Needs DirectorySlash Off above to
+  # have any effect — see that block. %{REQUEST_URI} rather than a backreference
+  # because the operand here is the per-directory-stripped path, while the
+  # substitution wants the full URL-path.
   # Must stay AFTER the .com rule above, which terminates with [R=301,L].
+  RewriteCond %{REQUEST_URI} !/$
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteCond %{REQUEST_FILENAME}/index.html -f
-  RewriteRule ^(.+?)/?$ $1/index.html [L]
+  RewriteRule ^ %{REQUEST_URI}/index.html [L]
 </IfModule>
 
 # --- Redirects (were Nuxt routeRules; static hosts need them here) -----------
