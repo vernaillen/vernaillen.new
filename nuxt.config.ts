@@ -122,7 +122,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-05-22',
 
   nitro: {
-    compressPublicAssets: true,
     prerender: {
       routes: [
         '/',
