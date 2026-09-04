@@ -43,7 +43,7 @@
 # unset — leave that variable set, or a deploy can leave the edge stale.
 # env=!long_cache so the immutable prefixes above always win.
 <IfModule mod_headers.c>
-  <FilesMatch "\.(html|json|xml|txt)(\.(br|gz))?$">
+  <FilesMatch "\.(html|json|xml|txt)$">
     Header set Cache-Control "public, max-age=0, s-maxage=31536000" env=!long_cache
   </FilesMatch>
 </IfModule>
