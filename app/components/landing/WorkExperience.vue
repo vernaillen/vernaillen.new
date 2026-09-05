@@ -35,13 +35,13 @@ defineProps<{
               {{ experience.position }}
             </span>
             <span
-              class="min-w-0"
-              :style="{ color: `color-mix(in oklch, ${experience.company.color} 60%, var(--ui-text-muted))` }"
+              class="min-w-0 text-highlighted"
             >
               <span class="font-medium">{{ experience.company.name }}</span>
               <UIcon
                 :name="experience.company.logo"
                 class="ml-1 inline-block shrink-0 align-middle"
+                :style="{ color: experience.company.color }"
               />
             </span>
           </ULink>

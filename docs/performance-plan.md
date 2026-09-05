@@ -4,14 +4,14 @@ Updated: 2026-09-05
 
 This file is the persistent source of truth for the website performance work.
 The initial review was previously only in the Codex conversation. The user
-authorized implementation of steps 1–5 on 2026-09-05. Steps 6–9 remain proposed.
+authorized implementation of steps 1–5 on 2026-09-05. The user subsequently authorized all remaining steps (6–9).
 
 ## Current status
 
 - **Baseline complete:** seven Lighthouse audits and two desktop interaction profiles (with/without tracing).
-- **Active:** steps 1–5 complete locally; production verification remains pending.
+- **Active:** implementing and measuring steps 6–9; production verification remains pending.
 - **Next proposed work:** step 6 (eager FFT poster and deferred demo/video loading).
-- **Implementation progress:** 5 of 9 steps implemented and verified locally; steps 6–9 not started.
+- **Implementation progress:** 5 of 9 steps implemented and verified locally; steps 6–9 in progress.
 - **Baseline:** [measurement report](performance-baseline.md).
 - **Latest results:** [steps 1–5 verification](performance-items-1-5.md).
 
@@ -46,10 +46,10 @@ step 2 remains a payload/robustness improvement rather than a reproduced stall.
 | 3 | Implemented / verified locally | Allow homepage experience rows to wrap or stack on mobile. | No horizontal document overflow at 320, 375, 390, 768 px; long company names readable; desktop alignment preserved. Prior live observation: 468 px document width at 390 px viewport. |
 | 4 | Implemented / verified locally | Standardize reveal timing, cap local stagger, and add a short page-content transition if it improves perceived navigation. | Main text visible immediately; later list items have no index-dependent wait; header remains stable; back/forward, hash links, keyboard focus and scroll restoration still work. Profile before adopting route animation. |
 | 5 | Implemented / verified locally | Honor reduced motion in theme wipe, Motion components and programmatic smooth scrolling. | Reduced-motion mode changes theme without the 600 ms wipe; controls work with keyboard; no animated reveal or smooth scrolling contrary to preference; ordinary mode remains smooth. |
-| 6 | Proposed | Serve the above-fold FFT poster eagerly; defer renderer import/mount until playback; gate project video loading/playback by visibility and motion preference. | Poster is discoverable in initial HTML with suitable priority; first click initiates playback; microphone user activation is preserved; error/retry/source switching and navigation cleanup work. Compare Projects LCP, transfer and CPU before playback. |
-| 7 | Proposed | Include prerendered GitHub contributions in initial Open Source HTML/payload. | Cards present before hydration; no spinner-to-content jump; static deployment still works without a runtime GitHub API; absent build credentials handled. |
-| 8 | Investigation | Measure shared JavaScript and CSS cost before adjusting preload or inline styles; investigate Shiki style-text hydration mismatch on code-heavy articles. | Controlled A/B measurements show a useful improvement in cold and repeat views; preserve responsive image priority, current font strategy and the guard against speculative shader downloads. Avoid blanket preload removal. |
-| 9 | Proposed | Fix measured Open Source star-count and homepage company-text contrast; small UI cleanup: duplicate toaster, forced homepage logo reload, mobile spacing, possible View Projects hero action. | Star-count and company-text contrast reach 4.5:1; one notification region; logo uses normal navigation; layout and keyboard behavior checked. Treat CTA and spacing as design choices, not measured performance fixes. |
+| 6 | In progress | Serve the above-fold FFT poster eagerly; defer renderer import/mount until playback; gate project video loading/playback by visibility and motion preference. | Poster is discoverable in initial HTML with suitable priority; first click initiates playback; microphone user activation is preserved; error/retry/source switching and navigation cleanup work. Compare Projects LCP, transfer and CPU before playback. |
+| 7 | In progress | Include prerendered GitHub contributions in initial Open Source HTML/payload. | Cards present before hydration; no spinner-to-content jump; static deployment still works without a runtime GitHub API; absent build credentials handled. |
+| 8 | In progress | Measure shared JavaScript and CSS cost before adjusting preload or inline styles; investigate Shiki style-text hydration mismatch on code-heavy articles. | Controlled A/B measurements show a useful improvement in cold and repeat views; preserve responsive image priority, current font strategy and the guard against speculative shader downloads. Avoid blanket preload removal. |
+| 9 | In progress | Fix measured Open Source star-count and homepage company-text contrast; small UI cleanup: duplicate toaster, forced homepage logo reload, mobile spacing, possible View Projects hero action. | Star-count and company-text contrast reach 4.5:1; one notification region; logo uses normal navigation; layout and keyboard behavior checked. Treat CTA and spacing as design choices, not measured performance fixes. |
 
 ## Measurement rules
 

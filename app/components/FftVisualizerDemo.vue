@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount } from 'vue'
-import { FFTVisualizer } from '@fft-visualizer/vue'
-import '@fft-visualizer/vue/style.css'
+import type { FFTVisualizer } from '@fft-visualizer/vue'
 import { createDemoAudio, type AudioSource, type DemoAudio, SOMA } from './fftRadio'
 
-const { poster } = defineProps<{
+const { poster, eager = false } = defineProps<{
   // Optional still shown before playback starts (e.g. the project image).
   poster?: string
+  eager?: boolean
 }>()
 
 // Only raster stills go through ipx's AVIF transform — a video or vector poster
@@ -27,6 +26,20 @@ const pending = ref<AudioSource | null>(null)
 const error = ref('')
 const playing = computed(() => source.value !== null)
 let audio: DemoAudio | null = null
+const renderer = shallowRef<typeof FFTVisualizer>()
+const rendererError = ref('')
+let rendererAttempt = 0
+
+async function loadRenderer() {
+  const attempt = ++rendererAttempt
+  rendererError.value = ''
+  try {
+    const module = await import('./FftRenderer.client.vue')
+    if (attempt === rendererAttempt) renderer.value = module.default
+  } catch {
+    if (attempt === rendererAttempt) rendererError.value = 'Visualizer could not load. Try again.'
+  }
+}
 
 const sources: { id: AudioSource, icon: string, label: string }[] = [
   { id: 'radio', icon: 'i-lucide-radio', label: 'Play radio' },
@@ -139,11 +152,15 @@ async function toggle(next: AudioSource) {
   const id = runId
   pending.value = next
   const instance = createDemoAudio(next, BANDS)
+  audio = instance // Stop can cancel an in-flight connection immediately.
   try {
-    await instance.start(feed)
+    const started = instance.start(feed) // Keep microphone/play inside this click.
+    if (!renderer.value) void loadRenderer()
+    await started
   } catch {
     instance.stop()
     if (id !== runId) return
+    audio = null
     pending.value = null
     error.value = next === 'mic'
       ? 'No microphone — permission denied, or no input device available.'
@@ -162,6 +179,8 @@ async function toggle(next: AudioSource) {
 
 function stop() {
   runId++
+  rendererAttempt++
+  rendererError.value = ''
   audio?.stop()
   audio = null
   source.value = null
@@ -173,10 +192,12 @@ function stop() {
 
 // SomaFM now-playing (CORS-enabled JSON); the newest song is first.
 async function refreshNowPlaying() {
+  const id = runId
   try {
     const res = await fetch(SOMA.songs, { cache: 'no-store' })
     const json = await res.json()
     const s = json?.songs?.[0]
+    if (id !== runId || source.value !== 'radio') return
     nowPlaying.value = s ? `${s.artist} — ${s.title}` : ''
   } catch {
     // leave the previous value; attribution still shows the station name
@@ -205,31 +226,29 @@ onBeforeUnmount(stop)
       class="relative w-full overflow-hidden rounded-xl border border-dusk-200 dark:border-dusk-800/50"
       style="aspect-ratio: 16 / 6; min-height: 220px"
     >
-      <ClientOnly>
-        <FFTVisualizer
-          mode="external"
-          :data="data"
-          :data-left="dataLeft"
-          :data-right="dataRight"
-          :bands="BANDS"
-          background="#0a0a12"
-          :show-stats="false"
-          v-bind="activeProps"
-        />
-        <template #fallback>
-          <div class="absolute inset-0 grid place-items-center bg-[#0a0a12] text-sm text-white/50">
-            Loading visualizer…
-          </div>
-        </template>
-      </ClientOnly>
+      <component
+        :is="renderer"
+        v-if="playing && renderer"
+        mode="external"
+        :data="data"
+        :data-left="dataLeft"
+        :data-right="dataRight"
+        :bands="BANDS"
+        background="#0a0a12"
+        :show-stats="false"
+        v-bind="activeProps"
+      />
 
       <NuxtImg
-        v-if="poster && !playing"
+        v-if="poster && (!playing || !renderer)"
         :src="poster"
         :format="posterFormat"
         alt=""
         aria-hidden="true"
-        loading="lazy"
+        :loading="eager ? 'eager' : 'lazy'"
+        :fetchpriority="eager ? 'high' : 'auto'"
+        :preload="eager ? { fetchPriority: 'high' } : false"
+        sizes="sm:100vw md:768px lg:1280px"
         class="absolute inset-0 size-full object-contain"
       />
 
@@ -268,7 +287,11 @@ onBeforeUnmount(stop)
       </div>
     </div>
 
-    <p class="mt-3 text-xs text-muted">
+    <div v-if="rendererError" role="status" class="mt-3 flex items-center gap-2 text-sm text-error">
+      {{ rendererError }}
+      <UButton label="Retry visualizer" size="xs" variant="outline" @click="loadRenderer" />
+    </div>
+    <p class="mt-3 text-xs text-muted" role="status">
       <span
         v-if="error"
         class="text-error"

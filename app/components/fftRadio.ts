@@ -82,16 +82,21 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
     audioEl.src = streamUrl
   }
 
-  async function openMic() {
+  async function openMic(own: AudioContext) {
     // No browser DSP in the path: echo cancellation, noise suppression and AGC
     // all reshape the very spectrum this demo exists to show.
-    stream = await navigator.mediaDevices.getUserMedia({
+    const input = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: false,
         noiseSuppression: false,
         autoGainControl: false
       }
     })
+    if (ctx !== own) {
+      input.getTracks().forEach(track => track.stop())
+      return
+    }
+    stream = input
   }
 
   async function start(onData: (mono: Uint8Array, left: Uint8Array, right: Uint8Array) => void) {
@@ -109,7 +114,8 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
     // graph is wired, never before.
     const own = new AudioContext()
     ctx = own
-    void own.resume() // a no-op when it already came up running
+    const resumed = own.resume() // Initiate while the click is still active.
+    let playback: Promise<void> = Promise.resolve()
 
     analyserL = own.createAnalyser()
     analyserL.fftSize = fftSize
@@ -127,12 +133,9 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
       splitter.connect(analyserL, 0)
       splitter.connect(analyserR, 1)
 
-      // Fire-and-forget: do NOT await or fail on the initial Range 403 — let the
-      // browser settle the connection on its own. The bars stay flat until audio
-      // actually starts flowing, then react.
-      void audioEl!.play().catch(() => {})
+      playback = audioEl!.play()
     } else {
-      await openMic()
+      await openMic(own)
       if (ctx !== own) return
 
       // Deliberately not connected to ctx.destination: routing a mic back to the
@@ -140,7 +143,8 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
       own.createMediaStreamSource(stream!).connect(analyserL)
     }
 
-    const wasm = await import('@fft-visualizer/vue/wasm')
+    // Observe failures immediately, even while the WASM module is loading.
+    const [wasm] = await Promise.all([import('@fft-visualizer/vue/wasm'), resumed, playback])
     // The import resolving is not the same as the FFT being usable: the package
     // is bundled with vite-plugin-top-level-await, so `FftProcessor` stays
     // undefined until the WASM instance has initialised, and the plugin hands

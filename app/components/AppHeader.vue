@@ -16,7 +16,6 @@ defineProps<{
         class="cursor-pointer w-full logo h-8"
         role="img"
         aria-label="Wouter Vernaillen, home"
-        @click="$route.path == '/' ? reloadNuxtApp({ path: '/', ttl: 100 }) : $router.push('/')"
       />
     </template>
 

@@ -12,9 +12,8 @@ if (!page.value) {
   })
 }
 
-const { data: github, status: githubStatus } = useLazyFetch<GitHubContributions>('/api/github-contributions.json', {
-  server: false
-})
+// Prerender into the page payload; static navigation reuses that payload.
+const { data: github } = await useFetch<GitHubContributions>('/api/github-contributions.json')
 
 const authoredProjects = computed(() => github.value?.authored ?? [])
 const contributedProjects = computed(() => github.value?.contributed ?? [])
@@ -63,16 +62,11 @@ defineOgImage('Vernaillen', {
       }"
     />
 
-    <div
-      v-if="githubStatus === 'idle' || githubStatus === 'pending'"
-      class="flex items-center justify-center gap-3 py-12 text-muted"
-    >
-      <UIcon
-        name="i-lucide-loader-circle"
-        class="size-5 animate-spin"
-      />
-      <span>Fetching data from GitHub…</span>
-    </div>
+    <UPageSection
+      v-if="!authoredProjects.length && !contributedProjects.length"
+      description="Project details are temporarily unavailable. You can browse my repositories on GitHub."
+      :links="[{ label: 'Browse GitHub', to: 'https://github.com/vernaillen', target: '_blank' }]"
+    />
 
     <UPageSection
       v-if="authoredProjects.length"
@@ -110,7 +104,7 @@ defineOgImage('Vernaillen', {
                   </div>
                   <div
                     v-if="project.stars"
-                    class="flex shrink-0 items-center gap-1 text-xs text-dimmed"
+                    class="flex shrink-0 items-center gap-1 text-xs text-muted"
                   >
                     <UIcon
                       name="i-lucide-star"
@@ -152,12 +146,12 @@ defineOgImage('Vernaillen', {
                 />
                 <span class="truncate">{{ contribution.repo }}</span>
               </div>
-              <div class="flex shrink-0 items-center gap-1 text-xs text-dimmed">
+              <div class="flex shrink-0 items-center gap-1 text-xs text-muted">
                 <UIcon
                   name="i-lucide-star"
                   class="size-3"
                 />
-                {{ contribution.stars.toLocaleString() }}
+                {{ contribution.stars.toLocaleString('en-US') }}
               </div>
             </div>
             <p class="mt-1 text-sm text-muted">

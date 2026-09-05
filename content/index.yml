@@ -6,6 +6,10 @@ title2: "Enterprise Full-Stack Java Developer"
 description: "Spring Boot, Vue/Nuxt & Angular, DevOps, Secure delivery, AI-enabled development."
 hero:
   links:
+    - label: View Projects
+      to: /projects
+      icon: i-lucide-folder-code
+      size: lg
     - label: Career
       to: /career
       icon: i-lucide-briefcase

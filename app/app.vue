@@ -51,6 +51,5 @@ useSchemaOrg([
 
     <AppSearch />
 
-    <UToaster />
   </UApp>
 </template>

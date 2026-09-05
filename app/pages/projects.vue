@@ -85,9 +85,9 @@ defineOgImage('Vernaillen', {
           <p class="mb-5 max-w-2xl text-muted">
             {{ project.description }}
           </p>
-          <LazyFftVisualizerDemo
+          <FftVisualizerDemo
             poster="/images/projects/fft-visualizer-hero.png"
-            hydrate-on-visible
+            eager
           />
           <ULink
             :to="project.url"
@@ -130,25 +130,12 @@ defineOgImage('Vernaillen', {
               />
             </ULink>
           </template>
-          <video
+          <ProjectVideo
             v-if="project.video"
-            autoplay
-            loop
-            muted
-            playsinline
-            width="640"
-            height="192"
-            class="object-cover w-full h-48 rounded-lg border border-dusk-200 dark:border-dusk-800/50"
-          >
-            <source
-              :src="project.image.replace('.mp4', '.webm')"
-              type="video/webm"
-            >
-            <source
-              :src="project.image"
-              type="video/mp4"
-            >
-          </video>
+            :src="project.image"
+            :title="project.title"
+            poster="/images/projects/vue-audiomotion-analyzer-poster.png"
+          />
           <NuxtImg
             v-else
             :src="project.image"
