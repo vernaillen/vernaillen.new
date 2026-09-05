@@ -1,5 +1,18 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+const reducedMotion = usePreferredReducedMotion()
+let activeTransition: ViewTransition | undefined
+let activeAnimation: Animation | undefined
+
+function cancelTransition() {
+  activeAnimation?.cancel()
+  activeTransition?.skipTransition()
+}
+
+watch(reducedMotion, (preference) => {
+  if (preference === 'reduce') cancelTransition()
+})
+onBeforeUnmount(cancelTransition)
 
 const nextTheme = computed(() => (colorMode.value === 'dark' ? 'light' : 'dark'))
 
@@ -7,26 +20,36 @@ const switchTheme = () => {
   colorMode.preference = nextTheme.value
 }
 
-const startViewTransition = (event: MouseEvent) => {
-  if (!document.startViewTransition) {
+const startViewTransition = async (event: MouseEvent) => {
+  // Finish the previous toggle's DOM update before accepting another one.
+  // This also prevents rejected `ready` promises on rapid repeat activation.
+  if (activeTransition) return
+  if (!document.startViewTransition || reducedMotion.value === 'reduce') {
     switchTheme()
     return
   }
 
-  const x = event.clientX
-  const y = event.clientY
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  const x = event.detail === 0 ? rect.left + rect.width / 2 : event.clientX
+  const y = event.detail === 0 ? rect.top + rect.height / 2 : event.clientY
   const endRadius = Math.hypot(
     Math.max(x, window.innerWidth - x),
     Math.max(y, window.innerHeight - y)
   )
 
-  const transition = document.startViewTransition(() => {
+  const transition = document.startViewTransition(async () => {
     switchTheme()
+    await nextTick()
   })
+  activeTransition = transition
 
-  transition.ready.then(() => {
-    const duration = 600
-    document.documentElement.animate(
+  try {
+    await transition.ready
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      transition.skipTransition()
+      return
+    }
+    activeAnimation = document.documentElement.animate(
       {
         clipPath: [
           `circle(0px at ${x}px ${y}px)`,
@@ -34,12 +57,19 @@ const startViewTransition = (event: MouseEvent) => {
         ]
       },
       {
-        duration: duration,
-        easing: 'cubic-bezier(.76,.32,.29,.99)',
+        duration: 300,
+        easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
         pseudoElement: '::view-transition-new(root)'
       }
     )
-  })
+    await activeAnimation.finished
+  } catch {
+    // A skipped transition or cancelled animation still applies the new theme.
+  } finally {
+    await transition.finished.catch(() => {})
+    activeAnimation = undefined
+    activeTransition = undefined
+  }
 }
 </script>
 

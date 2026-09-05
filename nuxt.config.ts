@@ -28,6 +28,7 @@ export default defineNuxtConfig({
     enabled: true
   },
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       script: [
         {
@@ -106,16 +107,9 @@ export default defineNuxtConfig({
 
   experimental: {
     componentIslands: true,
-    // SSR renders `.client` components as ServerPlaceholder, which without this
-    // flag is an empty <div>. HeroShaders.client.vue's root is `<Shader v-if=
-    // "ready">` and `ready` only flips in onMounted, so its first client render
-    // is a comment node — a <div>-vs-comment hydration mismatch as soon as the
-    // >=1024px media query hydrates it (desktop only; mobile never hydrates it
-    // and never warned). Emitting <!--placeholder--> on the server matches, and
-    // also drops the stray immediate="true" attr that fell through onto the
-    // placeholder. Losing placeholder attrs costs nothing here: the div was
-    // empty and absolutely positioned. Both <ClientOnly> usages pass an explicit
-    // #fallback, which this flag does not touch.
+    // Match client-only components whose initial render is a comment node.
+    // Explicit ClientOnly fallbacks are unaffected. Hero shader eligibility is
+    // now checked in its parent before the async component is imported.
     clientNodePlaceholder: true
   },
 

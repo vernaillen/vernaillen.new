@@ -77,13 +77,9 @@ const groupedEvents = computed((): Record<CareerEvent['category'], CareerEvent[]
         </div>
 
         <div class="lg:col-span-2 space-y-8">
-          <Motion
+          <ScrollReveal
             v-for="(event, index) in eventsInCategory"
             :key="`${category}-${index}`"
-            :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-            :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-            :transition="{ delay: 0.1 * index }"
-            :in-view-options="{ once: true }"
           >
             <div
               class="group relative pl-6 border-l border-default"
@@ -127,7 +123,7 @@ const groupedEvents = computed((): Record<CareerEvent['category'], CareerEvent[]
                 class="mr-2"
               />
             </div>
-          </Motion>
+          </ScrollReveal>
         </div>
       </div>
     </UPageSection>

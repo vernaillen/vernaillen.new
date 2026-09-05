@@ -71,6 +71,12 @@ performance.
 
 ## Development
 
+Performance work is tracked in [the improvement plan](docs/performance-plan.md),
+with measurements in [the baseline report](docs/performance-baseline.md).
+Update both after each implementation step. Re-run the pinned Lighthouse suite
+with `bash scripts/performance/lighthouse.sh`; raw reports stay in the ignored
+`.unlighthouse/performance/` directory.
+
 ```bash
 pnpm install
 pnpm dev          # http://localhost:3000

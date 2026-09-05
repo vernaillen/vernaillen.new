@@ -53,20 +53,10 @@ defineOgImage('Vernaillen', {
         container: 'pt-0!'
       }"
     >
-      <Motion
-        :initial="{ transform: 'translateY(10px)' }"
-        :while-in-view="{ transform: 'translateY(0)' }"
-        :transition="{ delay: 0.1 }"
-        :in-view-options="{ once: true }"
-      >
+      <ScrollReveal>
         <ContentRenderer :value="page" />
-      </Motion>
-      <Motion
-        :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-        :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-        :transition="{ delay: 0.2 }"
-        :in-view-options="{ once: true }"
-      >
+      </ScrollReveal>
+      <ScrollReveal>
         <div class="flex flex-row justify-center items-center py-10 -space-x-8">
           <PolaroidItem
             v-for="(image, index) in page.images"
@@ -75,7 +65,7 @@ defineOgImage('Vernaillen', {
             :index
           />
         </div>
-      </Motion>
+      </ScrollReveal>
     </UPageSection>
   </UPage>
 </template>

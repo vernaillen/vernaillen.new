@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { Shader, Pixelate, Plasma, SineWave, CursorTrail } from 'shaders/vue'
 
-const props = defineProps<{
-  // Skip the idle deferral and init right away (used on client-side
-  // navigation, where there is no load-measurement window to protect).
-  immediate?: boolean
-}>()
-
-const emit = defineEmits<{ ready: [] }>()
+const emit = defineEmits<{ ready: [], unavailable: [] }>()
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
@@ -28,8 +22,9 @@ const ready = ref(false)
 // blocked (a privacy default in some browsers) still implies a real context,
 // so we assume hardware in that case rather than disabling for everyone.
 function hasGpuAcceleration() {
+  let gl: WebGLRenderingContext | null = null
   try {
-    const gl = document.createElement('canvas').getContext('webgl')
+    gl = document.createElement('canvas').getContext('webgl')
     if (!gl) return false
     const ext = gl.getExtension('WEBGL_debug_renderer_info')
     if (!ext) return true
@@ -37,8 +32,25 @@ function hasGpuAcceleration() {
     return !/swiftshader|llvmpipe|software|basic render/i.test(renderer)
   } catch {
     return false
+  } finally {
+    gl?.getExtension('WEBGL_lose_context')?.loseContext()
   }
 }
+
+let idleHandle: number | undefined
+let timeoutHandle: ReturnType<typeof setTimeout> | undefined
+let disposed = false
+
+function unavailable() {
+  ready.value = false
+  if (!disposed) emit('unavailable')
+}
+
+onBeforeUnmount(() => {
+  disposed = true
+  if (idleHandle !== undefined) window.cancelIdleCallback(idleHandle)
+  if (timeoutHandle !== undefined) clearTimeout(timeoutHandle)
+})
 
 onMounted(() => {
   const value = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-500').trim()
@@ -50,23 +62,16 @@ onMounted(() => {
   // continuous WebGL animation for users who asked for reduced motion.
   if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
 
-  // Defer the expensive WebGL init until the browser is idle. The hero's
-  // static poster already paints the shader's resting frame, so the heavy GL
-  // work lands after the load-measurement window without leaving the
-  // background blank — which is what made deferring hurt Speed Index before
-  // the poster existed.
+  // Initial load and return navigation both need time to paint and handle input.
+  // Keep the poster until the library reports its actual first rendered frame.
   const start = () => {
+    if (disposed) return
     ready.value = true
-    // Once the first GL frame has painted, signal the parent to crossfade the
-    // poster out so the handoff has no blank gap.
-    requestAnimationFrame(() => requestAnimationFrame(() => emit('ready')))
   }
-  if (props.immediate) {
-    start()
-  } else if ('requestIdleCallback' in window) {
-    requestIdleCallback(start, { timeout: 2000 })
+  if ('requestIdleCallback' in window) {
+    idleHandle = window.requestIdleCallback(start, { timeout: 2000 })
   } else {
-    setTimeout(start, 200)
+    timeoutHandle = setTimeout(start, 200)
   }
 })
 
@@ -81,6 +86,8 @@ const opacity = computed(() => isDark.value ? ' opacity-30' : ' opacity-50')
   <Shader
     v-if="ready"
     :class="opacity"
+    @ready="!disposed && emit('ready')"
+    @unavailable="unavailable"
   >
     <Pixelate
       :gap="{

@@ -91,13 +91,9 @@ defineOgImage('Vernaillen', {
             {{ group.title }}
           </h3>
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Motion
-              v-for="(project, index) in group.projects"
+            <ScrollReveal
+              v-for="project in group.projects"
               :key="project.repo"
-              :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-              :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-              :transition="{ delay: 0.1 * index }"
-              :in-view-options="{ once: true }"
             >
               <ULink
                 :to="project.url"
@@ -127,7 +123,7 @@ defineOgImage('Vernaillen', {
                   {{ project.description }}
                 </p>
               </ULink>
-            </Motion>
+            </ScrollReveal>
           </div>
         </div>
       </div>
@@ -139,13 +135,9 @@ defineOgImage('Vernaillen', {
       description="Pull requests merged into open source projects across the ecosystem."
     >
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Motion
-          v-for="(contribution, index) in contributedProjects"
+        <ScrollReveal
+          v-for="contribution in contributedProjects"
           :key="contribution.repo"
-          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-          :transition="{ delay: 0.1 * index }"
-          :in-view-options="{ once: true }"
         >
           <ULink
             :to="contribution.pr || contribution.url"
@@ -172,7 +164,7 @@ defineOgImage('Vernaillen', {
               {{ contribution.description }}
             </p>
           </ULink>
-        </Motion>
+        </ScrollReveal>
       </div>
     </UPageSection>
   </UPage>

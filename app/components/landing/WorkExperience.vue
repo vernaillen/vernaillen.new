@@ -17,41 +17,36 @@ defineProps<{
   >
     <template #description>
       <div class="flex flex-col gap-2">
-        <Motion
+        <ScrollReveal
           v-for="(experience, index) in page.experience.items"
           :key="index"
-          :initial="{ opacity: 0, transform: 'translateY(20px)' }"
-          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-          :transition="{ delay: 0.1 + 0.03 * index }"
-          :in-view-options="{ once: true }"
-          class="text-muted flex items-center text-nowrap gap-2"
+          class="text-muted flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-2"
         >
-          <p class="font-mono text-xs">
+          <p class="shrink-0 font-mono text-xs">
             {{ experience.date }}
           </p>
-          <USeparator />
+          <USeparator class="hidden min-w-4 flex-1 sm:flex" />
           <ULink
-            class="flex items-center gap-1"
+            class="min-w-0 flex flex-wrap items-baseline gap-x-1 text-sm"
             :to="experience.company.url"
             target="_blank"
           >
             <span class="text-sm">
               {{ experience.position }}
             </span>
-            <div
-              class="inline-flex items-center gap-1 text-sm"
+            <span
+              class="min-w-0"
               :style="{ color: `color-mix(in oklch, ${experience.company.color} 60%, var(--ui-text-muted))` }"
             >
               <span class="font-medium">{{ experience.company.name }}</span>
-              <UIcon :name="experience.company.logo" />
-            </div>
+              <UIcon
+                :name="experience.company.logo"
+                class="ml-1 inline-block shrink-0 align-middle"
+              />
+            </span>
           </ULink>
-        </Motion>
+        </ScrollReveal>
       </div>
     </template>
   </UPageSection>
 </template>
-
-<style scoped>
-
-</style>

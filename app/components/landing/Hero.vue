@@ -15,15 +15,15 @@ const isDark = computed(() => colorMode.value === 'dark')
 // the shader never hydrates, so the poster stays as the (zero-GL) background.
 const shaderReady = ref(false)
 
-// The shader's idle-deferred init only earns its keep during the initial page
-// load (keeping heavy GL frames out of the load-measurement window). On a
-// client-side navigation there's no measurement window, so render it
-// immediately rather than late. isHydrating is only true on the first render.
-// The import.meta.client guard keeps the value identical on both sides of
-// hydration (false), where bare !isHydrating reads true on the server and
-// false on the client — a divergence that leaks into the SSR HTML as an
-// attribute the client would never render.
-const eagerShader = import.meta.client && !useNuxtApp().isHydrating
+// This check must live outside the heavy async component: delayed hydration
+// alone doesn't prevent a download when desktop users request reduced motion.
+// The mounted guard keeps the first client render identical to the SSR output.
+const mounted = useMounted()
+const shaderMedia = useMediaQuery('(min-width: 1024px) and (prefers-reduced-motion: no-preference)')
+const shaderEnabled = computed(() => mounted.value && shaderMedia.value)
+watch(shaderEnabled, () => {
+  shaderReady.value = false
+}, { flush: 'sync' })
 </script>
 
 <template>
@@ -37,8 +37,8 @@ const eagerShader = import.meta.client && !useNuxtApp().isHydrating
   >
     <template #top>
       <div
-        class="absolute inset-0 transition-opacity duration-700 ease-out"
-        :class="shaderReady ? 'opacity-0' : (isDark ? 'opacity-30' : 'opacity-50')"
+        class="absolute inset-0"
+        :class="shaderReady && shaderEnabled ? 'opacity-0 transition-opacity duration-300 ease-out' : (isDark ? 'opacity-30' : 'opacity-50')"
       >
         <!-- Not UColorModeImage: it forwards one identical set of attrs to both
              variants, and the two posters need opposite loading priorities. The
@@ -65,10 +65,10 @@ const eagerShader = import.meta.client && !useNuxtApp().isHydrating
         />
       </div>
       <LazyHeroShaders
-        hydrate-on-media-query="(min-width: 1024px)"
+        v-if="shaderEnabled"
         class="absolute inset-0"
-        :immediate="eagerShader"
-        @ready="shaderReady = true"
+        @ready="shaderReady = shaderEnabled"
+        @unavailable="shaderReady = false"
       />
     </template>
 
@@ -147,18 +147,18 @@ const eagerShader = import.meta.client && !useNuxtApp().isHydrating
 </template>
 
 <style scoped>
-/* Transform-only reveal: scale in without an opacity fade so above-the-fold
+/* Transform-only reveal: move in without an opacity fade so above-the-fold
    pixels paint in their near-final state on the first frame. Fading from
    opacity:0 left content invisible early, which delayed Speed Index
    (invisible pixels don't count as visually painted). */
 @keyframes hero-reveal {
-  from { transform: scale(1.05); }
-  to { transform: scale(1); }
+  from { transform: translateY(8px); }
+  to { transform: none; }
 }
 
 .hero-reveal,
 .hero-reveal-title {
-  animation: hero-reveal 0.25s ease-out both;
+  animation: hero-reveal 0.22s ease-out both;
 }
 .hero-reveal-1 { animation-delay: 0ms; }
 .hero-reveal-title { animation-delay: 40ms; }

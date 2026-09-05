@@ -57,13 +57,9 @@ defineOgImage('Vernaillen', {
       }"
     >
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Motion
+        <ScrollReveal
           v-for="(post, index) in posts"
           :key="index"
-          :initial="{ transform: 'translateY(10px)' }"
-          :while-in-view="{ transform: 'translateY(0)' }"
-          :transition="{ delay: 0.1 * index }"
-          :in-view-options="{ once: true }"
         >
           <UBlogPost
             variant="naked"
@@ -92,7 +88,7 @@ defineOgImage('Vernaillen', {
               {{ formatPostDate(post.date) }}
             </template>
           </UBlogPost>
-        </Motion>
+        </ScrollReveal>
       </div>
     </UPageSection>
   </UPage>

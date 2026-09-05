@@ -66,13 +66,9 @@ defineOgImage('Vernaillen', {
         container: 'pt-0!'
       }"
     >
-      <Motion
+      <ScrollReveal
         v-for="(project, index) in projects"
         :key="project.title"
-        :initial="{ transform: 'translateY(10px)' }"
-        :while-in-view="{ transform: 'translateY(0)' }"
-        :transition="{ delay: 0.2 * index }"
-        :in-view-options="{ once: true }"
       >
         <div
           v-if="project.demo === 'fft'"
@@ -164,7 +160,7 @@ defineOgImage('Vernaillen', {
             class="object-cover w-full h-48 rounded-lg border border-dusk-200 dark:border-dusk-800/50"
           />
         </UPageCard>
-      </Motion>
+      </ScrollReveal>
     </UPageSection>
   </UPage>
 </template>

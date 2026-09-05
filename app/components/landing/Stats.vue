@@ -14,12 +14,10 @@ defineProps<{
     }"
   >
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-px border border-dusk-200 dark:border-dusk-800/50 rounded-lg overflow-hidden">
-      <Motion
+      <ScrollReveal
         v-for="(stat, index) in page.stats"
         :key="index"
-        :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-        :animate="{ opacity: 1, transform: 'translateY(0)' }"
-        :transition="{ delay: 0.1 * index }"
+        :delay="index * 40"
         class="flex flex-col items-center justify-center py-6 px-4 bg-elevated/30"
       >
         <span class="font-heading text-3xl sm:text-4xl font-semibold tracking-tight text-primary">
@@ -28,7 +26,7 @@ defineProps<{
         <span class="font-mono text-xs text-muted mt-1">
           {{ stat.label }}
         </span>
-      </Motion>
+      </ScrollReveal>
     </div>
   </UPageSection>
 </template>

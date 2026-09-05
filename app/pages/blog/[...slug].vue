@@ -89,10 +89,7 @@ const articleLink = computed(() => `${site.url}${route.path}`)
         class="flex flex-col gap-4 mt-8 mx-auto"
       >
         <!-- Metadata row -->
-        <Motion
-          :initial="{ transform: 'translateY(10px)' }"
-          :while-in-view="{ transform: 'translateY(0)' }"
-        >
+        <ScrollReveal>
           <div class="flex items-center justify-center gap-3 font-mono text-xs text-muted">
             <span v-if="page.date">
               {{ formatPostDate(page.date) }}
@@ -107,21 +104,17 @@ const articleLink = computed(() => `${site.url}${route.path}`)
               {{ page.minRead }} min read
             </span>
           </div>
-        </Motion>
+        </ScrollReveal>
 
         <!-- Title & description -->
-        <Motion
-          :initial="{ transform: 'translateY(10px)' }"
-          :while-in-view="{ transform: 'translateY(0)' }"
-          :transition="{ delay: 0.07 }"
-        >
+        <ScrollReveal>
           <h1 class="text-3xl sm:text-4xl text-center max-w-3xl mx-auto tracking-tight leading-tight">
             {{ page.title }}
           </h1>
           <p class="font-mono text-muted text-center max-w-3xl mx-auto my-3 text-base leading-relaxed text-foreground/80">
             {{ page.description }}
           </p>
-        </Motion>
+        </ScrollReveal>
 
         <!-- Hero image. The <img> alone is already eager + fetchpriority=high, but
              it sits in the body behind ~85 modulepreload links of equal priority,
@@ -131,11 +124,7 @@ const articleLink = computed(() => `${site.url}${route.path}`)
              the link now carries imagesrcset + imagesizes, so the browser preloads
              the same candidate the <img> picks (2.0 preloaded the largest variant
              unconditionally and double-downloaded on mobile). -->
-        <Motion
-          :initial="{ transform: 'translateY(10px)' }"
-          :while-in-view="{ transform: 'translateY(0)' }"
-          :transition="{ delay: 0.1 }"
-        >
+        <ScrollReveal>
           <NuxtImg
             :src="page.image?.src"
             :alt="page.title"
@@ -149,14 +138,10 @@ const articleLink = computed(() => `${site.url}${route.path}`)
             :style="{ height: `${page.image?.height || 300}px` }"
             class="rounded-lg w-full object-cover object-center border border-dusk-200 dark:border-dusk-800/50"
           />
-        </Motion>
+        </ScrollReveal>
 
         <!-- Author -->
-        <Motion
-          :initial="{ transform: 'translateY(10px)' }"
-          :while-in-view="{ transform: 'translateY(0)' }"
-          :transition="{ delay: 0.15 }"
-        >
+        <ScrollReveal>
           <div class="flex items-center justify-center">
             <UUser
               color="neutral"
@@ -165,7 +150,7 @@ const articleLink = computed(() => `${site.url}${route.path}`)
               v-bind="page.author"
             />
           </div>
-        </Motion>
+        </ScrollReveal>
       </div>
     </UContainer>
 
@@ -189,16 +174,12 @@ const articleLink = computed(() => `${site.url}${route.path}`)
 
           <!-- Loaded body -->
           <template v-else>
-            <Motion
-              :initial="{ opacity: 0, transform: 'translateY(10px)' }"
-              :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
-              :transition="{ delay: 0.2 }"
-            >
+            <ScrollReveal>
               <ContentRenderer
                 v-if="page.body"
                 :value="page"
               />
-            </Motion>
+            </ScrollReveal>
 
             <!-- Below `lg` the TOC aside sits collapsed at the top of the page and
                  its #bottom slot is hidden by the theme, so the comment card is
