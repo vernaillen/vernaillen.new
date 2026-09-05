@@ -11,7 +11,7 @@ run_audit() {
   local label="$1" route="$2"
   shift 2
   printf 'Auditing %s%s (%s)\n' "$audit_origin" "$route" "$label"
-  npm exec --yes --package=lighthouse@13.4.1 -- lighthouse \
+  pnpm dlx lighthouse@13.4.1 \
     "${audit_origin%/}${route}" \
     --chrome-flags="--headless" \
     --output=html --output=json --save-assets \

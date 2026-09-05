@@ -8,8 +8,14 @@ const documentVisibility = useDocumentVisibility()
 const mounted = useMounted()
 const shouldPlay = computed(() => mounted.value && visible.value && preference.value === 'no-preference' && documentVisibility.value === 'visible')
 
+// Mounted the first time it may play and kept from then on: unmounting on every
+// scroll-out would refetch the file and restart it from the first frame.
+const loaded = ref(false)
+
 watch(shouldPlay, (play) => {
-  if (!play) video.value?.pause()
+  if (play) loaded.value = true
+  if (play) void video.value?.play().catch(() => {})
+  else video.value?.pause()
 }, { flush: 'sync' })
 watch(video, (element) => {
   if (element && shouldPlay.value) void element.play().catch(() => {})
@@ -27,15 +33,14 @@ onBeforeUnmount(() => video.value?.pause())
       :alt="title"
       format="avif"
       width="640"
-      height="192"
+      height="145"
       sizes="sm:100vw md:640px"
       loading="lazy"
       class="size-full object-cover"
     />
     <video
-      v-if="shouldPlay"
+      v-if="loaded"
       ref="video"
-      :poster="poster"
       autoplay
       loop
       muted

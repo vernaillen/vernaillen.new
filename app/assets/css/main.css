@@ -208,6 +208,13 @@ h1::after,
 }
 
 
+/* Hash-link scrolling (blog TOC, deep links) lands below the sticky header. */
+@layer base {
+  html {
+    scroll-padding-top: 5rem;
+  }
+}
+
 /* Page navigation: enter only; no exit delay and no invisible text. The header
    is outside NuxtPage, so it stays fixed while the incoming content settles. */
 @media (prefers-reduced-motion: no-preference) {

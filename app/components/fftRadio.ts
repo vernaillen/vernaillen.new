@@ -107,11 +107,11 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
     // audio through if the AudioContext is constructed — and the element played
     // — inside that gesture. Awaiting the WASM chunk first pushed both into a
     // later task, so the context came up suspended and the element stayed
-    // silent, with no error to show for it since play() rejections are
-    // deliberately swallowed below. That is what made it look like play needed
-    // two clicks: the second one found the module cached, collapsing the await
-    // to a microtask that stays inside the gesture. Load the FFT only once the
-    // graph is wired, never before.
+    // silent. That is what made it look like play needed two clicks: the
+    // second one found the module cached, collapsing the await to a microtask
+    // that stays inside the gesture. Load the FFT only once the graph is wired,
+    // never before, and await play() alongside it so a rejection surfaces as
+    // an error instead of a silent stream.
     const own = new AudioContext()
     ctx = own
     const resumed = own.resume() // Initiate while the click is still active.

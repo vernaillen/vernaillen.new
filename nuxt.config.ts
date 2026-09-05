@@ -18,7 +18,6 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxtjs/seo',
     'nuxt-svgo',
-    'motion-v/nuxt',
     'nuxt-studio',
     '@nuxt/fonts',
     'nuxt-llms'
@@ -42,6 +41,13 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+
+  router: {
+    options: {
+      // Hash links (blog TOC); the header offset is `scroll-padding-top` in main.css.
+      scrollBehaviorType: 'smooth'
+    }
+  },
 
   site: {
     url: 'https://vernaillen.dev',

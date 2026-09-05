@@ -7,6 +7,8 @@ let activeAnimation: Animation | undefined
 function cancelTransition() {
   activeAnimation?.cancel()
   activeTransition?.skipTransition()
+  activeAnimation = undefined
+  activeTransition = undefined
 }
 
 watch(reducedMotion, (preference) => {
@@ -21,9 +23,9 @@ const switchTheme = () => {
 }
 
 const startViewTransition = async (event: MouseEvent) => {
-  // Finish the previous toggle's DOM update before accepting another one.
-  // This also prevents rejected `ready` promises on rapid repeat activation.
-  if (activeTransition) return
+  // A click during the previous wipe skips that transition and starts a new
+  // one from the current state, so no toggle is ever dropped.
+  cancelTransition()
   if (!document.startViewTransition || reducedMotion.value === 'reduce') {
     switchTheme()
     return
@@ -67,8 +69,10 @@ const startViewTransition = async (event: MouseEvent) => {
     // A skipped transition or cancelled animation still applies the new theme.
   } finally {
     await transition.finished.catch(() => {})
-    activeAnimation = undefined
-    activeTransition = undefined
+    if (activeTransition === transition) {
+      activeAnimation = undefined
+      activeTransition = undefined
+    }
   }
 }
 </script>

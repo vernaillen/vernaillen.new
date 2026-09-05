@@ -110,7 +110,7 @@ defineOgImage('Vernaillen', {
                       name="i-lucide-star"
                       class="size-3"
                     />
-                    {{ project.stars }}
+                    {{ project.stars.toLocaleString('en-US') }}
                   </div>
                 </div>
                 <p class="mt-1 text-sm text-muted">

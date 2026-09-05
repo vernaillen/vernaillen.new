@@ -240,6 +240,8 @@ onBeforeUnmount(stop)
         v-bind="activeProps"
       />
 
+      <!-- object-contain in the 16:6 box shows the (near-square) poster at
+           ~42% of the box width, so the candidates follow that, not the box. -->
       <NuxtImg
         v-if="poster && (!playing || !renderer)"
         :src="poster"
@@ -249,7 +251,7 @@ onBeforeUnmount(stop)
         :loading="eager ? 'eager' : 'lazy'"
         :fetchpriority="eager ? 'high' : 'auto'"
         :preload="eager ? { fetchPriority: 'high' } : false"
-        sizes="sm:100vw md:768px lg:1280px"
+        sizes="xs:250px sm:250px md:300px lg:400px xl:510px"
         class="absolute inset-0 size-full object-contain"
       />
 
