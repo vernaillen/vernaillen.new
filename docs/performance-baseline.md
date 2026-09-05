@@ -1,7 +1,8 @@
 # Production performance baseline
 
 Measured 2026-09-05 against https://vernaillen.dev. No website implementation
-changes were made for these measurements. See the [full plan](performance-plan.md).
+changes were made for these measurements. See the [full plan](performance-plan.md)
+and the subsequent [steps 1–5 local verification](performance-items-1-5.md).
 
 ## Lighthouse results
 
@@ -135,7 +136,8 @@ node scripts/performance/profile.mjs /absolute/path/to/puppeteer-core/lib/puppet
 
 Baseline Puppeteer Core version: 25.10.0 (available with Lighthouse's cached
 dependencies). Set `PERF_TRACE=0` to repeat without tracing. Set
-`PERF_CHROME_PATH` to use another Chrome executable. The trace is
+`PERF_ORIGIN` to profile a local production preview and `PERF_CHROME_PATH` to
+use another Chrome executable. The trace is
 `desktop-interactions.trace.json`; summary data is `desktop-interactions.json`.
 
 Raw baseline folder: [reports and traces](../.unlighthouse/performance/baseline-2026-09-05/).

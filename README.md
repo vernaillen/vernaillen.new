@@ -47,14 +47,18 @@ performance.
 - **Prefetch is disabled** via a `build:manifest` hook. Nuxt prefetches every
   lazy chunk reachable from a route, which on the homepage meant ~3.5MB of
   speculative JS — including the 2.5MB shaders library that only ever hydrates
-  at ≥1024px. Modulepreload of what a route actually needs is untouched.
+  at ≥1024px with no reduced-motion preference. Modulepreload of what a route actually needs is untouched.
 - **No font preloads.** `font-display: swap` plus @nuxt/fonts' fallback metric
   overrides mean the LCP heading paints immediately in a size-matched fallback.
   Preloading the ~76KB of woff2 put it on the critical path: LCP 4.3s → 2.1s and
   mobile Perf 77 → 98 once removed.
-- **The hero shader is desktop-only and idle-deferred**, behind a static poster.
-  `clientNodePlaceholder` is on so its SSR placeholder is a comment node rather
-  than an empty `<div>`, matching the first client render.
+- **The hero shader is desktop-only and idle-deferred**, including return visits.
+  A mounted parent gate excludes mobile and reduced-motion visits before import.
+  The static poster stays visible until the renderer emits `ready`, and remains
+  visible on GPU failure.
+- **Reveals keep text visible** and use a short, one-time transform with at most
+  120 ms of stagger. Page entry moves 6 px over 160 ms; the header stays mounted.
+  Reduced motion disables reveal movement, the theme wipe and smooth hash scrolling.
 - **OG images are baked at build time** (`ogImage.zeroRuntime`) with
   `@takumi-rs`. `renderTimeout` is raised to 60s because AVIF encoding saturates
   the CPU during prerender and starves the OG renderer — don't lower it.
@@ -72,8 +76,9 @@ performance.
 ## Development
 
 Performance work is tracked in [the improvement plan](docs/performance-plan.md),
-with measurements in [the baseline report](docs/performance-baseline.md).
-Update both after each implementation step. Re-run the pinned Lighthouse suite
+with measurements in [the baseline report](docs/performance-baseline.md) and
+[steps 1–5 verification](docs/performance-items-1-5.md).
+Update the plan and the relevant results report after each implementation step. Re-run the pinned Lighthouse suite
 with `bash scripts/performance/lighthouse.sh`; raw reports stay in the ignored
 `.unlighthouse/performance/` directory.
 

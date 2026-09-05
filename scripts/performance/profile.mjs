@@ -9,6 +9,7 @@ if (!modulePath) throw new Error('Pass the installed puppeteer-core module path 
 const { default: puppeteer } = await import(pathToFileURL(resolve(modulePath)).href)
 const output = resolve(process.argv[3] || '.unlighthouse/performance/baseline-2026-09-05')
 const recordTrace = process.env.PERF_TRACE !== '0'
+const origin = process.env.PERF_ORIGIN || 'https://vernaillen.dev'
 await mkdir(output, { recursive: true })
 const delay = ms => new Promise(resolveDelay => setTimeout(resolveDelay, ms))
 const browser = await puppeteer.launch({
@@ -56,7 +57,7 @@ try {
     screenshots: true,
     categories: ['devtools.timeline', 'v8.execute', 'blink.user_timing', 'loading', 'cc', 'gpu', 'disabled-by-default-devtools.timeline', 'disabled-by-default-devtools.timeline.frame']
   })
-  await page.goto('https://vernaillen.dev/', { waitUntil: 'domcontentloaded' })
+  await page.goto(origin, { waitUntil: 'domcontentloaded' })
   await delay(8000)
   async function mark(label) {
     await page.evaluate((nextLabel) => {
@@ -113,7 +114,7 @@ try {
     }
   })
   const result = {
-    recordedAt: new Date().toISOString(), url: 'https://vernaillen.dev/', browser: await browser.version(),
+    recordedAt: new Date().toISOString(), url: origin, browser: await browser.version(),
     viewport: { width: 1440, height: 900, deviceScaleFactor: 1 },
     throttling: 'none', headless: true, traceEnabled: recordTrace,
     methodology: 'One synthetic run. RAF heartbeat and Long Tasks observer; scripted 100px wheel inputs every ~100ms. Trace recording adds overhead. RAF gaps are not GPU-presented FPS, and this does not measure real-user INP.',

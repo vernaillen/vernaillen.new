@@ -9,9 +9,11 @@ authorized implementation of steps 1–5 on 2026-09-05. Steps 6–9 remain propo
 ## Current status
 
 - **Baseline complete:** seven Lighthouse audits and two desktop interaction profiles (with/without tracing).
-- **Active:** implementing and validating steps 1–5 together, as requested.
-- **Implementation progress:** steps 1–5 in progress; steps 6–9 not started.
+- **Active:** steps 1–5 complete locally; production verification remains pending.
+- **Next proposed work:** step 6 (eager FFT poster and deferred demo/video loading).
+- **Implementation progress:** 5 of 9 steps implemented and verified locally; steps 6–9 not started.
 - **Baseline:** [measurement report](performance-baseline.md).
+- **Latest results:** [steps 1–5 verification](performance-items-1-5.md).
 
 ## Progress tracking
 
@@ -39,15 +41,15 @@ step 2 remains a payload/robustness improvement rather than a reproduced stall.
 | Step | Status | Change | Verification / completion criteria |
 | --- | --- | --- | --- |
 | 0 | Complete | Measured production loading and animation behavior; preserved raw reports and settings. | Three mobile homepage runs, desktop homepage, mobile Projects/Blog/Open Source; no run warnings; two desktop RAF/Long Task profiles with hardware GPU, including a repeat without tracing. Results in the baseline report. |
-| 1 | In progress | Use the shader library's real `ready`/`unavailable` events for poster handoff; cancel pending callbacks on unmount. | Poster remains until actual rendering succeeds; GPU failure preserves it; rapid navigation produces no late callbacks or blank hero. |
-| 2 | In progress | Gate shader import in a lightweight parent using viewport and reduced motion; defer startup on return navigation. | Mobile and reduced-motion desktop do not download the shader; no hydration mismatch; compare return-home trace and initial load against baseline. Preserve the existing offscreen pause behavior. |
-| 3 | In progress | Allow homepage experience rows to wrap or stack on mobile. | No horizontal document overflow at 320, 375, 390, 768 px; long company names readable; desktop alignment preserved. Prior live observation: 468 px document width at 390 px viewport. |
-| 4 | In progress | Standardize reveal timing, cap local stagger, and add a short page-content transition if it improves perceived navigation. | Main text visible immediately; later list items have no index-dependent wait; header remains stable; back/forward, hash links, keyboard focus and scroll restoration still work. Profile before adopting route animation. |
-| 5 | In progress | Honor reduced motion in theme wipe, Motion components and programmatic smooth scrolling. | Reduced-motion mode changes theme without the 600 ms wipe; controls work with keyboard; no animated reveal or smooth scrolling contrary to preference; ordinary mode remains smooth. |
+| 1 | Implemented / verified locally | Use the shader library's real `ready`/`unavailable` events for poster handoff; cancel pending callbacks on unmount. | Poster remains until actual rendering succeeds; GPU failure preserves it; rapid navigation produces no late callbacks or blank hero. |
+| 2 | Implemented / verified locally | Gate shader import in a lightweight parent using viewport and reduced motion; defer startup on return navigation. | Mobile and reduced-motion desktop do not download the shader; no hydration mismatch; compare return-home trace and initial load against baseline. Preserve the existing offscreen pause behavior. |
+| 3 | Implemented / verified locally | Allow homepage experience rows to wrap or stack on mobile. | No horizontal document overflow at 320, 375, 390, 768 px; long company names readable; desktop alignment preserved. Prior live observation: 468 px document width at 390 px viewport. |
+| 4 | Implemented / verified locally | Standardize reveal timing, cap local stagger, and add a short page-content transition if it improves perceived navigation. | Main text visible immediately; later list items have no index-dependent wait; header remains stable; back/forward, hash links, keyboard focus and scroll restoration still work. Profile before adopting route animation. |
+| 5 | Implemented / verified locally | Honor reduced motion in theme wipe, Motion components and programmatic smooth scrolling. | Reduced-motion mode changes theme without the 600 ms wipe; controls work with keyboard; no animated reveal or smooth scrolling contrary to preference; ordinary mode remains smooth. |
 | 6 | Proposed | Serve the above-fold FFT poster eagerly; defer renderer import/mount until playback; gate project video loading/playback by visibility and motion preference. | Poster is discoverable in initial HTML with suitable priority; first click initiates playback; microphone user activation is preserved; error/retry/source switching and navigation cleanup work. Compare Projects LCP, transfer and CPU before playback. |
 | 7 | Proposed | Include prerendered GitHub contributions in initial Open Source HTML/payload. | Cards present before hydration; no spinner-to-content jump; static deployment still works without a runtime GitHub API; absent build credentials handled. |
-| 8 | Investigation | Measure shared JavaScript and CSS cost before adjusting preload or inline styles. | Controlled A/B measurements show a useful improvement in cold and repeat views; preserve responsive image priority, current font strategy and the guard against speculative shader downloads. Avoid blanket preload removal. |
-| 9 | Proposed | Fix measured Open Source star-count contrast; small UI cleanup: duplicate toaster, forced homepage logo reload, mobile spacing, possible View Projects hero action. | Star-count contrast reaches 4.5:1; one notification region; logo uses normal navigation; layout and keyboard behavior checked. Treat CTA and spacing as design choices, not measured performance fixes. |
+| 8 | Investigation | Measure shared JavaScript and CSS cost before adjusting preload or inline styles; investigate Shiki style-text hydration mismatch on code-heavy articles. | Controlled A/B measurements show a useful improvement in cold and repeat views; preserve responsive image priority, current font strategy and the guard against speculative shader downloads. Avoid blanket preload removal. |
+| 9 | Proposed | Fix measured Open Source star-count and homepage company-text contrast; small UI cleanup: duplicate toaster, forced homepage logo reload, mobile spacing, possible View Projects hero action. | Star-count and company-text contrast reach 4.5:1; one notification region; logo uses normal navigation; layout and keyboard behavior checked. Treat CTA and spacing as design choices, not measured performance fixes. |
 
 ## Measurement rules
 
@@ -75,3 +77,5 @@ step 2 remains a payload/robustness improvement rather than a reproduced stall.
 | 2026-09-05 | 0 | Completed hardware-GPU interaction profiles with and without tracing. Return home was smooth in both; one 57–59 ms Projects-navigation task reproduced. Scroll outlier from trace run did not recur without tracing. |
 | 2026-09-05 | Priorities | Added eager FFT poster delivery to step 6 and measured star-count contrast to step 9. Moved step 6 ahead of optional route animation. |
 | 2026-09-05 | Validation | Audit runners executed successfully; repository lint and typecheck passed; shell/JavaScript syntax and documentation links checked. No production build was needed because application code was unchanged. Files saved locally, not committed or deployed. |
+| 2026-09-05 | 1–5 | Implementation recorded in local commit `8a47717`. Production build and behavioral checks passed; local profile kept scrolling/return-home steady. Projects still has a 53 ms task. Detailed results and a separate Shiki hydration warning are recorded in the steps 1–5 report. Production verification pending. |
+| 2026-09-05 | 1–5 verification | Completed seven local Lighthouse audits and four same-server pre-change homepage audits. Mobile median score stayed 72; desktop stayed 97; homepage LCP unchanged. Mobile TBT median rose 121 → 138 ms. No loading-score gain claimed. Company-text contrast findings added to step 9; production repeat remains pending. Final lint/typecheck and all five behavioral scenarios passed (known article CSS hydration warning recorded). |
