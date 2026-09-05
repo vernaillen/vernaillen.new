@@ -123,7 +123,14 @@ const articleLink = computed(() => `${site.url}${route.path}`)
           </p>
         </Motion>
 
-        <!-- Hero image -->
+        <!-- Hero image. The <img> alone is already eager + fetchpriority=high, but
+             it sits in the body behind ~85 modulepreload links of equal priority,
+             so on a throttled connection it queued behind ~390KB of JS (LCP 4.6s vs
+             FCP 1.4s). `preload` emits a <link rel=preload as=image> in <head> that
+             unhead sorts ahead of the modulepreloads. Safe since @nuxt/image 2.1:
+             the link now carries imagesrcset + imagesizes, so the browser preloads
+             the same candidate the <img> picks (2.0 preloaded the largest variant
+             unconditionally and double-downloaded on mobile). -->
         <Motion
           :initial="{ transform: 'translateY(10px)' }"
           :while-in-view="{ transform: 'translateY(0)' }"
@@ -138,6 +145,7 @@ const articleLink = computed(() => `${site.url}${route.path}`)
             sizes="sm:100vw md:900px"
             loading="eager"
             fetchpriority="high"
+            :preload="{ fetchPriority: 'high' }"
             :style="{ height: `${page.image?.height || 300}px` }"
             class="rounded-lg w-full object-cover object-center border border-dusk-200 dark:border-dusk-800/50"
           />
