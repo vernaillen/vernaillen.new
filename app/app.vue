@@ -50,6 +50,5 @@ useSchemaOrg([
     </NuxtLayout>
 
     <AppSearch />
-
   </UApp>
 </template>

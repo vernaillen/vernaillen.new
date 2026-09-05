@@ -18,7 +18,10 @@ onBeforeUnmount(() => video.value?.pause())
 </script>
 
 <template>
-  <div ref="container" class="relative h-48 w-full overflow-hidden rounded-lg border border-dusk-200 dark:border-dusk-800/50">
+  <div
+    ref="container"
+    class="relative h-48 w-full overflow-hidden rounded-lg border border-dusk-200 dark:border-dusk-800/50"
+  >
     <NuxtImg
       :src="poster"
       :alt="title"
@@ -43,8 +46,14 @@ onBeforeUnmount(() => video.value?.pause())
       height="192"
       class="absolute inset-0 size-full object-cover"
     >
-      <source :src="src.replace(/\.mp4$/, '.webm')" type="video/webm">
-      <source :src="src" type="video/mp4">
+      <source
+        :src="src.replace(/\.mp4$/, '.webm')"
+        type="video/webm"
+      >
+      <source
+        :src="src"
+        type="video/mp4"
+      >
     </video>
   </div>
 </template>

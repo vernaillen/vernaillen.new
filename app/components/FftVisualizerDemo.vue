@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FFTVisualizer } from '@fft-visualizer/vue'
+import type { Component } from 'vue'
 import { createDemoAudio, type AudioSource, type DemoAudio, SOMA } from './fftRadio'
 
 const { poster, eager = false } = defineProps<{
@@ -26,7 +27,7 @@ const pending = ref<AudioSource | null>(null)
 const error = ref('')
 const playing = computed(() => source.value !== null)
 let audio: DemoAudio | null = null
-const renderer = shallowRef<typeof FFTVisualizer>()
+const renderer = shallowRef<Component>()
 const rendererError = ref('')
 let rendererAttempt = 0
 
@@ -287,11 +288,23 @@ onBeforeUnmount(stop)
       </div>
     </div>
 
-    <div v-if="rendererError" role="status" class="mt-3 flex items-center gap-2 text-sm text-error">
+    <div
+      v-if="rendererError"
+      role="status"
+      class="mt-3 flex items-center gap-2 text-sm text-error"
+    >
       {{ rendererError }}
-      <UButton label="Retry visualizer" size="xs" variant="outline" @click="loadRenderer" />
+      <UButton
+        label="Retry visualizer"
+        size="xs"
+        variant="outline"
+        @click="loadRenderer"
+      />
     </div>
-    <p class="mt-3 text-xs text-muted" role="status">
+    <p
+      class="mt-3 text-xs text-muted"
+      role="status"
+    >
       <span
         v-if="error"
         class="text-error"
