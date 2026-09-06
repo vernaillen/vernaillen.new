@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { execSync } from 'node:child_process'
+import { minifyContentStyles } from './build/content-styles'
 
 const lastUpdated = (() => {
   try {
@@ -151,6 +152,10 @@ export default defineNuxtConfig({
   },
 
   hooks: {
+    'content:file:afterParse': ({ content }) => {
+      minifyContentStyles(content.body)
+      minifyContentStyles(content.excerpt)
+    },
     // Nuxt prefetches every lazy chunk reachable from a route, which on the
     // homepage meant ~3.5MB of speculative JS — including the 2.5MB shaders
     // library that only ever hydrates at >=1024px. That download competes with

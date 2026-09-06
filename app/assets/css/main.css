@@ -46,6 +46,11 @@
   --color-vernaillen-950: #2e1b02;
 }
 
+/* The lighter brand gold cannot support small text against white. */
+.light {
+  --ui-primary: var(--ui-color-primary-700);
+}
+
 .dark {
   --ui-bg: var(--ui-color-neutral-950);
   --ui-bg-muted: var(--ui-color-neutral-900);

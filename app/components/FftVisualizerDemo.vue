@@ -38,8 +38,20 @@ async function loadRenderer() {
     const module = await import('./FftRenderer.client.vue')
     if (attempt === rendererAttempt) renderer.value = module.default
   } catch {
-    if (attempt === rendererAttempt) rendererError.value = 'Visualizer could not load. Try again.'
+    if (attempt === rendererAttempt) rendererFailed()
   }
+}
+
+function rendererFailed() {
+  stop()
+  renderer.value = undefined
+  rendererError.value = 'Visualizer could not load. Reload the demo to try again.'
+}
+
+function reloadDemo() {
+  stop()
+  // Browsers cache failed dynamic imports for the lifetime of this document.
+  reloadNuxtApp({ force: true })
 }
 
 const sources: { id: AudioSource, icon: string, label: string }[] = [
@@ -238,6 +250,7 @@ onBeforeUnmount(stop)
         background="#0a0a12"
         :show-stats="false"
         v-bind="activeProps"
+        @unavailable="rendererFailed"
       />
 
       <!-- object-contain in the 16:6 box shows the (near-square) poster at
@@ -297,10 +310,10 @@ onBeforeUnmount(stop)
     >
       {{ rendererError }}
       <UButton
-        label="Retry visualizer"
+        label="Reload demo"
         size="xs"
         variant="outline"
-        @click="loadRenderer"
+        @click="reloadDemo"
       />
     </div>
     <p

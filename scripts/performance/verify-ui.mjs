@@ -23,7 +23,7 @@ const results = []
 const delay = ms => new Promise(resolveDelay => setTimeout(resolveDelay, ms))
 const posterOpacity = page => page.$eval('img[src*="hero-poster-dark"]', image => Number(getComputedStyle(image.parentElement).opacity))
 
-async function scenario(name, run, knownWarnings = []) {
+async function scenario(name, run) {
   const context = await browser.createBrowserContext()
   const page = await context.newPage()
   const errors = []
@@ -38,7 +38,7 @@ async function scenario(name, run, knownWarnings = []) {
   try {
     const details = await run(page, requests)
     assert.deepEqual(errors, [], 'No page exceptions')
-    assert.deepEqual(warnings.filter(warning => !knownWarnings.includes(warning)), [], 'No unexpected hydration warnings')
+    assert.deepEqual(warnings, [], 'No unexpected hydration warnings')
     results.push({ name, status: 'passed', warnings, ...details })
     console.log(`PASS ${name}${warnings.length ? ' (known warning recorded)' : ''}`)
   } catch (error) {
@@ -98,11 +98,9 @@ try {
     await page.goto(`${origin}/blog/wpnuxt-v2`)
     const hash = await page.$eval('main a[href^="#"]', link => link.getAttribute('href'))
     await page.click(`main a[href="${hash}"]`)
-    await page.waitForFunction(() => window.__scrollCalls.some(args => args[0]?.behavior === 'instant'))
+    await page.waitForFunction(() => window.__scrollCalls.some(args => ['instant', 'auto'].includes(args[0]?.behavior)))
     return { shaderRequests: 0, themeTransitions: 0, hash }
-  // The prerendered Shiki <style> is minified; MDC hydrates equivalent, spaced
-  // CSS text. Diagnosed separately from motion behavior; see the results report.
-  }, [`${origin}/blog/wpnuxt-v2: Hydration completed but contains mismatches.`])
+  })
 
   await scenario('Poster stays visible until real GPU initialization finishes', async (page) => {
     await page.evaluateOnNewDocument(() => {

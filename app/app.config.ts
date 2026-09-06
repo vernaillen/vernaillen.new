@@ -15,6 +15,13 @@ export default defineAppConfig({
       secondary: 'teal',
       neutral: 'dusk'
     },
+    button: {
+      compoundVariants: [{
+        color: 'primary',
+        variant: 'solid',
+        class: 'hover:bg-primary/90 active:bg-primary/90'
+      }]
+    },
     pageHero: {
       slots: {
         container: 'py-18 sm:py-24 lg:py-32',

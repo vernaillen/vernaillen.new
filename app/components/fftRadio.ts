@@ -115,6 +115,8 @@ export function createDemoAudio(source: AudioSource, bins: number, fftSize = 204
     const own = new AudioContext()
     ctx = own
     const resumed = own.resume() // Initiate while the click is still active.
+    // Observe it now; Promise.all below still propagates the failure to the UI.
+    void resumed.catch(() => {})
     let playback: Promise<void> = Promise.resolve()
 
     analyserL = own.createAnalyser()
