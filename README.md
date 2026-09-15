@@ -62,11 +62,11 @@ performance.
 - **OG images are baked at build time** (`ogImage.zeroRuntime`) with
   `@takumi-rs`. `renderTimeout` is raised to 60s because AVIF encoding saturates
   the CPU during prerender and starves the OG renderer — don't lower it.
-- **Edge caching.** Prerendered HTML gets `max-age=0, s-maxage=31536000` so the
-  CDN holds it and browsers always revalidate; `/images/**` and `/_ipx/**` are
-  immutable for a year. On the static deploy those headers come from
-  `public/.htaccess` (Nitro `routeRules` are inert without a server), and CI
-  purges the Bunny pull zone after each deploy.
+- **Cache headers.** Prerendered HTML gets `max-age=0, s-maxage=31536000` so
+  browsers always revalidate (`s-maxage` only matters to a shared cache — none
+  in front today); `/images/**` and `/_ipx/**` are immutable for a year. On the
+  static deploy those headers come from `public/.htaccess` (Nitro `routeRules`
+  are inert without a server).
 - **`/api/radio`** proxies a SomaFM stream so the FFT visualizer demo can read
   untainted PCM (SomaFM 403s the `Range` header browsers send). Set
   `NUXT_PUBLIC_RADIO_URL` to an absolute URL when the site is served statically
@@ -93,12 +93,12 @@ pnpm check        # prepare + lint + typecheck + generate, same as CI
 
 ## Deployment
 
-**`main` → `nuxt generate` → Combell → Bunny.** A single `ci` workflow runs on
+**`main` → `nuxt generate` → Combell.** A single `ci` workflow runs on
 every branch as two chained jobs — `check` (lint, typecheck), then
 `build-deploy` behind a `needs:`, which runs the production build. On `main`,
 and only if all of that passed, that build output is rsynced to a Combell
-shared-hosting pack over SSH and the Bunny.net pull zone in front of it is
-purged. `public/.htaccess` supplies the cache headers and redirects the Nitro
+shared-hosting pack over SSH. `public/.htaccess` supplies the cache headers and
+redirects the Nitro
 `routeRules` can't provide on a plain static host. AVIF encoding during
 prerender is the slow part of the build, which is why the split is on the
 checks rather than the deploy: a deploy job would get a fresh runner and have
@@ -106,10 +106,10 @@ to build all over again, or take the output as an artifact — and
 `upload-artifact` excludes dotfiles by default, which would silently drop that
 `.htaccess` and with it every production cache header.
 
-DNS lives at LuaDNS: the apex is an ALIAS to the Bunny pull zone, `www` a CNAME
-to it, and Bunny origin-pulls from `https://vernaillencom.webhosting.be` — a
-valid SAN on the Combell pack's certificate, so origin SSL verification stays
-on and the edge cert is Bunny's own.
+DNS is on Bunny DNS, managed as code with DNSControl in `~/git/dnscontrol`
+(`dnsconfig.js`): apex and `www` are A/AAAA records straight at the Combell
+pack — no CDN in front since September 2026 — and `.htaccess` 301s `www` to the
+apex. The pack's own multi-SAN certificate serves the site.
 
 The one route that needs a live server, `/api/radio`, runs as a small Nitro app
 on Coolify at `radio.vernaillen.dev`; the static build points at it via
